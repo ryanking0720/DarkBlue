@@ -1,8 +1,8 @@
 package com.DarkBlue.Move;
 
 public enum MoveType{
-	REGULAR, 
-	ATTACKING, 
-	CASTLING, 
-	EN_PASSANT;
+    REGULAR, 
+    ATTACKING, 
+    CASTLING, 
+    EN_PASSANT;
 }
