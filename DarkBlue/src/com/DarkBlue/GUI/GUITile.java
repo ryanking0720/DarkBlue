@@ -4,34 +4,23 @@ import com.DarkBlue.Board.*;
 import com.DarkBlue.Utilities.*;
 
 import javax.swing.JPanel;
-//import javax.swing.JFrame;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 
-import java.net.URL;
-import java.net.URLConnection;
-//import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 import javax.imageio.ImageIO;
-import javax.net.ssl.HttpsURLConnection;
 
-public final class GUITile extends JPanel implements MouseListener{
+public final class GUITile extends JPanel{
 
     // Final values for bookkeeping
     private static final long serialVersionUID = Utilities.ONE_LONG;
     
     public static final String EXTENSION = ".png";
-    //public static final String FOLDER = "https://github.com/ryanking0720/DarkBlue/tree/master/DarkBlue/src/com/DarkBlue/GUI/ChessPieces/";
     public static final String FOLDER = "GUI/ChessPieces/";
     
     public final String m_actionCommand;
@@ -98,11 +87,9 @@ public final class GUITile extends JPanel implements MouseListener{
             final String path = FOLDER + colorString + pieceString + EXTENSION;
         
             try{
-                //URL url = new URL(path);
-                //HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
                 this.m_piece = ImageIO.read(new File(path));//bp      
                 this.add(new JLabel(new ImageIcon(m_piece)));
-                validate();
+                revalidate();
                 repaint();
             }catch(Exception e){        
                 e.printStackTrace();
@@ -119,203 +106,6 @@ public final class GUITile extends JPanel implements MouseListener{
     public final void Revert(){
         this.setBackground(this.m_originalColor);
         repaint();
-    }
-    
-    /*
-    NAME
-        protected final void paintComponent(Graphics a_g);
-    
-    SYNOPSIS
-        protected final void paintComponent(Graphics a_g);
-    
-        Graphics a_g -------> The Graphics object.
-    
-    DESCRIPTION
-        This method is overridden from Graphics.
-        It paints the tile with the image provided.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    /*
-    @Override
-    protected final void paintComponent(Graphics a_g){
-        
-        super.paintComponent(a_g);
-        a_g.setColor(this.GetColor());
-        
-        if(this.IsOccupied()){
-            this.SetPiece();
-            
-            //a_g.drawImage(m_piece, Utilities.ZERO, Utilities.ZERO, this);
-            //m_label = new JLabel(new ImageIcon(m_piece));
-            //this.add(m_label);
-            
-        }else{
-            m_piece = null;
-            if(m_label.getParent() == this){
-                this.remove(m_label);
-            }
-        }
-    }
-    */
-
-    /*
-    NAME
-        public void mouseClicked(final MouseEvent a_event);
-    
-    SYNOPSIS
-        public void mouseClicked(final MouseEvent a_event);
-    
-        MouseEvent a_event -------> The MouseEvent object.
-    
-    DESCRIPTION
-        This method determines if this tile was clicked.
-        If it was, it will light up in bright green.
-        If it was not clicked, the method will determine if
-        this tile is in the fairway of a piece that is moving.
-        If so, it will turn to a slightly more transparent green.
-        If this tile is not part of the selected piece's legal move
-        spectrum, it will not change color at all.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    @Override
-    public final void mouseClicked(final MouseEvent a_event){
-        /*
-        if(this.IsSelected() || this.IsMovable()){            
-            this.m_state = TileState.UNSELECTED;
-            this.m_color = this.m_originalColor;
-        }else{
-            if(a_event.getSource() == this){
-                this.m_state = TileState.SELECTED;
-                this.m_color = Utilities.SELECTED_GREEN;
-            }else{                
-                // Determine if this tile is in the path of any legal move
-                // and light it up using the more transparent green
-            }
-        }
-        revalidate();
-        repaint();
-        */
-        if(SwingUtilities.isLeftMouseButton(a_event)){
-            
-        }
-    }
-    
-    /*
-    NAME
-        public void mouseExited(final MouseEvent a_event);
-    
-    SYNOPSIS
-        public void mouseExited(final MouseEvent a_event);
-    
-        MouseEvent a_event -------> The MouseEvent object.
-    
-    DESCRIPTION
-        This method determines if this tile was exited.
-        It serves no purpose for my chess engine.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    @Override
-    public final void mouseExited(final MouseEvent a_event){
-
-    }
-    
-    /*
-    NAME
-        public void mouseReleased(final MouseEvent a_event);
-    
-    SYNOPSIS
-        public void mouseReleased(final MouseEvent a_event);
-    
-        MouseEvent a_event -------> The MouseEvent object.
-    
-    DESCRIPTION
-        This method determines if the mouse was released on this tile.
-        It serves no purpose for my chess engine.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    @Override
-    public final void mouseReleased(final MouseEvent a_event){
-
-    }
-    
-    /*
-    NAME
-        public void mouseEntered(final MouseEvent a_event);
-    
-    SYNOPSIS
-        public void mouseEntered(final MouseEvent a_event);
-    
-        MouseEvent a_event -------> The MouseEvent object.
-    
-    DESCRIPTION
-        This method determines if the mouse was entered on this tile.
-        It serves no purpose for my chess engine.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    @Override
-    public final void mouseEntered(final MouseEvent a_event){
-
-    }
-    
-    /*
-    NAME
-        public void mousePressed(final MouseEvent a_event);
-    
-    SYNOPSIS
-        public void mousePressed(final MouseEvent a_event);
-    
-        MouseEvent a_event -------> The MouseEvent object.
-    
-    DESCRIPTION
-        This method determines if the mouse was entered on this tile.
-        It serves no purpose for my chess engine.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    @Override
-    public final void mousePressed(final MouseEvent a_event){
-
     }
     
     /*

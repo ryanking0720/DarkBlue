@@ -1085,4 +1085,82 @@ public interface MoveEvaluation{
         
         return copiedMoves;
     }
+    
+    /*
+    NAME
+        public static boolean IsEnPassantMove();
+    
+    SYNOPSIS
+        public static boolean IsEnPassantMove();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if the move to be generated is an en passant move,
+        which is a special capture involving pawns. If the moving piece is a pawn
+        on its fifth rank, and a piece to its left or right is an enemy pawn that
+        just advanced 2 tiles on the previous move and would have been captured by
+        this pawn had it only moved 1 tile, and the destination tilefor the first 
+        pawn is an empty tile diagonally in front of it, then this move is deemed 
+        to be an en passant move.
+    
+    RETURNS
+        True if the move is en passant, and false otherwise.
+        One of these two options will always occur.
+        
+    AUTHOR
+        Ryan King
+    */
+    public static boolean IsEnPassantMove(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Piece a_victim){
+        /*
+        return (((m_candidate.IsWhite() && m_destinationRow == m_startRow - Utilities.ONE) 
+                || (m_candidate.IsBlack() && m_destinationRow == m_startRow + Utilities.ONE)) 
+                && (m_destinationColumn == m_startColumn + Utilities.ONE || m_destinationColumn == m_startColumn - Utilities.ONE) 
+                && (Utilities.HasValidCoordinates(m_destinationRow, m_startRow - Utilities.ONE)
+                        || Utilities.HasValidCoordinates(m_destinationRow, m_startRow + Utilities.ONE))
+                && m_board.GetTile(m_destinationRow, m_destinationColumn).IsEmpty()
+                && (m_previouslyMoved.IsPawn() 
+                && m_previouslyMoved.IsEnemy(m_candidate)
+                && m_previouslyMoved.HowManyMoves() == Utilities.ONE
+                && Math.abs(m_previouslyMoved.GetCurrentRow() - m_oldRow) == Utilities.TWO
+                && m_oldColumn == m_previouslyMoved.GetCurrentColumn()));
+        */
+        return a_victim != null
+                    && a_candidate.IsPawn()
+                    && a_victim.IsPawn() 
+                    && a_victim.Equals(DarkBlue.GetPreviouslyMoved()) 
+                    && (a_victim.GetCurrentRow() == a_destinationRow - Utilities.ONE
+                            || a_victim.GetCurrentRow() == a_destinationRow + Utilities.ONE)
+                    && a_victim.GetCurrentColumn() == a_destinationColumn;
+    }
+    
+    /*
+    NAME
+        private final boolean IsCastlingMove();
+    
+    SYNOPSIS
+        private final boolean IsCastlingMove();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if the given move
+        is a castling move or not.
+        
+    RETURNS
+        True if the move is a castling move, 
+        or false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public static boolean IsCastlingMove(final Piece a_candidate, final int a_sourceRow, final int a_sourceColumn, final int a_destinationRow, final int a_destinationColumn){
+        return a_candidate.IsKing()
+                && a_destinationRow == a_sourceRow 
+                && (a_destinationColumn == a_sourceColumn + Utilities.TWO 
+                || a_destinationColumn == a_sourceColumn - Utilities.TWO);
+    }
+    
+    
 }

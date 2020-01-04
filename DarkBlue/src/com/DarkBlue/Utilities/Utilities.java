@@ -7,92 +7,95 @@ import com.DarkBlue.Piece.*;
 
 public interface Utilities{
     // Icons for pieces to be used in algebraic notation
-    public final char PAWN_ICON = 'P';
-    public final char ROOK_ICON = 'R';
-    public final char KNIGHT_ICON = 'N';
-    public final char BISHOP_ICON = 'B';
-    public final char QUEEN_ICON = 'Q';
-    public final char KING_ICON = 'K';
+    public static final char PAWN_ICON = 'P';
+    public static final char ROOK_ICON = 'R';
+    public static final char KNIGHT_ICON = 'N';
+    public static final char BISHOP_ICON = 'B';
+    public static final char QUEEN_ICON = 'Q';
+    public static final char KING_ICON = 'K';
     
     // Icons for pieces to be used on the board
-    public final char WHITE_PAWN_BOARD_ICON = '♙';
-    public final char WHITE_ROOK_BOARD_ICON = '♖';
-    public final char WHITE_KNIGHT_BOARD_ICON = '♘';
-    public final char WHITE_BISHOP_BOARD_ICON = '♗';
-    public final char WHITE_QUEEN_BOARD_ICON = '♕';
-    public final char WHITE_KING_BOARD_ICON = '♔';
+    public static final char WHITE_PAWN_BOARD_ICON = '♙';
+    public static final char WHITE_ROOK_BOARD_ICON = '♖';
+    public static final char WHITE_KNIGHT_BOARD_ICON = '♘';
+    public static final char WHITE_BISHOP_BOARD_ICON = '♗';
+    public static final char WHITE_QUEEN_BOARD_ICON = '♕';
+    public static final char WHITE_KING_BOARD_ICON = '♔';
     
-    public final char BLACK_PAWN_BOARD_ICON = '♟';
-    public final char BLACK_ROOK_BOARD_ICON = '♜';
-    public final char BLACK_KNIGHT_BOARD_ICON = '♞';
-    public final char BLACK_BISHOP_BOARD_ICON = '♝';
-    public final char BLACK_QUEEN_BOARD_ICON = '♛';
-    public final char BLACK_KING_BOARD_ICON = '♚';
+    public static final char BLACK_PAWN_BOARD_ICON = '♟';
+    public static final char BLACK_ROOK_BOARD_ICON = '♜';
+    public static final char BLACK_KNIGHT_BOARD_ICON = '♞';
+    public static final char BLACK_BISHOP_BOARD_ICON = '♝';
+    public static final char BLACK_QUEEN_BOARD_ICON = '♛';
+    public static final char BLACK_KING_BOARD_ICON = '♚';
     
     // Letters in algebraic notation
-    public final char A = 'a';
-    public final char B = 'b';
-    public final char C = 'c';
-    public final char D = 'd';
-    public final char E = 'e';
-    public final char F = 'f';
-    public final char G = 'g';
-    public final char H = 'h';
-    public final char NULL = '\0';
+    public static final char A = 'a';
+    public static final char B = 'b';
+    public static final char C = 'c';
+    public static final char D = 'd';
+    public static final char E = 'e';
+    public static final char F = 'f';
+    public static final char G = 'g';
+    public static final char H = 'h';
+    public static final char NULL = '\0';
     
     // Character versions of single-digit numbers
-    public final char ONE_CHAR = '1';
-    public final char TWO_CHAR = '2';
-    public final char THREE_CHAR = '3';
-    public final char FOUR_CHAR = '4';
-    public final char FIVE_CHAR = '5';
-    public final char SIX_CHAR = '6';
-    public final char SEVEN_CHAR = '7';
-    public final char EIGHT_CHAR = '8';
+    public static final char ONE_CHAR = '1';
+    public static final char TWO_CHAR = '2';
+    public static final char THREE_CHAR = '3';
+    public static final char FOUR_CHAR = '4';
+    public static final char FIVE_CHAR = '5';
+    public static final char SIX_CHAR = '6';
+    public static final char SEVEN_CHAR = '7';
+    public static final char EIGHT_CHAR = '8';
     
     // Castling move strings
-    public final String KINGSIDE_CASTLE = "0-0";
-    public final String QUEENSIDE_CASTLE = "0-0-0";
+    public static final String KINGSIDE_CASTLE = "0-0";
+    public static final String QUEENSIDE_CASTLE = "0-0-0";
+    
+    // Rules to display in the InstructionFrame
+    public static final String INSTRUCTIONS = "How to use this engine:\n\n1. Use your primary mouse button to select the piece you wish to move.\n\n2. Give that piece another primary click to deselect it and choose another piece.\n\n3. Click on any green tile to move the piece to that spot. Play alternates between both players until one loses, resigns, or a draw is reached.";
     
     // Symbolic constants for piece values and initializations for immutability
-    public final int NEGATIVE_SEVEN = -7;
-    public final int NEGATIVE_SIX = -6;
-    public final int NEGATIVE_FIVE = -5;
-    public final int NEGATIVE_FOUR = -4;
-    public final int NEGATIVE_THREE = -3;
-    public final int NEGATIVE_TWO = -2;
-    public final int NEGATIVE_ONE = -1;
-    public final int ZERO = 0;
-    public final int ONE = 1;
-    public final int TWO = 2;
-    public final int THREE = 3;
-    public final int FOUR = 4;
-    public final int FIVE = 5;
-    public final int SIX = 6;
-    public final int SEVEN = 7;
-    public final int EIGHT = 8;
-    public final int NINE = 9;
-    public final int TEN = 10;
-    public final int FORTY = 40;
-    public final int FIFTY = 50;
-    public final int FIFTY_ONE = 51;
-    public final int SIXTY = 60;
-    public final int SIXTY_FOUR = 64;
-    public final int ONE_HUNDRED_TWO = 102;
-    public final int ONE_HUNDRED_SEVENTY_EIGHT = 178;
-    public final int TWO_HUNDRED_FOUR = 204;
-    public final int TWO_HUNDRED_FIFTY_FIVE = 255;
-    public final int THREE_HUNDRED_SIXTY = 360;
-    public final int FOUR_HUNDRED_TWENTY = 420;
-    public final int NINE_HUNDRED_NINETY_NINE = 999;
+    public static final int NEGATIVE_SEVEN = -7;
+    public static final int NEGATIVE_SIX = -6;
+    public static final int NEGATIVE_FIVE = -5;
+    public static final int NEGATIVE_FOUR = -4;
+    public static final int NEGATIVE_THREE = -3;
+    public static final int NEGATIVE_TWO = -2;
+    public static final int NEGATIVE_ONE = -1;
+    public static final int ZERO = 0;
+    public static final int ONE = 1;
+    public static final int TWO = 2;
+    public static final int THREE = 3;
+    public static final int FOUR = 4;
+    public static final int FIVE = 5;
+    public static final int SIX = 6;
+    public static final int SEVEN = 7;
+    public static final int EIGHT = 8;
+    public static final int NINE = 9;
+    public static final int TEN = 10;
+    public static final int FORTY = 40;
+    public static final int FIFTY = 50;
+    public static final int FIFTY_ONE = 51;
+    public static final int SIXTY = 60;
+    public static final int SIXTY_FOUR = 64;
+    public static final int ONE_HUNDRED_TWO = 102;
+    public static final int ONE_HUNDRED_SEVENTY_EIGHT = 178;
+    public static final int TWO_HUNDRED_FOUR = 204;
+    public static final int TWO_HUNDRED_FIFTY_FIVE = 255;
+    public static final int THREE_HUNDRED_SIXTY = 360;
+    public static final int FOUR_HUNDRED_TWENTY = 420;
+    public static final int NINE_HUNDRED_NINETY_NINE = 999;
     
-    public final long ONE_LONG = 1;
+    public static final long ONE_LONG = 1;
     
     // Colors for GUITiles
-    public final Color BLACK = new Color(TWO_HUNDRED_FOUR, ONE_HUNDRED_TWO, ZERO, TWO_HUNDRED_FIFTY_FIVE);
-    public final Color WHITE = new Color(TWO_HUNDRED_FIFTY_FIVE, ONE_HUNDRED_SEVENTY_EIGHT, ONE_HUNDRED_TWO, TWO_HUNDRED_FIFTY_FIVE);
-    public final Color SELECTED_GREEN = new Color(FIFTY_ONE, TWO_HUNDRED_FIFTY_FIVE, FIFTY_ONE, TWO_HUNDRED_FIFTY_FIVE);
-    public final Color MOVABLE_GREEN = new Color(ONE_HUNDRED_TWO, TWO_HUNDRED_FIFTY_FIVE, ONE_HUNDRED_TWO, ONE_HUNDRED_TWO);
+    public static final Color BLACK = new Color(TWO_HUNDRED_FOUR, ONE_HUNDRED_TWO, ZERO, TWO_HUNDRED_FIFTY_FIVE);
+    public static final Color WHITE = new Color(TWO_HUNDRED_FIFTY_FIVE, ONE_HUNDRED_SEVENTY_EIGHT, ONE_HUNDRED_TWO, TWO_HUNDRED_FIFTY_FIVE);
+    public static final Color SELECTED_GREEN = new Color(FIFTY_ONE, TWO_HUNDRED_FIFTY_FIVE, FIFTY_ONE, TWO_HUNDRED_FIFTY_FIVE);
+    public static final Color MOVABLE_GREEN = new Color(ONE_HUNDRED_TWO, TWO_HUNDRED_FIFTY_FIVE, ONE_HUNDRED_TWO, ONE_HUNDRED_TWO);
     
     /**/
     /*
@@ -523,40 +526,6 @@ public interface Utilities{
             return IsValidTileLetter(tile.charAt(Utilities.ZERO)) && IsValidTileNumber(tileNumber);
         }catch(Exception e){
             return false;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        public static Piece DuplicatePiece(final Piece a_candidate);
-    
-    SYNOPSIS
-        public static Piece DuplicatePiece(final Piece a_candidate)
-        
-        Piece a_candidate ---------------> The piece to be duplicated.
-    
-    DESCRIPTION
-        This method duplicates the given piece and adds 1 to its current number of moves.
-        This version is used when re-instantiating a piece that did not move.
-    
-    RETURNS
-        Piece: The new pawn, rook, knight, bishop, queen, or king with its move count increased by 1, or null on error.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public static Piece DuplicatePiece(final Piece a_candidate){
-        // Make a deep copy of the piece that just moved
-        switch(a_candidate.GetPieceType()){
-            case PAWN: return new Pawn(a_candidate, a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), a_candidate.HowManyMoves() + Utilities.ONE);
-            case ROOK: return new Rook(a_candidate, a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), a_candidate.HowManyMoves() + Utilities.ONE);
-            case KNIGHT: return new Knight(a_candidate, a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), a_candidate.HowManyMoves() + Utilities.ONE);
-            case BISHOP: return new Bishop(a_candidate, a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), a_candidate.HowManyMoves() + Utilities.ONE);
-            case QUEEN: return new Queen(a_candidate, a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), a_candidate.HowManyMoves() + Utilities.ONE);
-            case KING: return new King(a_candidate, a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), a_candidate.HowManyMoves() + Utilities.ONE);
-            default: return null;
         }
     }
         

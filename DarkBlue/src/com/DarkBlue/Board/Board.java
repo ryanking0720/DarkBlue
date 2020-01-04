@@ -2,6 +2,7 @@ package com.DarkBlue.Board;
 
 import com.DarkBlue.Player.*;
 import com.DarkBlue.Piece.*;
+
 import com.DarkBlue.Move.*;
 import com.DarkBlue.Utilities.*;
 
@@ -117,6 +118,20 @@ public final class Board{
         return this.m_boardObject;
     }
     
+    public final int PieceCount(){
+    	int count = Utilities.ZERO;
+    	
+    	for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
+    		int row = i / Utilities.EIGHT;
+    		int column = i % Utilities.EIGHT;
+    		if(this.m_boardObject[row][column].IsOccupied()){
+    			count++;
+    		}
+    	}
+    	
+    	return count;
+    }
+    
     /*
     NAME
         private static final Tile[][] GetCurrentBoard(final BoardBuilder a_builder);
@@ -215,6 +230,14 @@ public final class Board{
         
         // Return the newly-built board
         return builder.Build();
+    }
+    
+    public static final Board GetEmptyBoard(){
+    	final BoardBuilder builder = new BoardBuilder();
+    	
+    	// Empty, because no pieces need to be added
+    	
+    	return builder.Build();
     }
     
     /*
@@ -563,9 +586,9 @@ public final class Board{
     */
     public final void PrintWhoseTurn(){
         if(m_whoseTurn == ChessColor.WHITE){
-            System.out.println("It’s white’s turn.");
+            System.out.println("Itï¿½s whiteï¿½s turn.");
         }else{
-            System.out.println("It’s black’s turn.");
+            System.out.println("Itï¿½s blackï¿½s turn.");
         }
     }
     
@@ -1165,7 +1188,7 @@ public final class Board{
         final Tile promotedTile = this.m_boardObject[promotedRow][promotedColumn];
         
         // Remove the old pawn and put the promoted piece in its place
-        this.m_boardObject[promotedRow][promotedColumn] = new Tile(promotedTile.GetColor(), promotedTile.GetRow(), promotedTile.GetColumn(), Utilities.DuplicatePiece(a_promotedPiece));
+        this.m_boardObject[promotedRow][promotedColumn] = new Tile(promotedTile.GetColor(), promotedTile.GetRow(), promotedTile.GetColumn(), Factory.PieceFactory(a_promotedPiece));
 
         // Initialize a new BoardBuilder object with the configuration of the new Board
         BoardBuilder builder = new BoardBuilder(this.m_boardObject, this.WhoseTurnIsIt());

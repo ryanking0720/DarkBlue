@@ -14,13 +14,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-//import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -30,11 +28,15 @@ import javax.swing.JPanel;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
+import javax.swing.JFileChooser;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
+
+import java.io.FileWriter;
 
 /*
  * This class is the driver class for the entire program.
@@ -69,7 +71,7 @@ import javax.swing.SwingWorker;
  * The game will continue indefinitely until one side wins (and the other consequently loses),
  * the game draws due to certain conditions, or if the human player chooses to resign (this counts as a loss).
  */
-public final class DarkBlue extends JFrame implements ActionListener{
+public final class DarkBlue extends JFrame{
     
     private static final long serialVersionUID = Utilities.ONE_LONG;
     
@@ -109,6 +111,8 @@ public final class DarkBlue extends JFrame implements ActionListener{
     
     private Scanner m_keyboard;
     
+    private GameWatcher m_watcher = new GameWatcher();
+    
     // The alias for the current player, used to reduce code
     private Player m_currentPlayer;
         
@@ -119,26 +123,31 @@ public final class DarkBlue extends JFrame implements ActionListener{
         
     private GameState m_state = GameState.NORMAL;
     
-    private static ChessColor m_humanColor, m_oppositeColor;
+    private static ChessColor m_humanColor, m_computerColor;
     
     // The players described by color
     private static Player m_white;
     
     private static Player m_black;
     
-    private static Player m_computerPlayer;
+    private static Player m_humanPlayer, m_computerPlayer;
     
     // The exact coordinates the player chooses when moving
-    private int m_sourceRow;
-    private int m_sourceColumn;
-    private int m_destinationRow;
-    private int m_destinationColumn;
+    private int m_sourceRow = Utilities.NEGATIVE_ONE;
+    private int m_sourceColumn = Utilities.NEGATIVE_ONE;
+    private int m_destinationRow = Utilities.NEGATIVE_ONE;
+    private int m_destinationColumn = Utilities.NEGATIVE_ONE;
+    
+    private boolean m_isFirstMove = true;
     
     private static int m_originalRow;
     private static int m_originalColumn;
 
     // The number of moves made; useful for determining draws
-    private int m_moves = Utilities.ZERO;
+    private int m_allHalfmoves = Utilities.ZERO;
+    private int m_currentHalfmoves = Utilities.ZERO;
+    
+    private int m_fullmoves = Utilities.ONE;
         
     // Search depth for the AI
     private static int m_depth = Utilities.FIVE;// To be used later on
@@ -166,29 +175,29 @@ public final class DarkBlue extends JFrame implements ActionListener{
     private static DarkBlue m_instance;
     
     
-    /* Swing components */
-    private JButton m_resign = new JButton(RESIGN);
-    private JButton m_move = new JButton(MOVE);
+    /* Swing components */    
+    private DarkBlueMenuBar m_menuBar = new DarkBlueMenuBar();
     
-    private JPanel m_bottom = new JPanel();
+    //private JButton m_resign = new JButton(RESIGN);
+    //private JButton m_move = new JButton(MOVE);
+    
+    //private JPanel m_bottom = new JPanel();
+    private JPanel m_top = new JPanel();
     
     // Contains the board panel and two row bumpers on either side
-    private JPanel m_center = new JPanel();
+    //private JPanel m_center = new JPanel();
     
     // Contains the GUIBoard object, as well as two column bumpers on top and bottom
     private JPanel m_boardPanel = new JPanel();
     
     // Left and right row indicators with numbers 1-8
-    private RowBumper m_leftBumper, m_rightBumper;
+    //private RowBumper m_leftBumper, m_rightBumper;
     
     // Top and bottom column indicators with letters A-H
-    private ColumnBumper m_topBumper, m_bottomBumper;
+    //private ColumnBumper m_topBumper, m_bottomBumper;
     
-    private JTextField m_source = new JTextField();
-    private JTextField m_destination = new JTextField();
-    
-    private JLabel m_sourceLabel = new JLabel(SOURCE);
-    private JLabel m_destinationLabel = new JLabel(DESTINATION);
+    //private JLabel m_sourceLabel = new JLabel(SOURCE);
+    //private JLabel m_destinationLabel = new JLabel(DESTINATION);
     
     //private SwingWorker<Void, Void> m_worker;
     
@@ -215,12 +224,19 @@ public final class DarkBlue extends JFrame implements ActionListener{
     */
     private DarkBlue(){        
         super(TITLE);
+        ChooseColor();
+        m_isFirstMove = true;
+        this.m_board = new GUIBoard(Board.GetStartingPosition());//Get the starting position
+        InitializePlayers(m_board.GetBoard());
         this.m_keyboard = new Scanner(System.in);
         this.m_moveHistory = new ArrayList<>();
         this.m_boardHistory = new ArrayList<>();
+        
+        m_currentPlayer = m_white;
+        m_watcher.Observe();
         this.CreateAndShowGUI();
-        this.TryPlay();
-        //Test();
+        //this.TryPlay();
+        //Test();// Use for testing on the command line
     }
     
     /*
@@ -356,25 +372,24 @@ public final class DarkBlue extends JFrame implements ActionListener{
     AUTHOR
         Ryan King
     */
-    @Override
-    public final void actionPerformed(final ActionEvent a_event){
-        if(a_event.getSource() == m_resign){
-            int wantToResign = JOptionPane.showConfirmDialog(this, RESIGN_QUESTION, TITLE, JOptionPane.YES_NO_OPTION);
-            
-            if(wantToResign == JOptionPane.YES_OPTION){
-                if(m_humanColor.IsWhite()){
-                    JOptionPane.showMessageDialog(this, BLACK_RESIGNATION, TITLE, JOptionPane.ERROR_MESSAGE);
-                }else{
-                    JOptionPane.showMessageDialog(this, WHITE_RESIGNATION, TITLE, JOptionPane.ERROR_MESSAGE);
-                }
-                System.exit(Utilities.ZERO);
-            }
-        }else if(a_event.getSource() == m_move){
-            if(HumanPlay()){
-                Play();
-            }
-        }
-        CreateWorker();
+    
+    
+    public final String GetDate(){
+    	final Calendar now = Calendar.getInstance();
+    	
+    	final int year = now.get(Calendar.YEAR);
+    	final int month = now.get(Calendar.MONTH) + Utilities.ONE;
+    	final int day = now.get(Calendar.DAY_OF_MONTH);
+    	final int hour = now.get(Calendar.HOUR_OF_DAY);
+    	final int minute = now.get(Calendar.MINUTE);
+    	final int second = now.get(Calendar.SECOND);
+    	
+    	return Integer.toString(year)
+    			+ (month < Utilities.TEN ? Integer.toString(Utilities.ZERO) : "") + Integer.toString(month)
+    			+ (day < Utilities.TEN ? Integer.toString(Utilities.ZERO) : "") + Integer.toString(day)
+    			+ (hour < Utilities.TEN ? Integer.toString(Utilities.ZERO) : "") + Integer.toString(hour) 
+    			+ (minute < Utilities.TEN ? Integer.toString(Utilities.ZERO) : "") + Integer.toString(minute)
+    			+ (second < Utilities.TEN ? Integer.toString(Utilities.ZERO) : "") + Integer.toString(second);
     }
     
     public void CreateWorker(){
@@ -413,51 +428,36 @@ public final class DarkBlue extends JFrame implements ActionListener{
         worker.execute();
     }
     
-    /*
-    NAME
-        public final void paintComponents(final Graphics a_g);
-    
-    SYNOPSIS
-        public final void paintComponents(final Graphics a_g);
-    
-        Graphics a_g -------> The Graphics object.
-    
-    DESCRIPTION
-        This method paints every component inside the JFrame.
-        This is primarily used to repaint the board once
-        a piece moves, but applies to all sections of the program.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    /*
-    @Override
-    public final void paintComponents(final Graphics a_g){
-        super.paintComponents(a_g);
-        
-        m_board.paintComponent(a_g);
-    }
-    */
-    
     public final void HighlightLegalMoves(){
         if(m_candidate != null){
-            this.m_board.GetTile(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn()).LightUp();
+        	if(m_humanPlayer.IsWhite()){
+        		this.m_board.GetTile(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn()).LightUp();
+        	}else{
+        		this.m_board.GetTile(Utilities.SEVEN - m_candidate.GetCurrentRow(), Utilities.SEVEN - m_candidate.GetCurrentColumn()).LightUp();
+        	}
             for(Move move : m_candidate.GetCurrentLegalMoves()){
-                this.m_board.GetTile(move.GetNewRow(), move.GetNewColumn()).LightUp();
+            	if(m_humanPlayer.IsWhite()){
+            		this.m_board.GetTile(move.GetNewRow(), move.GetNewColumn()).LightUp();
+            	}else{
+            		this.m_board.GetTile(Utilities.SEVEN - move.GetNewRow(), Utilities.SEVEN - move.GetNewColumn()).LightUp();
+            	}
             }
         }
     }
     
     public final void UndoHighlighting(){
         if(m_candidate != null){
-            this.m_board.GetTile(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn()).Revert();
+        	if(m_humanPlayer.IsWhite()){
+        		this.m_board.GetTile(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn()).Revert();
+        	}else{
+        		this.m_board.GetTile(Utilities.SEVEN - m_candidate.GetCurrentRow(), Utilities.SEVEN - m_candidate.GetCurrentColumn()).Revert();
+        	}
             for(Move move : m_candidate.GetCurrentLegalMoves()){
-                this.m_board.GetTile(move.GetNewRow(), move.GetNewColumn()).Revert();
+            	if(m_humanPlayer.IsWhite()){
+            		this.m_board.GetTile(move.GetNewRow(), move.GetNewColumn()).Revert();
+            	}else{
+            		this.m_board.GetTile(Utilities.SEVEN - move.GetNewRow(), Utilities.SEVEN - move.GetNewColumn()).Revert();
+            	}
             }
         }
     }
@@ -482,8 +482,12 @@ public final class DarkBlue extends JFrame implements ActionListener{
         Ryan King
     */
     private final void AddComponentsToPane(final Container a_pane){
-        this.ChooseColor();
-
+    	//ConstructMenuBar();
+    	
+    	m_top.add(m_menuBar);
+    	
+    	a_pane.add(m_top, BorderLayout.PAGE_START);
+    	
         JPanel sourcePanel = new JPanel();
         JPanel destinationPanel = new JPanel();
         sourcePanel.setLayout(new BoxLayout(sourcePanel, BoxLayout.PAGE_AXIS));
@@ -491,66 +495,39 @@ public final class DarkBlue extends JFrame implements ActionListener{
         
         ConstructBoardPanel();
         
-        m_resign.addActionListener(this);
-        m_move.addActionListener(this);
+        //m_move.addActionListener(this);
         
-        /*
-        m_bottom.setLayout(new FlowLayout());
+        //m_center.setLayout(new BoxLayout(m_center, BoxLayout.LINE_AXIS));
         
-        m_bottom.add(m_resign);
+        //m_leftBumper = new RowBumper(m_humanColor);
         
-        sourcePanel.add(m_sourceLabel);
-        sourcePanel.add(m_source);
+        //m_rightBumper = new RowBumper(m_humanColor);
         
-        destinationPanel.add(m_destinationLabel);
-        destinationPanel.add(m_destination);
+        //m_center.add(m_leftBumper);
         
-        m_bottom.add(sourcePanel);
-        m_bottom.add(destinationPanel);
+        //m_center.add(m_boardPanel);
         
-        m_resign.setAlignmentX(Component.CENTER_ALIGNMENT);
-        m_move.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //m_boardPanel.setVisible(false);
         
-        m_sourceLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        m_source.setAlignmentX(Component.CENTER_ALIGNMENT);
+        //m_center.add(m_rightBumper);
         
-        m_destinationLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        m_destination.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        m_bottom.add(m_move);
-        
-        m_bottom.setBackground(Color.WHITE);
-        
-        a_pane.add(m_bottom, BorderLayout.PAGE_END);
-        */
-        
-        m_center.setLayout(new BoxLayout(m_center, BoxLayout.LINE_AXIS));
-        
-        m_leftBumper = new RowBumper(m_humanColor);
-        
-        m_rightBumper = new RowBumper(m_humanColor);
-        
-        m_center.add(m_leftBumper);
-        
-        m_center.add(m_boardPanel);
-        
-        m_center.add(m_rightBumper);
-        
-        a_pane.add(m_center, BorderLayout.CENTER);
+        a_pane.add(m_board, BorderLayout.CENTER);
     }
     
     private final void ConstructBoardPanel(){
         m_boardPanel.setLayout(new BoxLayout(m_boardPanel, BoxLayout.PAGE_AXIS));
         
-        m_topBumper = new ColumnBumper(m_humanColor);
-        m_bottomBumper = new ColumnBumper(m_humanColor);
+        //m_topBumper = new ColumnBumper(m_humanColor);
+        //m_bottomBumper = new ColumnBumper(m_humanColor);
         
-        m_boardPanel.add(m_topBumper);
+        //m_boardPanel.add(m_topBumper);
         
-        m_boardPanel.add(m_board);
+        //m_boardPanel.add(m_board);
         
-        m_boardPanel.add(m_bottomBumper);
+        //m_boardPanel.add(m_bottomBumper);
     }
+    
+    
     
     /*
     NAME
@@ -573,6 +550,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
     */
     private final void CreateAndShowGUI(){
         this.setSize(new Dimension(4120, 4120));
+        //this.setPreferredSize(new Dimension(4120, 4120));
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.AddComponentsToPane(this.getContentPane());
         this.pack();
@@ -622,8 +600,8 @@ public final class DarkBlue extends JFrame implements ActionListener{
     AUTHOR
         Ryan King
     */
-    public static final ChessColor GetOppositeColor(){
-        return m_oppositeColor;
+    public static final ChessColor GetComputerColor(){
+        return m_computerColor;
     }
     
     /*
@@ -656,12 +634,12 @@ public final class DarkBlue extends JFrame implements ActionListener{
             
             Piece piece = a_player.GetActivePieces().get(index);
             
-            piece = Utilities.DuplicatePiece(piece);
+            piece = Factory.PieceFactory(piece);
             
             activePiecesCopy.add(piece);
         }
         
-        Pawn pawn = null;
+        final Pawn pawn;
         // Check through all the player's pieces
         for(int index = Utilities.ZERO; index < activePiecesCopy.size(); index++){
             // Look for a pawn that's on its last rank
@@ -669,7 +647,12 @@ public final class DarkBlue extends JFrame implements ActionListener{
                 if((a_player.IsWhite() && activePiecesCopy.get(index).GetCurrentRow() == Utilities.ZERO) || (a_player.IsBlack() && activePiecesCopy.get(index).GetCurrentRow() == Utilities.SEVEN)){
                     pawn = (Pawn) a_player.GetActivePieces().get(index);
                     // Return a new Board object with the new powerful piece replacing the pawn
-                    m_board = new GUIBoard(pawn.Promote(m_board.GetBoard()));
+                    SwingUtilities.invokeLater(new Runnable() {
+                    	public void run(){
+                    		m_board = new GUIBoard(pawn.Promote(m_board.GetBoard()));
+                    	}
+                    });
+                    
                     return;
                 }
             }else{
@@ -841,7 +824,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         Ryan King
     */
     private final boolean IsDrawByFiftyMoveRule(){
-        return m_moves >= Utilities.FIFTY;
+        return m_currentHalfmoves >= Utilities.FIFTY;
     }
     
     /*
@@ -873,82 +856,6 @@ public final class DarkBlue extends JFrame implements ActionListener{
     */
     private final boolean IsDrawByThreefoldRepetition(){
         return false;
-    }
-    
-    /*
-    NAME
-        private final boolean IsEnPassantMove();
-    
-    SYNOPSIS
-        private final boolean IsEnPassantMove();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if the move to be generated is an en passant move,
-        which is a special capture involving pawns. If the moving piece is a pawn
-        on its fifth rank, and a piece to its left or right is an enemy pawn that
-        just advanced 2 tiles on the previous move and would have been captured by
-        this pawn had it only moved 1 tile, and the destination tilefor the first 
-        pawn is an empty tile diagonally in front of it, then this move is deemed 
-        to be an en passant move.
-    
-    RETURNS
-        True if the move is en passant, and false otherwise.
-        One of these two options will always occur.
-        
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsEnPassantMove(){
-        /*
-        return (((m_candidate.IsWhite() && m_destinationRow == m_startRow - Utilities.ONE) 
-                || (m_candidate.IsBlack() && m_destinationRow == m_startRow + Utilities.ONE)) 
-                && (m_destinationColumn == m_startColumn + Utilities.ONE || m_destinationColumn == m_startColumn - Utilities.ONE) 
-                && (Utilities.HasValidCoordinates(m_destinationRow, m_startRow - Utilities.ONE)
-                        || Utilities.HasValidCoordinates(m_destinationRow, m_startRow + Utilities.ONE))
-                && m_board.GetTile(m_destinationRow, m_destinationColumn).IsEmpty()
-                && (m_previouslyMoved.IsPawn() 
-                && m_previouslyMoved.IsEnemy(m_candidate)
-                && m_previouslyMoved.HowManyMoves() == Utilities.ONE
-                && Math.abs(m_previouslyMoved.GetCurrentRow() - m_oldRow) == Utilities.TWO
-                && m_oldColumn == m_previouslyMoved.GetCurrentColumn()));
-        */
-        return m_victim != null
-                    && m_candidate.IsPawn()
-                    && m_victim.IsPawn() 
-                    && m_victim.Equals(m_previouslyMoved) 
-                    && (m_victim.GetCurrentRow() == m_destinationRow - Utilities.ONE
-                            || m_victim.GetCurrentRow() == m_destinationRow + Utilities.ONE)
-                    && m_victim.GetCurrentColumn() == m_destinationColumn;
-    }
-    
-    /*
-    NAME
-        private final boolean IsCastlingMove();
-    
-    SYNOPSIS
-        private final boolean IsCastlingMove();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if the given move
-        is a castling move or not.
-        
-    RETURNS
-        True if the move is a castling move, 
-        or false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsCastlingMove(){
-        return m_candidate.IsKing()
-                && m_destinationRow == m_sourceRow 
-                && (m_destinationColumn == m_sourceColumn + Utilities.TWO 
-                || m_destinationColumn == m_sourceColumn - Utilities.TWO);
     }
     
     /*
@@ -998,8 +905,175 @@ public final class DarkBlue extends JFrame implements ActionListener{
         return m_depth;
     }
     
+    /*
+    NAME
+        public static final boolean ShouldHighlightLegalMoves();
+    
+    SYNOPSIS
+        public static final boolean ShouldHighlightLegalMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if legal moves should be highlighted on the GUI.
+    
+    RETURNS
+        boolean m_shouldHighlightLegalMoves: If legal moves should be highlighted on the GUI.
+    
+    AUTHOR
+        Ryan King
+    */
     public static final boolean ShouldHighlightLegalMoves(){
         return m_shouldHighlightLegalMoves;
+    }
+    
+    /*
+    NAME
+        public static final String Serialize();
+    
+    SYNOPSIS
+        public static final String Serialize();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns a String representation of the game in Forsyth-Edwards notation (FEN). 
+        This notation allows any game to be resumed immediately with all the required information.
+        It includes the following, all delimited by one space:
+        
+        1. The board configuration, expressed by capital letters corresponding to white pieces,
+        lowercase letters corresponding to black pieces, and numbers corresponding to consecutive
+        empty tiles in a row. All rows are delimited by forward slashes ("/").
+        Parsing starts from tile a8-h8, then a7-h7, a6-h6, ... , all the way down to a1-h1.
+        This corresponds to row 0, 1, 2, ... , 7 on my internal board.
+        
+        For example, the board configuration for the starting postition is "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR".
+        
+        2. A lowercase letter representing the side who will be playing once the game is deserialized and resumed.
+        
+        For example, the starting position dictates that white should move first, so this will give "w".
+        
+        3. Capital and/or lowercase letters indicating which sides either king can castle on, if any. 
+        
+        For example, in the starting postition, both white and black can theoretically castle, even though it is not legal for them to do so yet.
+        This case would necessitate placing KQkq, which indicates both players can castle on either side.
+        If both forms of castling are illegal for both players, a hyphen-minus ("-") is placed instead.
+        This legality is determined by seeing if the king and both rooks are in their original positions, disregarding any potential disruptions
+        in the form of threats or pieces sitting between the king and the rook. This is evaulated at the beginning of every turn.
+        
+        4. The space on which an en passant move can be performed if the piece that was most recently moved is a pawn.
+        
+        For example, after the move 1. e4, which moves the white king's pawn from e2 to e4, this pawn could theoretically be captured en passant
+        the next turn because it moved 2 spaces on its first move. Otherwise, a hyphen-minus is placed here instead.
+        This would generate "e4". The starting position, on the other hand, will generate "-".
+        
+        5. The number of halfmoves (either white or black moving individually, as opposed to an entire turn) since a pawn movement or capture. This starts at 0.
+        
+        6. The number of turns taken by both players (once both black and white have finished their moves). This starts at 1.
+        
+        Following these rules, the string returned by the starting position is as follows:
+        
+        rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+        
+    RETURNS
+        String serial: The serialization string.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final String Serialize(){
+    	// Initialize the serialization string
+    	String serial = "";
+    	
+    	// Initialize the counter that will hold 
+    	// the current number of empty tiles encountered in part of a row
+    	int emptyTiles = Utilities.ZERO;
+    	
+    	// Add the contents of the board
+    	for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
+    		int row = index / Utilities.EIGHT;
+    		int column = index % Utilities.EIGHT;
+    		
+    		if(m_board.GetBoard().GetTile(row, column).IsEmpty()){
+    			emptyTiles++;
+    		}else{
+    			if(emptyTiles > Utilities.ZERO){
+    				serial += Integer.toString(emptyTiles);
+    				emptyTiles = Utilities.ZERO;
+    			}
+    			serial += m_board.GetBoard().GetTile(row, column).GetPiece().GetIcon();
+    		}
+    		
+    		if(column == Utilities.SEVEN && row < Utilities.SEVEN){
+    			serial += "/";
+    			emptyTiles = Utilities.ZERO;
+    		}
+    	}
+    	
+    	// Add a space as a delimiter
+    	serial += " ";
+    	
+    	// Add the side who will play next when the game resumes
+    	serial += Character.toLowerCase(m_board.GetBoard().WhoseTurnIsIt().toString().charAt(Utilities.ZERO));
+    	
+    	// Add a space as a delimiter
+    	serial += " ";
+    	
+    	// Add which player(s) can castle and on what side
+    	if(!(m_white.CanKingsideCastle(m_board.GetBoard()) || m_white.CanQueensideCastle(m_board.GetBoard())) && !(m_black.CanKingsideCastle(m_board.GetBoard()) || m_black.CanQueensideCastle(m_board.GetBoard()))){
+    		serial += "-";
+    	}else{
+    	
+    		if(m_white.CanKingsideCastle(m_board.GetBoard())){
+    			serial += Utilities.KING_ICON;
+    		}
+    	
+    		if(m_white.CanQueensideCastle(m_board.GetBoard())){
+    			serial += Utilities.QUEEN_ICON;
+    		}
+    	  	
+    		if(m_black.CanKingsideCastle(m_board.GetBoard())){
+    			serial += Character.toLowerCase(Utilities.KING_ICON);
+    		}
+    	
+    		if(m_black.CanQueensideCastle(m_board.GetBoard())){
+    			serial += Character.toLowerCase(Utilities.QUEEN_ICON);
+    		}
+    	}
+    	
+    	// Add a space as a delimiter
+    	serial += " ";
+    	
+    	// Add en passant moves, if any
+    	if(m_previouslyMoved != null && m_previouslyMoved.IsPawn()){
+    		if(m_previouslyMoved.IsWhite() && m_previouslyMoved.GetCurrentRow() == Utilities.FOUR && m_previouslyMoved.HowManyMoves() == Utilities.ONE){
+    			serial += Utilities.ToAlgebraic(m_previouslyMoved.GetCurrentRow(), m_previouslyMoved.GetCurrentColumn());
+    		}else if(m_previouslyMoved.IsBlack() && m_previouslyMoved.GetCurrentRow() == Utilities.THREE && m_previouslyMoved.HowManyMoves() == Utilities.ONE){
+    			serial += Utilities.ToAlgebraic(m_previouslyMoved.GetCurrentRow(), m_previouslyMoved.GetCurrentColumn());
+    		}else{
+    			serial += "-";
+    		}
+    	}else{
+    		serial += "-";
+    	}
+    	
+    	// Add a space as a delimiter
+    	serial += " ";
+    	
+    	// Add the current number of halfmoves (times white/black moved individually)
+    	serial += Integer.toString(m_currentHalfmoves);
+    	
+    	// Add a space as a delimiter
+    	serial += " ";
+    	
+    	// Add the current number of fullmoves (times when black finished moving)
+    	serial += Integer.toString(m_fullmoves);
+    	
+    	return serial;
+    }
+    
+    public final void Deserialize(){
+    	
     }
     
     /*
@@ -1024,107 +1098,10 @@ public final class DarkBlue extends JFrame implements ActionListener{
     */
     public final void EvaluatePreviouslyMoved(){
         // Make a deep copy of the piece that just moved
-        m_previouslyMoved = Utilities.DuplicatePiece(m_candidate);
+        m_previouslyMoved = Factory.PieceFactory(m_candidate);
     }
     
     /*
-    NAME
-        public final Move EvaluateMove();
-    
-    SYNOPSIS
-        public final Move EvaluateMove();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method creates a new Move object.
-        Depending on the type of move this is, it could be:
-        
-        A regular move 
-        (Any piece moving to an empty tile),
-        
-        An attacking move 
-        (Any piece moving to an occupied tile and
-        capturing the opposing piece on that tile the way it typically captures),
-        
-        A castling move 
-        (Swapping the king and the rook when there are no other pieces between them,
-        the king will not move through check and neither the
-        king nor the rook has moved yet), or
-        
-        An en passant move
-        (A special attacking move which can only occur if a pawn is at its fifth rank
-        and the previous piece to move was an opposing pawn that advanced 2 squares on
-        its first move and could have been taken by the other pawn had it only moved 1 square.
-        This is the only legal move where the destination tile is not the same as the tile
-        of the captured piece).
-    
-    RETURNS
-        Move move: The evaluated move, ready to be made.
-        This will never return null, because at this point,
-        all possible moves it could generate are deemed to be legal.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final Move EvaluateMove(){
-        final Move move;
-        // Instantiate the desired move
-        if(!m_candidate.IsKing() && !m_candidate.IsPawn()){// This is definitely not a castling or en passant move
-            if(m_victim != null){
-                move = new AttackingMove(m_candidate, m_destinationRow, m_destinationColumn, m_victim);
-            }else{
-                move = new RegularMove(m_candidate, m_destinationRow, m_destinationColumn);
-            }
-        }else{
-            if(m_candidate.IsKing()){// This could be a castling move
-                if(IsCastlingMove()){
-                    // This is a castling move
-                    move = new CastlingMove((King)m_candidate, m_destinationRow, m_destinationColumn);
-                    
-                    final Rook rook = (Rook) m_board.GetBoard().GetTile(((CastlingMove)move).GetRookCurrentRow(), ((CastlingMove)move).GetRookCurrentColumn()).GetPiece();
-                    
-                    final Tile rookTile = m_board.GetBoard().GetTile(rook.GetCurrentRow(), rook.GetCurrentColumn());
-                    
-                    m_board.GetBoard().GetBoard()[rook.GetCurrentRow()][rook.GetCurrentColumn()] = new Tile(rookTile.GetColor(), rookTile.GetRow(), rookTile.GetColumn(), Utilities.DuplicatePiece(rook));                
-                }else{// This is a regular or attacking move
-                    if(m_victim != null){
-                        move = new AttackingMove(m_candidate, m_destinationRow, m_destinationColumn, m_victim);
-                    }else{
-                        move = new RegularMove(m_candidate, m_destinationRow, m_destinationColumn);
-                    }
-                }
-            }else{// This could be a regular move, an attacking move, or an en passant move
-                if(IsEnPassantMove()){
-                    // This is an en passant move
-                    final Pawn victim;
-                        if(Utilities.HasValidCoordinates(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn() + Utilities.ONE)
-                                && m_board.GetBoard().GetTile(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn() + Utilities.ONE).IsOccupied()){
-                            victim = (Pawn) m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn + Utilities.ONE).GetPiece();
-                        }else{
-                            victim = (Pawn) m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn - Utilities.ONE).GetPiece();
-                        }
-                    move = new EnPassantMove((Pawn)m_candidate, m_destinationRow, m_destinationColumn, victim);
-                }else{// This isn't an en passant move
-                    // This is a regular or attacking move
-                    if(m_victim != null){
-                        move = new AttackingMove(m_candidate, m_destinationRow, m_destinationColumn, m_victim);
-                    }else{
-                        move = new RegularMove(m_candidate, m_destinationRow, m_destinationColumn);
-                    }
-                }
-            }
-        }
-        // Record that the piece moved
-        // ?
-
-        EvaluatePreviouslyMoved();
-        
-        // Return the complete move
-        return move;
-    }
-    
-    
     private final boolean HumanPlay(){
         final Delta source = Game.ParseTile(m_source);
         
@@ -1150,13 +1127,9 @@ public final class DarkBlue extends JFrame implements ActionListener{
         
         m_nextMove = EvaluateMove();
         
-        /*
-        revalidate();
-        repaint();
-        */
-        
         return true;
     }
+    */
     
     /*
     public static GUIBoard GetStartingPosition(){
@@ -1195,8 +1168,8 @@ public final class DarkBlue extends JFrame implements ActionListener{
     AUTHOR
         Ryan King
     */
-    private final void ComputerPlay(final Computer a_computer){
-        ArrayList<Move> allPossibleMoves = a_computer.UglyMoves();
+    private final void ComputerPlay(){
+        ArrayList<Move> allPossibleMoves = m_computerPlayer.UglyMoves();
         
         // Make a stupid random AI for now
         
@@ -1207,6 +1180,8 @@ public final class DarkBlue extends JFrame implements ActionListener{
         // Get the moving piece
         m_nextMove = allPossibleMoves.get(move);// For the stupid AI
         //m_nextMove = a_computer.Search(Utilities.ZERO);// For a slightly better AI
+        
+        m_candidate = m_nextMove.GetPiece();
         
         // Get the piece's old coordinates
         m_sourceRow = m_nextMove.GetOldRow();
@@ -1220,7 +1195,19 @@ public final class DarkBlue extends JFrame implements ActionListener{
         m_victim = m_nextMove.GetVictim();
         
         // Make the move
-        //MakeMove();
+        MakeMove();
+        
+        m_allHalfmoves++;
+        
+        if(m_candidate.IsPawn() || m_victim != null){
+            m_currentHalfmoves = Utilities.ZERO;
+        }else{
+            m_currentHalfmoves++;
+        }
+        
+        if(m_allHalfmoves % Utilities.TWO == Utilities.ZERO){
+        	m_fullmoves++;
+        }
     }
     
     /*
@@ -1276,8 +1263,12 @@ public final class DarkBlue extends JFrame implements ActionListener{
     AUTHOR
         Ryan King
     */
+    /*
     private final void TryPlay(){
         try{
+        	ChooseColor();
+        	m_save.setEnabled(true);
+        	m_resign.setEnabled(true);
             Play();            
         }catch(RuntimeException e){
             System.err.println("Dark Blue has quit unexpectedly.");
@@ -1285,6 +1276,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
             System.exit(Utilities.ONE);
         }
     }
+    */
     
     /*
     NAME
@@ -1345,6 +1337,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         }else{
             m_board = m_board.Move((RegularMove)m_nextMove);
         }
+
         m_moveHistory.add(m_nextMove);
     }
     
@@ -1371,28 +1364,24 @@ public final class DarkBlue extends JFrame implements ActionListener{
     */
     private final void ChooseColor(){
         
-        Object[] colors = {BLACK, WHITE};
+        Object[] colors = {WHITE, BLACK};
         
         while(true){
             
             m_buttonInt = JOptionPane.showOptionDialog(null, PLAY_AS, TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, colors, null);
             
             switch(m_buttonInt){
-                // For a black human player
-                case Utilities.ZERO: m_humanColor = ChessColor.BLACK;
-                break;
                 // For a white human player
-                case Utilities.ONE:  m_humanColor = ChessColor.WHITE;
+                case Utilities.ZERO: m_humanColor = ChessColor.WHITE;
+                break;
+                // For a black human player
+                case Utilities.ONE:  m_humanColor = ChessColor.BLACK;
                 break;
                 // Do not allow the player to proceed without choosing a color
                 default: continue;
             }
             
-            m_oppositeColor = Utilities.Reverse(m_humanColor);
-            
-            m_board = new GUIBoard(Board.GetStartingPosition());// Originally DarkBlue.GetStartingPosition()
-            
-            InitializePlayers(m_board.GetBoard());
+            m_computerColor = Utilities.Reverse(m_humanColor);
 
             break;
         }
@@ -1421,6 +1410,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
     AUTHOR
         Ryan King
     */
+    /*
     private final void Play(){
         //int index = Utilities.ZERO;
         
@@ -1474,15 +1464,15 @@ public final class DarkBlue extends JFrame implements ActionListener{
             revalidate();
             repaint();
         }
-            /*
+            // Block comments begin
             // Initialize the move
             m_nextMove = EvaluateMove();
             
             // Reset the move count if a pawn gets moved or a piece gets captured
             if(m_candidate.IsPawn() || m_victim != null){
-                m_moves = Utilities.ZERO;
+                m_halfmoves = Utilities.ZERO;
             }else{
-                m_moves++;
+                m_halfmoves++;
             }
         
             // Make the move
@@ -1503,9 +1493,10 @@ public final class DarkBlue extends JFrame implements ActionListener{
             
             // Add the newly-made move to the game history
             m_boardHistory.add(Board.GetDeepCopy(m_board.GetBoard()));    
-            */
+            // Block comments end
         // End of while true game loop
     }
+	*/
     /*
     private final void InitializePlayers(final Board a_board, final Player a_white, final Player a_black){
         if(DarkBlue.GetHumanColor().IsWhite()){// Timeout exception?
@@ -1522,12 +1513,16 @@ public final class DarkBlue extends JFrame implements ActionListener{
         if(DarkBlue.GetHumanColor().IsWhite()){// Timeout exception?
             m_white = new Human(ChessColor.WHITE, a_board);
             m_black = new Human(ChessColor.BLACK, a_board);// Originally a computer
+            m_humanPlayer = m_white;
             m_computerPlayer = m_black;
         }else{
             m_white = new Human(ChessColor.WHITE, a_board);// Originally a computer
             m_black = new Human(ChessColor.BLACK, a_board);
+            m_humanPlayer = m_black;
             m_computerPlayer = m_white;
         }
+        // Initialize m_currentPlayer to white because white always goes first
+        //m_currentPlayer = m_white;
         RefreshPlayers();
     }
     
@@ -1770,7 +1765,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
                 TestPlay();                    
             }else{
                 System.out.println("Thinking...");
-                ComputerPlay((Computer)m_computerPlayer);
+                ComputerPlay();
             }
             
             RefreshPlayers();
@@ -1805,25 +1800,25 @@ public final class DarkBlue extends JFrame implements ActionListener{
             String tile = m_keyboard.nextLine();
             m_sourceRow = Utilities.ToBoardRow(tile);
             m_sourceColumn = Utilities.ToBoardColumn(tile);
-        try{
-            if(!Utilities.HasValidCoordinates(m_sourceRow, m_sourceColumn)){
-                JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-            }else{
+            try{
+            	if(!Utilities.HasValidCoordinates(m_sourceRow, m_sourceColumn)){
+            		JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+            	}else{
             
-                m_candidate = m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn).GetPiece();
+            		m_candidate = m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn).GetPiece();
             
-                if(m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn).IsEmpty()){
-                    JOptionPane.showMessageDialog(null, DarkBlue.EMPTY_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-                }else if(m_candidate.GetColor().IsEnemy(m_currentPlayer.GetColor())){
-                    JOptionPane.showMessageDialog(null, DarkBlue.WRONG_COLOR, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-                }else if(m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && !m_candidate.CanMove()){
-                    JOptionPane.showMessageDialog(null, DarkBlue.NO_LEGAL_MOVES, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-                }
+            		if(m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn).IsEmpty()){
+            			JOptionPane.showMessageDialog(null, DarkBlue.EMPTY_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+            		}else if(m_candidate.GetColor().IsEnemy(m_currentPlayer.GetColor())){
+            			JOptionPane.showMessageDialog(null, DarkBlue.WRONG_COLOR, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+            		}else if(m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && !m_candidate.CanMove()){
+            			JOptionPane.showMessageDialog(null, DarkBlue.NO_LEGAL_MOVES, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+            		}
+            	}
+            	return;
+            }catch(Exception e){
+            	JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
             }
-            return;
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-        }
         }while(!Utilities.HasValidCoordinates(m_sourceRow, m_sourceColumn));
     }
     
@@ -1890,7 +1885,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         m_originalRow = m_sourceRow;
         m_originalColumn = m_sourceColumn;
         
-        m_nextMove = EvaluateMove();
+        m_nextMove = Factory.MoveFactory(m_candidate, m_destinationRow, m_destinationColumn, m_victim, m_board.GetBoard());
         
         MakeMove();
     }
@@ -1937,7 +1932,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         //m_board.Castle(blackKing);
         
     }
-    */
+    */   
     
     private final class GUITile extends JPanel implements MouseListener{
 
@@ -1989,9 +1984,10 @@ public final class DarkBlue extends JFrame implements ActionListener{
             }
             
             this.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+            this.setPreferredSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
             this.setBackground(this.m_originalColor);
             
-            m_actionCommand = Utilities.ToAlgebraic(this.m_tile.GetRow(), this.m_tile.GetColumn());
+            this.m_actionCommand = Utilities.ToAlgebraic(this.m_tile.GetRow(), this.m_tile.GetColumn());
 
             addMouseListener(this);
             
@@ -2040,50 +2036,6 @@ public final class DarkBlue extends JFrame implements ActionListener{
         
         /*
         NAME
-            protected final void paintComponent(Graphics a_g);
-        
-        SYNOPSIS
-            protected final void paintComponent(Graphics a_g);
-        
-            Graphics a_g -------> The Graphics object.
-        
-        DESCRIPTION
-            This method is overridden from Graphics.
-            It paints the tile with the image provided.
-            This method violates the Senior Project naming
-            conventions because it is overridden from Java.
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            Ryan King
-        */
-        /*
-        @Override
-        protected final void paintComponent(Graphics a_g){
-            
-            super.paintComponent(a_g);
-            a_g.setColor(this.GetColor());
-            
-            if(this.IsOccupied()){
-                this.SetPiece();
-                
-                //a_g.drawImage(m_piece, Utilities.ZERO, Utilities.ZERO, this);
-                //m_label = new JLabel(new ImageIcon(m_piece));
-                //this.add(m_label);
-                
-            }else{
-                m_piece = null;
-                if(m_label.getParent() == this){
-                    this.remove(m_label);
-                }
-            }
-        }
-        */
-
-        /*
-        NAME
             public void mouseClicked(final MouseEvent a_event);
         
         SYNOPSIS
@@ -2110,76 +2062,101 @@ public final class DarkBlue extends JFrame implements ActionListener{
         */
         @Override
         public final void mouseClicked(final MouseEvent a_event){
+
+            if(SwingUtilities.isLeftMouseButton(a_event)){
+            	
+            	if(m_watcher.IsGameOver() || m_currentPlayer.IsComputer()){
+            		return;
+            	}
+            	
+            	final String source = a_event.getSource().toString();
+            	
+            	final Runnable r = new Runnable(){
+            		public void run(){
+            			Respond(source);
+            			
+            			if(IsMoveDone()){
+                    		m_sourceTile = null;
+                    		m_destinationTile = null;
+                    		m_watcher.Observe();
+                    	}
+            		}
+            	};
+            	
+            	new Thread(r).start();
+            }   
             
-            final Runnable r = new Runnable(){
+            SwingUtilities.invokeLater(new Runnable(){
                 public void run(){
-                    Respond(a_event);
-                }
-            };
-            
-            new Thread(r).start();
-            
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    m_board.DrawBoard();
+                	m_board.DrawBoard();
                 }
             });
         }
         
         // Responds to mouseevents
-        public final void Respond(final MouseEvent a_event){
-            if(SwingUtilities.isLeftMouseButton(a_event)){
+        public final void Respond(final String a_eventSource){
+            if(m_sourceTile == null){
+            	// Find the tile that was clicked
+                m_sourceRow = Utilities.ToBoardRow(a_eventSource);
+                m_sourceColumn = Utilities.ToBoardColumn(a_eventSource);
                 
-                final String eventSource = this.toString();
-                
-                if(m_sourceTile == null){
-                    m_sourceRow = Utilities.ToBoardRow(eventSource);
-                    m_sourceColumn = Utilities.ToBoardColumn(eventSource);
-                    m_sourceTile = m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn);
-                    m_candidate = m_sourceTile.GetPiece();
-                    if(m_sourceTile.IsOccupied() && m_candidate.GetColor().IsAlly(m_humanColor) && m_candidate.CanMove()){
-                        m_shouldHighlightLegalMoves = true;
-                    }else{
-                        m_sourceTile = null;
-                        m_sourceRow = Utilities.NEGATIVE_ONE;
-                        m_sourceColumn = Utilities.NEGATIVE_ONE;
-                        m_candidate = null;
-                    }
-                }else{
-                    m_destinationRow = Utilities.ToBoardRow(eventSource);
-                    m_destinationColumn = Utilities.ToBoardColumn(eventSource);
+                m_sourceTile = new Tile(m_board.GetBoard().GetTile(m_sourceRow, m_sourceColumn));
+                m_candidate = m_sourceTile.GetPiece();
                     
-                    if(m_sourceTile.GetRow() == m_destinationRow && m_sourceTile.GetColumn() == m_destinationColumn){
-                        m_shouldHighlightLegalMoves = false;
-                        m_sourceTile = null;
-                        m_sourceRow = Utilities.NEGATIVE_ONE;
-                        m_sourceColumn = Utilities.NEGATIVE_ONE;
-                        m_candidate = null;
-                    }else{
-                        m_destinationTile = m_board.GetBoard().GetTile(m_destinationRow, m_destinationColumn);
+                if(m_sourceTile.IsOccupied() && m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && m_candidate.CanMove()){
+                    m_shouldHighlightLegalMoves = true;
+                }else{
+                    m_sourceTile = null;
+                }
+            }else{
+                m_destinationRow = Utilities.ToBoardRow(a_eventSource);
+                m_destinationColumn = Utilities.ToBoardColumn(a_eventSource);
+                    
+                // The player deselected his/her current piece
+                if(m_sourceTile.GetRow() == m_destinationRow && m_sourceTile.GetColumn() == m_destinationColumn){
+                    m_shouldHighlightLegalMoves = false;
+                    m_sourceTile = null;
+                }else{
+                	// The player chose a place to move
+                    m_destinationTile = new Tile(m_board.GetBoard().GetTile(m_destinationRow, m_destinationColumn));
                         
-                        if(Utilities.IsLegal(m_candidate, m_destinationRow, m_destinationColumn)){
-                            m_victim = m_destinationTile.GetPiece();
-                            m_shouldHighlightLegalMoves = false;
+                    if(Utilities.IsLegal(m_candidate, m_destinationRow, m_destinationColumn)){
+                    	m_shouldHighlightLegalMoves = false;
                         
-                            m_nextMove = EvaluateMove();
+                        m_nextMove = Factory.MoveFactory(m_candidate, m_destinationRow, m_destinationColumn, m_victim, m_board.GetBoard());
+
+                        // Generate a copy of the victim from the piece factory
+                        m_victim = Factory.PieceFactory(m_nextMove.GetVictim());
                         
-                            MakeMove();
-                        
-                            m_nextMove = null;
-                            m_sourceTile = null;
-                            m_sourceRow = Utilities.NEGATIVE_ONE;
-                            m_sourceColumn = Utilities.NEGATIVE_ONE;
-                            m_candidate = null;
+                        // Reset the board for repainting
+                        if(m_nextMove.IsEnPassant()){
+                        	m_board.SetBoard(m_board.GetBoard().EnPassant((EnPassantMove)m_nextMove, m_white, m_black));
+                        }else if(m_nextMove.IsCastling()){
+                        	m_board.SetBoard(m_board.GetBoard().Castle((CastlingMove)m_nextMove));
+                        }else if(m_nextMove.IsAttacking()){
+                        	m_board.SetBoard(m_board.GetBoard().Attack((AttackingMove)m_nextMove, m_white, m_black));
+                        }else{
+                        	m_board.SetBoard(m_board.GetBoard().Move((RegularMove)m_nextMove));
                         }
-                        
-                        m_destinationTile = null;
-                        m_destinationRow = Utilities.NEGATIVE_ONE;
-                        m_destinationColumn = Utilities.NEGATIVE_ONE;
-                        m_victim = null;
+                            
+                        m_allHalfmoves++;
+                            
+                        if(m_candidate.IsPawn() || m_victim != null){
+                            m_currentHalfmoves = Utilities.ZERO;
+                        }else{
+                            m_currentHalfmoves++;
+                        }
+                            
+                        if(m_allHalfmoves % Utilities.TWO == Utilities.ZERO){
+                        	m_fullmoves++;
+                        }                            
                     }
                 }
             }
+        }
+        
+        public final boolean IsMoveDone(){
+        	return m_sourceTile != null && m_destinationTile != null;
         }
         
         /*
@@ -2205,7 +2182,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         */
         @Override
         public final void mouseExited(final MouseEvent a_event){
-
+        	return;
         }
         
         /*
@@ -2231,7 +2208,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         */
         @Override
         public final void mouseReleased(final MouseEvent a_event){
-
+        	return;
         }
         
         /*
@@ -2257,7 +2234,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         */
         @Override
         public final void mouseEntered(final MouseEvent a_event){
-
+        	return;
         }
         
         /*
@@ -2283,81 +2260,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         */
         @Override
         public final void mousePressed(final MouseEvent a_event){
-
-        }
-        
-        /*
-        NAME
-            public int GetRow();
-        
-        SYNOPSIS
-            public int GetRow();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns the row of this object.
-            It is the same as the a_tile object that was
-            passed into the constructor and will never change.    
-        
-        RETURNS
-            int m_row: The tile's row.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final int GetRow(){
-            return this.m_tile.GetRow();
-        }
-        
-        /*
-        NAME
-            public int GetColumn();
-        
-        SYNOPSIS
-            public int GetColumn();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns the column of this object.
-            It is the same as the a_tile object that was
-            passed into the constructor and will never change.    
-        
-        RETURNS
-            int m_column: The tile's column.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final int GetColumn(){
-            return this.m_tile.GetColumn();
-        }
-        
-        /*
-        NAME
-            public Color GetOriginalColor();
-        
-        SYNOPSIS
-            public Color GetOriginalColor();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns the Color
-            of the tile in its normal state only.
-            This is used to refer back to when a 
-            tile gets unselected or if a move is completed.
-            This Color is set in the constructor and can never change.
-        
-        RETURNS
-            Color m_originalColor: The tile's original Color.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final Color GetOriginalColor(){
-            return this.m_originalColor;
+        	return;
         }
         
         /*
@@ -2384,14 +2287,6 @@ public final class DarkBlue extends JFrame implements ActionListener{
             return m_tile;
         }
         
-        public final boolean IsOccupied(){
-            return this.m_tile.IsOccupied();
-        }
-        
-        public final boolean IsEmpty(){
-            return this.m_tile.IsEmpty();
-        }
-        
         /*
         public static void main(String[] args){
             JFrame frame = new JFrame("GUI Tile");
@@ -2413,10 +2308,11 @@ public final class DarkBlue extends JFrame implements ActionListener{
             frame.setVisible(true);
         }
         */
-        
+        /*
         public final boolean Equals(final GUITile a_tile){
             return this.GetTile().GetPiece().Equals(a_tile.GetTile().GetPiece());
         }
+        */
         
         @Override
         public final String toString(){
@@ -2429,7 +2325,7 @@ public final class DarkBlue extends JFrame implements ActionListener{
         private static final long serialVersionUID = Utilities.ONE_LONG;
         
         private final GUITile[][] m_tiles;
-        private final Board m_board;
+        private Board m_board;
 
         /*
         NAME
@@ -2461,13 +2357,34 @@ public final class DarkBlue extends JFrame implements ActionListener{
             m_board = a_board;
 
             m_tiles = new GUITile[Utilities.EIGHT][Utilities.EIGHT];
+
+            PurgeBoard();
+
+            if(DarkBlue.GetHumanColor().IsWhite()){
+                BuildWhiteBoard();
+            }else{
+                BuildBlackBoard();
+            }
             
-            DrawBoard();
+            revalidate();
+            repaint();
+        }
+        
+        public final void PurgeBoard(){
+        	       	
+        	for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
+        		int row = i / Utilities.EIGHT;
+        		int column = i % Utilities.EIGHT;
+        		this.m_tiles[row][column] = null;
+        	}
+        	
+        	this.removeAll();
         }
         
         public final void DrawBoard(){
-            
-            PurgeBoard();
+
+        	//this.removeAll();
+        	PurgeBoard();
 
             if(DarkBlue.GetHumanColor().IsWhite()){
                 BuildWhiteBoard();
@@ -2487,17 +2404,16 @@ public final class DarkBlue extends JFrame implements ActionListener{
         
         /*
         NAME
-            private final void PurgeBoard();
+            public final void SetBoard(final Board a_board);
         
         SYNOPSIS
-            private final void PurgeBoard();
+            public final void SetBoard(final Board a_board);
         
-            No parameters.
+            Board a_board -------> The board object to be set.
         
         DESCRIPTION
-            This method clears the GUIBoard by
-            setting all of its tiles to null
-            and then removing everything.
+            This method sets the board object in its
+            corresponding field.
         
         RETURNS
             Nothing
@@ -2505,13 +2421,12 @@ public final class DarkBlue extends JFrame implements ActionListener{
         AUTHOR
             Ryan King
         */
-        private void PurgeBoard(){
-            for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-                int row = index / Utilities.EIGHT;
-                int column = index % Utilities.EIGHT;
-                this.m_tiles[row][column] = null;
-            }
-            this.removeAll();
+        public final void SetBoard(final Board a_board){
+            m_board = a_board;
+        }
+        
+        public final int PieceCount(){
+        	return m_board.PieceCount();
         }
         
         /*
@@ -2570,39 +2485,6 @@ public final class DarkBlue extends JFrame implements ActionListener{
                 this.add(m_tiles[Utilities.SEVEN - row][Utilities.SEVEN - column]);
             }
         }
-        
-        /*
-        NAME
-            protected final void paintComponent(Graphics a_g);
-        
-        SYNOPSIS
-            protected final void paintComponent(Graphics a_g);
-        
-            Graphics a_g -------> The Graphics object.
-        
-        DESCRIPTION
-            This method is overridden from Graphics.
-            It paints the tiles on the board.
-            This method violates the Senior Project naming
-            conventions because it is overridden from Java.
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            Ryan King
-        */
-        /*
-        @Override
-        protected final void paintComponent(final Graphics a_g){
-            super.paintComponent(a_g);
-            for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-                int row = index / Utilities.EIGHT;
-                int column = index % Utilities.EIGHT;
-                m_tiles[row][column].paintComponent(a_g);
-            }
-        }
-        */
         
         /*
         NAME
@@ -2773,4 +2655,247 @@ public final class DarkBlue extends JFrame implements ActionListener{
             }
         }
     }
+    
+    public final class DarkBlueMenuBar extends JMenuBar implements ActionListener{
+
+    	private static final long serialVersionUID = Utilities.ONE_LONG;
+    	
+    	private final JMenu m_file = new JMenu("File");
+        private final JMenuItem m_newGame = new JMenuItem("New Game");
+        private final JMenuItem m_loadGame = new JMenuItem("Load Game");
+        private final JMenuItem m_save = new JMenuItem("Save");
+        //private final JMenuItem m_resign = new JMenuItem("Resign");
+        private final JMenuItem m_quit = new JMenuItem("Quit");
+        
+        private final JMenu m_help = new JMenu("Help");
+        private final JMenuItem m_instructions = new JMenuItem("Instructions");
+        private final JMenuItem m_rules = new JMenuItem("Rules of Chess");
+        
+        public DarkBlueMenuBar(){
+        	super();
+        	
+        	AddActionListeners();
+        	AddMnemonics();
+        	AddItemsToMenu();
+        }
+        
+        private final void AddMnemonics(){
+        	m_newGame.setMnemonic('N');
+        	m_loadGame.setMnemonic('L');
+        	m_save.setMnemonic('S');
+        	//m_resign.setMnemonic('R');
+        	m_quit.setMnemonic('Q');
+        	m_instructions.setMnemonic('I');
+        	m_rules.setMnemonic('R');
+        }
+        
+        private final void AddActionListeners(){
+        	m_newGame.addActionListener(this);
+        	m_loadGame.addActionListener(this);
+        	m_save.addActionListener(this);
+        	//m_resign.addActionListener(this);
+        	m_quit.addActionListener(this);
+        	m_instructions.addActionListener(this);
+        	m_rules.addActionListener(this);
+        }
+        
+        private final void AddItemsToMenu(){
+        	m_file.add(m_newGame);
+        	m_file.add(m_loadGame);
+        	m_file.add(m_save);
+        	//m_file.add(m_resign);
+        	m_file.add(m_quit);
+        	this.add(m_file);
+        	
+        	m_help.add(m_instructions);
+        	m_help.add(m_rules);
+        	this.add(m_help);
+        }
+        
+        @Override
+        public final void actionPerformed(final ActionEvent a_event){
+        	if(a_event.getSource() == this.m_newGame){
+        		if(m_board.PieceCount() > Utilities.ZERO){
+        			if(JOptionPane.showConfirmDialog(this, "Do you really wish to quit this game?", "Dark Blue", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION){
+        				return;
+        			}
+        		}
+        		
+        		final Runnable r = new Runnable(){
+        			public final void run(){
+        				m_isFirstMove = true;
+        				m_sourceTile = null;
+        				m_destinationTile = null;
+        				m_sourceRow = Utilities.NEGATIVE_ONE;
+        				m_sourceColumn = Utilities.NEGATIVE_ONE;
+        				m_destinationRow = Utilities.NEGATIVE_ONE;
+        				m_destinationColumn = Utilities.NEGATIVE_ONE;
+        				m_candidate = null;
+        				m_victim = null;
+        				m_nextMove = null;
+        				m_allHalfmoves = Utilities.ZERO;
+        			    m_currentHalfmoves = Utilities.ZERO;
+        			    m_fullmoves = Utilities.ONE;
+        			    m_moveHistory.clear();
+        			    m_boardHistory.clear();       			    
+        			    ChooseColor();
+        				m_board.SetBoard(Board.GetStartingPosition());
+        				InitializePlayers(m_board.GetBoard());
+        				m_watcher.Observe();
+        			}
+        		};
+        		
+        		new Thread(r).start();
+        		
+        		SwingUtilities.invokeLater(new Runnable(){
+        			public final void run(){
+        				m_board.DrawBoard();
+        				// Clear out move windows, taken pieces, etc.      			       				
+        			}
+        		});
+        	}
+        	/*
+        	else if(a_event.getSource() == this.m_resign){
+                final int wantToResign = JOptionPane.showConfirmDialog(this, RESIGN_QUESTION, TITLE, JOptionPane.YES_NO_OPTION);
+                
+                if(wantToResign == JOptionPane.YES_OPTION){
+                    if(m_humanColor.IsWhite()){
+                        JOptionPane.showMessageDialog(this, BLACK_RESIGNATION, TITLE, JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(this, WHITE_RESIGNATION, TITLE, JOptionPane.ERROR_MESSAGE);
+                    }
+                    
+                    System.exit(Utilities.ZERO);
+                }  
+            }
+            */
+        	else if(a_event.getSource() == m_loadGame){
+            	JFileChooser chooser = new JFileChooser();
+            	chooser.setDialogTitle("Load Game");
+            	
+            	if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+            		// Deserialize
+            		m_save.setEnabled(true);
+            	}
+            }else if(a_event.getSource() == this.m_save){
+            	final String fen = Serialize();
+            	
+            	final String file = "DarkBlue" + GetDate() + ".fen";
+            	
+            	try{
+            		final FileWriter writer = new FileWriter(file);
+            		
+            		writer.write(fen);
+            		
+            		writer.close();
+            		
+            		m_save.setEnabled(false);
+            	}catch(Exception e){
+            		e.printStackTrace();
+            	}
+            }else if(a_event.getSource() == this.m_quit){
+            	final int wantToQuit = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit without saving?", TITLE, JOptionPane.YES_NO_OPTION);
+                
+                if(wantToQuit == JOptionPane.YES_OPTION){   
+                	
+                	if(m_humanColor.IsWhite()){
+                        JOptionPane.showMessageDialog(this, BLACK_RESIGNATION, TITLE, JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(this, WHITE_RESIGNATION, TITLE, JOptionPane.ERROR_MESSAGE);
+                    }
+                	
+                    System.exit(Utilities.ZERO);
+                }
+            }
+        }
+        
+        public final void EnableSave(){
+        	m_save.setEnabled(true);
+        }
+        
+        public final void DisableSave(){
+        	m_save.setEnabled(false);
+        }
+        
+        /*
+        public final void EnableResign(){
+        	m_resign.setEnabled(true);
+        }
+        
+        public final void DisableResign(){
+        	m_resign.setEnabled(false);
+        }
+        */
+        
+        public final void EnableLoad(){
+        	m_loadGame.setEnabled(true);
+        }
+        
+        public final void DisableLoad(){
+        	m_loadGame.setEnabled(false);
+        }
+    }
+	
+	public final class GameWatcher{
+		
+		public final boolean IsGameOver(){
+	    	return m_white.HasLost(m_board.GetBoard()) || m_black.HasLost(m_board.GetBoard()) ||
+	    			IsDrawByThreefoldRepetition() || IsDrawByFiftyMoveRule() ||
+	    			IsDrawByInsufficientMaterial();
+	    }
+		
+		public final void Observe(){
+			
+			// Do not evaluate an empty board
+			if(m_board.PieceCount() == Utilities.ZERO){
+				return;
+			}
+			
+			while(true){
+				if(m_isFirstMove){
+					m_isFirstMove = false;
+				}else{
+					CheckForPromotions(m_currentPlayer);
+					ChessColor previous = m_currentPlayer.GetColor();	
+					m_currentPlayer = (previous.IsWhite() ? m_black : m_white);			
+				}
+				
+				if(m_currentPlayer.IsInCheckmate(m_board.GetBoard()) && m_currentPlayer.IsBlack()){
+					JOptionPane.showMessageDialog(null, WHITE_CHECKMATE_MESSAGE, TITLE, JOptionPane.ERROR_MESSAGE);
+					//System.exit(Utilities.ZERO);
+					return;
+				}else if(m_currentPlayer.IsInCheckmate(m_board.GetBoard()) && m_currentPlayer.IsWhite()){
+					JOptionPane.showMessageDialog(null, BLACK_CHECKMATE_MESSAGE, TITLE, JOptionPane.ERROR_MESSAGE);
+					//System.exit(Utilities.ZERO);
+					return;
+				}else if(m_currentPlayer.IsInCheck(m_board.GetBoard()) && m_currentPlayer.IsHuman()){
+					JOptionPane.showMessageDialog(null, CHECK_MESSAGE, TITLE, JOptionPane.WARNING_MESSAGE);
+				}else if(m_currentPlayer.IsInStalemate(m_board.GetBoard())){
+					JOptionPane.showMessageDialog(null, STALEMATE_MESSAGE, TITLE, JOptionPane.ERROR_MESSAGE);
+					//System.exit(Utilities.ZERO);
+					return;
+				}else if(IsDrawByInsufficientMaterial()){
+					JOptionPane.showMessageDialog(null, INSUFFICIENT_MATERIAL_MESSAGE, TITLE, JOptionPane.ERROR_MESSAGE);
+					//System.exit(Utilities.ZERO);
+					return;
+				}else if(IsDrawByFiftyMoveRule()){
+					JOptionPane.showMessageDialog(null, FIFTY_MOVE_MESSAGE, TITLE, JOptionPane.ERROR_MESSAGE);
+					//System.exit(Utilities.ZERO);
+					return;
+				}else if(IsDrawByThreefoldRepetition()){
+					JOptionPane.showMessageDialog(null, THREEFOLD_REPETITION_MESSAGE, TITLE, JOptionPane.ERROR_MESSAGE);
+					//System.exit(Utilities.ZERO);
+					return;
+				}							
+				
+				RefreshPlayers();
+			
+				if(m_currentPlayer.IsComputer()){
+					ComputerPlay();
+				}else{
+					break;
+				}		
+			}// end of while true loop
+		}
+	}
 }

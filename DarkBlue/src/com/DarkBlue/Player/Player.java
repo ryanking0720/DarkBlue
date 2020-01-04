@@ -164,6 +164,10 @@ public abstract class Player{
         return total;
     }
     
+    public final boolean HasLost(final Board a_board){
+    	return this.IsInCheckmate(a_board) || this.IsInStalemate(a_board);
+    }
+    
     /**/
     /*
     NAME
@@ -577,10 +581,10 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public static boolean IsInCheck(final Board a_board);
+        public final boolean IsInCheck(final Board a_board);
     
     SYNOPSIS
-        public static boolean IsInCheck(final Board a_board);
+        public final boolean IsInCheck(final Board a_board);
     
         Board a_board ------> The current board.
     
@@ -588,9 +592,9 @@ public abstract class Player{
         This method determines if the player's king is in check,
         i.e. if he is threatened by an enemy piece but has at least
         one legal move he can use to escape, capture the opposing piece,
-         or use another piece to capture or block the threatening piece.
-         The player who is in check has no choice but to remove the threat.
-         The game continues normally after the player does so.
+        or use another piece to capture or block the threatening piece.
+        The player who is in check has no choice but to remove the threat.
+        The game continues normally after the player does so.
     
     RETURNS
         True if the player is in check, and false otherwise.
@@ -598,8 +602,123 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public boolean IsInCheck(final Board a_board){
+    public final boolean IsInCheck(final Board a_board){
         return !MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() > Utilities.ZERO;
+    }
+    /**/
+    /*
+    NAME
+        public final boolean CanKingsideCastle(final Board a_board);
+    
+    SYNOPSIS
+        public final boolean CanKingsideCastle(final Board a_board);
+    
+        Board a_board ------> The current board.
+    
+    DESCRIPTION
+        This method determines if the player's king can castle on his own side,
+        i.e., the right side for white, or the left side for black.
+    
+    RETURNS
+        True if the player can perform a kingside castle, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean CanKingsideCastle(final Board a_board){
+    	final int kingRow = (this.IsWhite() ? Utilities.SEVEN : Utilities.ZERO);
+    	final int kingColumn = Utilities.FOUR;
+    	
+    	final int rookRow = kingRow;
+    	final int rookColumn = Utilities.SEVEN;
+    	
+    	final Piece potentialKing = a_board.GetTile(kingRow, kingColumn).GetPiece();
+    	final Piece potentialRook = a_board.GetTile(rookRow, rookColumn).GetPiece();
+    	
+    	return this.HasPotentialCastlingKing(potentialKing) && this.HasPotentialCastlingRook(potentialRook);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean CanQueensideCastle(final Board a_board);
+    
+    SYNOPSIS
+        public final boolean CanQueensideCastle(final Board a_board);
+    
+        Board a_board ------> The current board.
+    
+    DESCRIPTION
+        This method determines if the player's king can castle on the side opposite his own,
+        i.e., the left side for white, or the right side for black.
+    
+    RETURNS
+        True if the player can perform a queenside castle, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean CanQueensideCastle(final Board a_board){
+    	final int kingRow = (this.IsWhite() ? Utilities.SEVEN : Utilities.ZERO);
+    	final int kingColumn = Utilities.FOUR;
+    	
+    	final int rookRow = kingRow;
+    	final int rookColumn = Utilities.ZERO;
+    	
+    	final Piece potentialKing = a_board.GetTile(kingRow, kingColumn).GetPiece();
+    	final Piece potentialRook = a_board.GetTile(rookRow, rookColumn).GetPiece();
+    	
+    	return this.HasPotentialCastlingKing(potentialKing) && this.HasPotentialCastlingRook(potentialRook);
+    }
+    
+    /**/
+    /*
+    NAME
+        private final boolean HasPotentialCastlingKing(final Piece a_piece);
+    
+    SYNOPSIS
+        private final boolean HasPotentialCastlingKing(final Piece a_piece);
+    
+        Board a_board ------> The player whose turn it is.
+    
+    DESCRIPTION
+        This method determines if the player's king can castle,
+        which is true if the king is in either spot (7, 4) for white,
+        or spot (0, 4) for black and has not moved yet.
+    
+    RETURNS
+        True if the player's king can potentially castle, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    private final boolean HasPotentialCastlingKing(final Piece a_piece){
+    	return a_piece != null && a_piece.GetColor().IsAlly(this.GetColor()) && a_piece.IsKing() && !a_piece.HasMoved();
+    }
+    
+    /**/
+    /*
+    NAME
+        private final boolean HasPotentialCastlingRook(final Piece a_piece);
+    
+    SYNOPSIS
+        private final boolean HasPotentialCastlingRook(final Piece a_piece);
+    
+        Board a_board ------> The player whose turn it is.
+    
+    DESCRIPTION
+        This method determines if the player's rook can castle,
+        which is true if the rook is in either spot (7, 7) or (0, 7) for white,
+        or spots (0, 0) or (7, 0) for black and has not moved yet.
+    
+    RETURNS
+        True if the player's rook can potentially castle, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    private final boolean HasPotentialCastlingRook(final Piece a_piece){
+    	return a_piece != null && a_piece.GetColor().IsAlly(this.GetColor()) && a_piece.IsRook() && !a_piece.HasMoved();
     }
     
     /**/
@@ -625,7 +744,7 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public boolean IsInCheckmate(final Board a_board){
+    public final boolean IsInCheckmate(final Board a_board){
         return !MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() == Utilities.ZERO;
     }
     
@@ -651,9 +770,11 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public boolean IsInStalemate(final Board a_board){
+    public final boolean IsInStalemate(final Board a_board){
         return MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() == Utilities.ZERO;
     }
+    
+    
     
     /**/
     /*

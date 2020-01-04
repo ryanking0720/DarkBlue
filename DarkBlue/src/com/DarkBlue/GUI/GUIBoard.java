@@ -6,14 +6,10 @@ import com.DarkBlue.Utilities.*;
 import com.DarkBlue.Player.*;
 
 import java.awt.GridLayout;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 //import java.awt.Dimension;
-import java.awt.Graphics;
 
 //import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 /*
 import java.awt.Color;
 import java.awt.event.MouseEvent;
@@ -162,39 +158,6 @@ public final class GUIBoard extends JPanel{
             this.add(m_tiles[Utilities.SEVEN - row][Utilities.SEVEN - column]);
         }
     }
-    
-    /*
-    NAME
-        protected final void paintComponent(Graphics a_g);
-    
-    SYNOPSIS
-        protected final void paintComponent(Graphics a_g);
-    
-        Graphics a_g -------> The Graphics object.
-    
-    DESCRIPTION
-        This method is overridden from Graphics.
-        It paints the tiles on the board.
-        This method violates the Senior Project naming
-        conventions because it is overridden from Java.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    /*
-    @Override
-    protected final void paintComponent(final Graphics a_g){
-        super.paintComponent(a_g);
-        for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-            int row = index / Utilities.EIGHT;
-            int column = index % Utilities.EIGHT;
-            m_tiles[row][column].paintComponent(a_g);
-        }
-    }
-    */
     
     /*
     NAME

@@ -5,7 +5,7 @@ import com.DarkBlue.Utilities.Utilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
+//import java.awt.Font;
 import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -82,6 +82,7 @@ public class RowBumper extends JPanel{
     }
     
     // Source: https://stackoverflow.com/questions/2715118/how-to-change-the-size-of-the-font-of-a-jlabel-to-take-the-maximum-size
+    /*
     private void AdjustFonts(){
         final Font labelFont = m_labels[Utilities.ZERO].getFont();
         final String labelText = m_labels[Utilities.ZERO].getText();
@@ -103,4 +104,5 @@ public class RowBumper extends JPanel{
             m_labels[i].setFont(new Font(labelFont.getName(), Font.PLAIN, fontSizeToUse));
         }
     }
+    */
 }

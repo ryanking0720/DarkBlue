@@ -1254,4 +1254,9 @@ public abstract class Piece{
             return false;
         }
     }
+    
+    @Override
+    public final String toString(){
+    	return Utilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.m_pieceType.toString().toLowerCase();
+    }
 }
