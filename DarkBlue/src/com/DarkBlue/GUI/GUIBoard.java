@@ -348,7 +348,7 @@ public final class GUIBoard extends JPanel{
     */
     
     public final GUITile GetTile(final int a_row, final int a_column){
-        if(Utilities.HasValidCoordinates(a_row, a_column)){
+        if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
             return m_tiles[a_row][a_column];
         }else{
             return null;

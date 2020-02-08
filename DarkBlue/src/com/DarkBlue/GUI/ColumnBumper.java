@@ -2,6 +2,7 @@ package com.DarkBlue.GUI;
 
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,9 +46,9 @@ public class ColumnBumper extends JPanel{
         for(int i = Utilities.ZERO; i < m_letters.length; i++){
             
             if(a_color.IsWhite()){
-                m_labels[i] = new JLabel(Utilities.ToAlgebraicColumn(i));
+                m_labels[i] = new JLabel(BoardUtilities.ToAlgebraicColumn(i));
             }else{
-                m_labels[i] = new JLabel(Utilities.ToAlgebraicColumn(Utilities.SEVEN - i));
+                m_labels[i] = new JLabel(BoardUtilities.ToAlgebraicColumn(Utilities.SEVEN - i));
             }
             
             m_letters[i].add(m_labels[i]);

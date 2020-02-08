@@ -1,6 +1,7 @@
 package com.DarkBlue.GUI;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -21,7 +22,11 @@ public final class InstructionFrame extends JFrame implements WindowListener{
 		
 		this.m_text.setText(Utilities.INSTRUCTIONS);
 		
+		this.m_text.setEditable(false);
+		
 		this.add(new JScrollPane(this.m_text), BorderLayout.CENTER);
+		
+		this.setSize(new Dimension(1000, 500));
 		
 		this.setVisible(true);
 	}

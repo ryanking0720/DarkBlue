@@ -89,8 +89,33 @@ public final class CastlingMove extends Move{
         this.m_rookDestinationColumn = AssignRookDestinationColumn(this.m_newColumn);
     }
     
+    /*
+    NAME
+        public final String toString();
+    
+    SYNOPSIS
+        public final String toString();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method is overridden from the Object superclass.
+        It returns a string representation of this move in
+        algebraic notation.
+        
+        Per the rules prescribed by FIDE, a kingside castle by
+        either side is returned as "0-0", and a queenside castle
+        is returned as "0-0-0".
+    
+    
+    RETURNS
+        String moveString: A string representation of the move.
+    
+    AUTHOR
+        Ryan King
+    */
     @Override
-    public final String GetStringMove(){
+    public final String toString(){
         if((this.m_newColumn - this.m_oldColumn) == Utilities.TWO){
             return Utilities.KINGSIDE_CASTLE;
         }else{

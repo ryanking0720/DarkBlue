@@ -37,15 +37,15 @@ public final class RegularMove extends Move{
 
     /*
     NAME
-        public final String GetStringMove();
+        public final String toString();
     
     SYNOPSIS
-        public final String GetStringMove();
+        public final String toString();
     
         No parameters.
     
     DESCRIPTION
-        This method is overridden from the Move superclass.
+        This method is overridden from the Object superclass.
         It returns a string representation of this move in
         algebraic notation using its fields.
         
@@ -65,14 +65,15 @@ public final class RegularMove extends Move{
         Ryan King
     */
     @Override
-    public final String GetStringMove(){
+    public final String toString(){
         String moveString = "";
         
         if(!m_piece.IsPawn()){
-            moveString += Character.toString(m_piece.GetIcon());
+            moveString += Character.toString(m_piece.GetIcon()).toUpperCase();
         }
         
-        moveString += Utilities.ToAlgebraic(m_newRow, m_newColumn);
+        moveString += BoardUtilities.ToAlgebraic(m_newRow, m_newColumn);
+        
         return moveString;
     }
     

@@ -39,10 +39,10 @@ public final class AttackingMove extends Move{
     
     /*
     NAME
-        public String GetStringMove();
+        public final String toString();
     
     SYNOPSIS
-        public String GetStringMove();
+        public final String toString();
     
         No parameters.
     
@@ -68,16 +68,17 @@ public final class AttackingMove extends Move{
         Ryan King
     */
     @Override
-    public final String GetStringMove(){
+    public final String toString(){
         String moveString = "";
         
         if(!m_piece.IsPawn()){
-            moveString += Character.toString(this.m_piece.GetIcon());
+            moveString += Character.toString(Character.toUpperCase(this.m_piece.GetIcon()));
         }else{
-            moveString += Utilities.ToAlgebraicColumn(this.m_piece.GetCurrentColumn());
+            moveString += BoardUtilities.ToAlgebraicColumn(this.m_piece.GetCurrentColumn());
         }
         
-        moveString += "x" + Utilities.ToAlgebraic(this.m_newRow, this.m_newColumn);
+        moveString += "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn);
+        
         return moveString;
     }
     

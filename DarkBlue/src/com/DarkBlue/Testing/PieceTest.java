@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class PieceTest{
 
     public PieceTest(){
-        // TODO Auto-generated constructor stub
+    	
     }
 
     @Test

@@ -66,42 +66,54 @@ public final class Computer extends Player{
     /**/
     /*
     NAME
-        public final Move Search();
+        public final boolean IsHuman();
     
     SYNOPSIS
-        public final Move Search();
+        public final boolean IsHuman();
     
         No parameters.
     
     DESCRIPTION
-        This method returns the best move from the move tree.
+        This method returns if this player's type is human.
     
     RETURNS
-        Move: The best move from the move tree.
+        boolean: Always returns false.
     
     AUTHOR
         Ryan King
     */
-    public final Move Search(final int a_level, final Board a_board, final Player a_white, final Player a_black){
-        /*int bestIndex = Utilities.ZERO;*/
-        //int total = Utilities.ZERO;
-        Move bestMove = null;
-        if(a_level == DarkBlue.GetMaxSearchDepth()){
-            return bestMove;
-        }else{
-            Board clone = Board.GetDeepCopy(a_board);
-            ArrayList<Move> attackMoves = GetAttackingMoves();
-            for(int index = Utilities.ONE; index < attackMoves.size(); index++){
-                if(attackMoves.get(index).GetMoveType() == MoveType.EN_PASSANT){
-                    //total += attackMoves.get(index).GetVictim().GetValue();
-                    clone = clone.EnPassant((EnPassantMove)attackMoves.get(index), a_white, a_black);
-                }else{
-                    //total += attackMoves.get(index).GetVictim().GetValue();
-                    clone = clone.Attack((AttackingMove)attackMoves.get(index), a_white, a_black);
-                }
-            }
-            return Search(a_level + Utilities.ONE, clone, a_white, a_black);
-        }
+    @Override
+    public final boolean IsHuman(){
+        return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsComputer();
+    
+    SYNOPSIS
+        public final boolean IsComputer();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if this player's type is computer.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsComputer(){
+        return true;
+    }
+    
+    @Override
+    public final PlayerType GetPlayerType(){
+    	return PlayerType.COMPUTER;
     }
     
     /**/
@@ -133,77 +145,5 @@ public final class Computer extends Player{
             }
         }
         return attackMoves;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final int GetMaxIndex(final ArrayList<Move> a_moves);
-    
-    SYNOPSIS
-        public final int GetMaxIndex(final ArrayList<Move> a_moves);
-    
-        ArrayList<Move> a_moves --------> The moves to be maximized.
-    
-    DESCRIPTION
-        This method returns the index of the move whose victim has
-        the highest value out of all of the moves with victims.
-        The loop iterates through every move and returns the
-        result at the end.
-    
-    RETURNS
-        int maxIndex: The index whose move has the highest victim value.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int GetMaxIndex(final ArrayList<Move> a_moves){
-        int maxIndex = Utilities.ZERO;
-        for(int index = Utilities.ONE; index < a_moves.size(); index++){
-            if(!a_moves.get(index).HasVictim()){
-                continue;
-            }else{
-                if(a_moves.get(maxIndex).GetVictim().GetValue() < a_moves.get(index).GetVictim().GetValue()){
-                    maxIndex = index;
-                }
-            }
-        }
-        return maxIndex;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final int GetMinIndex(final ArrayList<Move> a_moves);
-    
-    SYNOPSIS
-        public final int GetMinIndex(final ArrayList<Move> a_moves);
-    
-        ArrayList<Move> a_moves --------> The moves to be minimized.
-    
-    DESCRIPTION
-        This method returns the index of the move whose victim has
-        the lowest value out of all of the moves with victims.
-        The loop iterates through every move and returns the
-        result at the end.
-    
-    RETURNS
-        int minIndex: The index whose move has the lowest victim value.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int GetMinIndex(final ArrayList<Move> a_moves){
-        int minIndex = Utilities.ZERO;
-        for(int index = Utilities.ONE; index < a_moves.size(); index++){
-            if(!a_moves.get(index).HasVictim()){
-                continue;
-            }else{
-                if(a_moves.get(minIndex).GetVictim().GetValue() > a_moves.get(index).GetVictim().GetValue()){
-                    minIndex = index;
-                }
-            }
-        }
-        return minIndex;
     }
 }

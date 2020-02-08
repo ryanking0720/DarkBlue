@@ -62,15 +62,15 @@ public final class GUITile extends JPanel{
         
         // Set the color of the tile
         if(a_tile.GetColor().IsWhite()){
-            this.m_originalColor = Utilities.WHITE;
+            this.m_originalColor = BoardUtilities.WHITE;
         }else{
-            this.m_originalColor = Utilities.BLACK;
+            this.m_originalColor = BoardUtilities.BLACK;
         }
         
         this.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
         this.setBackground(this.m_originalColor);
         
-        m_actionCommand = Utilities.ToAlgebraic(this.m_tile.GetRow(), this.m_tile.GetColumn());
+        m_actionCommand = BoardUtilities.ToAlgebraic(this.m_tile.GetRow(), this.m_tile.GetColumn());
 
         SetPiece();
         
@@ -99,7 +99,7 @@ public final class GUITile extends JPanel{
     }
     
     public final void LightUp(){
-        this.setBackground(Utilities.SELECTED_GREEN);
+        this.setBackground(BoardUtilities.SELECTED_GREEN);
         repaint();
     }
     

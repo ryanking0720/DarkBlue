@@ -87,4 +87,148 @@ public final class Knight extends Piece{
         // Add the moves that are currently deemed legal
         this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKnightMoves));
     }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsPawn();
+    
+    SYNOPSIS
+        public final boolean IsPawn();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a pawn.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsPawn(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsKing();
+    
+    SYNOPSIS
+        public final boolean IsKing();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a king.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsKing(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsRook();
+    
+    SYNOPSIS
+        public final boolean IsRook();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a rook.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsRook(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsBishop();
+    
+    SYNOPSIS
+        public final boolean IsBishop();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a bishop.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsBishop(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsQueen();
+    
+    SYNOPSIS
+        public final boolean IsQueen();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a queen.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsQueen(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsKnight();
+    
+    SYNOPSIS
+        public final boolean IsKnight();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a knight.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsKnight(){
+    	return true;
+    }
 }

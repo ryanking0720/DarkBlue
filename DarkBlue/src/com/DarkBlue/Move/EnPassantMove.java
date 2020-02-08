@@ -45,15 +45,15 @@ public final class EnPassantMove extends Move{
 
     /*
     NAME
-        public final String GetStringMove();
+        public final String toString();
     
     SYNOPSIS
-        public final String GetStringMove();
+        public final String toString();
     
         No parameters.
     
     DESCRIPTION
-        This method is overridden from the Move superclass.
+        This method is overridden from the Object superclass.
         It returns a string representation of this move in
         algebraic notation using its fields.
         
@@ -72,8 +72,8 @@ public final class EnPassantMove extends Move{
         Ryan King
     */
     @Override
-    public final String GetStringMove(){    
-        String moveString = Utilities.ToAlgebraicColumn(this.m_oldColumn) + "x" + Utilities.ToAlgebraic(m_newRow, m_newColumn) + " e.p.";
+    public final String toString(){    
+        String moveString = BoardUtilities.ToAlgebraicColumn(this.m_oldColumn) + "x" + BoardUtilities.ToAlgebraic(m_newRow, m_newColumn) + " e.p.";
         return moveString;
     }
     

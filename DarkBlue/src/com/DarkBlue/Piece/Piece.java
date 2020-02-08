@@ -847,8 +847,7 @@ public abstract class Piece{
         No parameters.
     
     DESCRIPTION
-        This method determines if this piece is a pawn
-        by looking at its piece type.
+        This method determines if this piece is a pawn.
     
     RETURNS
         boolean: True if the piece is a pawn, and false otherwise.
@@ -857,24 +856,20 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean IsPawn(){
-        return m_pieceType == PieceType.PAWN;
-        
-    }
+    public abstract boolean IsPawn();
     
     /**/
     /*
     NAME
-        public final boolean IsKing();
+        public abstract boolean IsKing();
     
     SYNOPSIS
-        public final boolean IsKing();
+        public abstract boolean IsKing();
     
         No parameters.
     
     DESCRIPTION
-        This method determines if this piece is a king
-        by looking at its piece type.
+        This method determines if this piece is a king.
     
     RETURNS
         boolean: True if this piece is a king, and false otherwise.
@@ -883,23 +878,20 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean IsKing(){
-        return m_pieceType == PieceType.KING;
-    }
+    public abstract boolean IsKing();
     
     /**/
     /*
     NAME
-        public final boolean IsRook();
+        public abstract boolean IsRook();
     
     SYNOPSIS
-        public final boolean IsRook();
+        public abstract boolean IsRook();
     
         No parameters.
     
     DESCRIPTION
-        This method determines if this piece is a rook
-        by looking at its piece type.
+        This method determines if this piece is a rook.
     
     RETURNS
         boolean: True if this piece is a rook, and false otherwise.
@@ -908,23 +900,20 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean IsRook(){
-        return m_pieceType == PieceType.ROOK;
-    }
+    public abstract boolean IsRook();
     
     /**/
     /*
     NAME
-        public final boolean IsBishop();
+        public abstract boolean IsBishop();
     
     SYNOPSIS
-        public final boolean IsBishop();
+        public abstract boolean IsBishop();
     
         No parameters.
     
     DESCRIPTION
-        This method determines if this piece is a bishop
-        by looking at its piece type.
+        This method determines if this piece is a bishop.
     
     RETURNS
         boolean: True if this piece is a bishop, and false otherwise.
@@ -933,23 +922,20 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean IsBishop(){
-        return m_pieceType == PieceType.BISHOP;
-    }
+    public abstract boolean IsBishop();
     
     /**/
     /*
     NAME
-        public final boolean IsQueen();
+        public abstract boolean IsQueen();
     
     SYNOPSIS
-        public final boolean IsQueen();
+        public abstract boolean IsQueen();
     
         No parameters.
     
     DESCRIPTION
-        This method determines if this piece is a queen
-        by looking at its piece type.
+        This method determines if this piece is a queen.
     
     RETURNS
         boolean: True if this piece is a queen, and false otherwise.
@@ -958,23 +944,20 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean IsQueen(){
-        return m_pieceType == PieceType.QUEEN;
-    }
+    public abstract boolean IsQueen();
     
     /**/
     /*
     NAME
-        public final boolean IsKnight();
+        public abstract boolean IsKnight();
     
     SYNOPSIS
-        public final boolean IsKnight();
+        public abstract boolean IsKnight();
     
         No parameters.
     
     DESCRIPTION
-        This method determines if this piece is a knight
-        by looking at its piece type.
+        This method determines if this piece is a knight.
     
     RETURNS
         boolean: True if this piece is a knight, and false otherwise.
@@ -983,9 +966,7 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean IsKnight(){
-        return m_pieceType == PieceType.KNIGHT;
-    }
+    public abstract boolean IsKnight();
     
     /**/
     /*
@@ -1090,7 +1071,7 @@ public abstract class Piece{
     */
     public final boolean IsEnemy(final Piece a_piece){
         try{
-            return this.GetColor() == Utilities.Reverse(a_piece.GetColor());
+            return this.GetColor() == BoardUtilities.Reverse(a_piece.GetColor());
         }catch(Exception e){
             return false;
         }
@@ -1228,11 +1209,8 @@ public abstract class Piece{
         
         1. Color
         2. Type
-        3. Row
-        4. Column
-        5. Number of moves
         
-        If all five conditions pass, this method returns true.
+        If both conditions pass, this method returns true.
         If one of them fails, the method short-circuits and returns false.
         Null arguments always return false.
     
@@ -1247,9 +1225,10 @@ public abstract class Piece{
         try{        
             return this.IsAlly(a_piece)
                     && this.IsSameType(a_piece)
+                    /*
                     && this.IsSameRow(a_piece)
                     && this.IsSameColumn(a_piece)
-                    && this.IsSameMoves(a_piece);
+                    && this.IsSameMoves(a_piece)*/;
         }catch(Exception e){
             return false;
         }
@@ -1257,6 +1236,6 @@ public abstract class Piece{
     
     @Override
     public final String toString(){
-    	return Utilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.m_pieceType.toString().toLowerCase();
+    	return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.m_pieceType.toString().toLowerCase();
     }
 }

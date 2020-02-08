@@ -114,7 +114,7 @@ public class GameTest{
                 if((a_player.IsWhite() && activePiecesCopy.get(index).GetCurrentRow() == Utilities.ZERO) || (a_player.IsBlack() && activePiecesCopy.get(index).GetCurrentRow() == Utilities.SEVEN)){
                     pawn = (Pawn) a_player.GetActivePieces().get(index);
                     // Return a new Board object with the new powerful piece replacing the pawn
-                    m_board = pawn.Promote(m_board);
+                    m_board = pawn.Promote(m_board, a_player.IsHuman());
                     return;
                 }
             }else{
@@ -149,10 +149,10 @@ public class GameTest{
         do{
             System.out.print(DarkBlue.SOURCE + ": ");
             String tile = m_keyboard.nextLine();
-            m_sourceRow = Utilities.ToBoardRow(tile);
-            m_sourceColumn = Utilities.ToBoardColumn(tile);
+            m_sourceRow = BoardUtilities.ToBoardRow(tile);
+            m_sourceColumn = BoardUtilities.ToBoardColumn(tile);
         try{
-            if(!Utilities.HasValidCoordinates(m_sourceRow, m_sourceColumn)){
+            if(!BoardUtilities.HasValidCoordinates(m_sourceRow, m_sourceColumn)){
                 JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
             }else{
             
@@ -169,7 +169,7 @@ public class GameTest{
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
         }
-        }while(!Utilities.HasValidCoordinates(m_sourceRow, m_sourceColumn));
+        }while(!BoardUtilities.HasValidCoordinates(m_sourceRow, m_sourceColumn));
     }
     
     /*
@@ -198,10 +198,10 @@ public class GameTest{
         do{
             System.out.print(DarkBlue.DESTINATION + ": ");
             String tile = m_keyboard.nextLine();
-            m_destinationRow = Utilities.ToBoardRow(tile);
-            m_destinationColumn = Utilities.ToBoardColumn(tile);
+            m_destinationRow = BoardUtilities.ToBoardRow(tile);
+            m_destinationColumn = BoardUtilities.ToBoardColumn(tile);
         try{
-            if(!Utilities.HasValidCoordinates(m_destinationRow, m_destinationColumn)){
+            if(!BoardUtilities.HasValidCoordinates(m_destinationRow, m_destinationColumn)){
                 JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
             }else{
                 
@@ -219,7 +219,7 @@ public class GameTest{
         }catch(Exception e){
             JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
         }
-        }while(!Utilities.HasValidCoordinates(m_destinationRow, m_destinationColumn));
+        }while(!BoardUtilities.HasValidCoordinates(m_destinationRow, m_destinationColumn));
     }
     
     /*
@@ -587,7 +587,7 @@ public class GameTest{
                 if(IsEnPassantMove()){
                     // This is an en passant move
                     Pawn victim;
-                        if(Utilities.HasValidCoordinates(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn() + Utilities.ONE)
+                        if(BoardUtilities.HasValidCoordinates(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn() + Utilities.ONE)
                                 && m_board.GetTile(m_candidate.GetCurrentRow(), m_candidate.GetCurrentColumn() + Utilities.ONE).IsOccupied()){
                             victim = (Pawn) m_board.GetTile(m_sourceRow, m_sourceColumn + Utilities.ONE).GetPiece();
                         }else{

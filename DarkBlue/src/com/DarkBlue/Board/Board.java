@@ -422,13 +422,15 @@ public final class Board{
     public static final Board GetEnPassantTest(){
         final BoardBuilder builder = new BoardBuilder();
         
+        // Set pieces for white
         builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.THREE, Utilities.FOUR));
         builder.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR));
         
-        
+        // Set pieces for black
         builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
         builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
         
+        // Black will go first in this test
         builder.SetWhoseTurn(ChessColor.BLACK);
         
         return builder.Build();
@@ -458,7 +460,7 @@ public final class Board{
     */
     public final Tile GetTile(final int a_row, final int a_column){
         try{
-            if(Utilities.HasValidCoordinates(a_row, a_column)){
+            if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
                 return m_boardObject[a_row][a_column];
             }else{
                 return null;
@@ -812,7 +814,7 @@ public final class Board{
         */
         public final BoardBuilder RemovePiece(final int a_row, final int a_column){
             try{
-                if(Utilities.HasValidCoordinates(a_row, a_column)){
+                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
                     final Tile original = m_builderBoard[a_row][a_column];
                     m_builderBoard[a_row][a_column] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), null);
                 }
@@ -843,7 +845,7 @@ public final class Board{
         */
         public final BoardBuilder SetPiece(final Piece a_piece){
             try{
-                if(Utilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
+                if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
                     final Tile original = m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
                     m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), a_piece);
                 }
@@ -879,7 +881,7 @@ public final class Board{
         */
         public final void SetTile(final Tile a_tile, final int a_row, final int a_column){
             try{
-                if(Utilities.HasValidCoordinates(a_row, a_column)){
+                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
                     m_builderBoard[a_row][a_column] = a_tile;
                 }
             }catch(Exception e){
@@ -911,7 +913,7 @@ public final class Board{
         */
         public final Tile GetTile(final int a_row, final int a_column){
             try{
-                if(Utilities.HasValidCoordinates(a_row, a_column)){
+                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
                     return m_builderBoard[a_row][a_column];
                 }else{
                     return null;
@@ -972,12 +974,12 @@ public final class Board{
         final Tile oldTile = m_boardObject[oldRow][oldColumn];
                 
         // Set the moved Piece to the new Tile
-        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Utilities.DuplicatePiece(a_candidate.GetPiece(), newRow, newColumn));
+        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
         // Remove the moved Piece from the old Tile
         m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        BoardBuilder builder = new BoardBuilder(m_boardObject, Utilities.Reverse(this.WhoseTurnIsIt()));
+        BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         return builder.Build();
     }
@@ -1020,12 +1022,12 @@ public final class Board{
         final Tile oldTile = m_boardObject[oldRow][oldColumn];
         
         // Set the moved Piece to the new Tile
-        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Utilities.DuplicatePiece(a_candidate.GetPiece(), newRow, newColumn));
+        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
         // Remove the moved Piece from the old Tile
         m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder builder = new BoardBuilder(m_boardObject, Utilities.Reverse(this.WhoseTurnIsIt()));
+        final BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Return the newly-moved board
         return builder.Build();
@@ -1072,20 +1074,18 @@ public final class Board{
         final Tile oldRookTile = m_boardObject[oldRookRow][oldRookColumn];
         final Tile newRookTile = m_boardObject[newRookRow][newRookColumn];
     
-        // Set the moved Piece to the new Tile
-        m_boardObject[newKingRow][newKingColumn] = new Tile(newKingTile.GetColor(), newKingTile.GetRow(), newKingTile.GetColumn(), Utilities.DuplicatePiece(a_candidate.GetPiece(), newKingRow, newKingColumn));
-        // Remove the moved Piece from the old Tile
+        // Set the moved king to the new Tile
+        m_boardObject[newKingRow][newKingColumn] = new Tile(newKingTile.GetColor(), newKingTile.GetRow(), newKingTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newKingRow, newKingColumn));
+        // Remove the moved king from the old Tile
         m_boardObject[oldKingRow][oldKingColumn] = new Tile(oldKingTile.GetColor(), oldKingTile.GetRow(), oldKingTile.GetColumn(), null);
         
-        final Rook rook = (Rook) m_boardObject[oldRookRow][oldRookColumn].GetPiece();
-        
-        // Set the moved Piece to the new Tile
-        m_boardObject[newRookRow][newRookColumn] = new Tile(newRookTile.GetColor(), newRookTile.GetRow(), newRookTile.GetColumn(), Utilities.DuplicatePiece(rook, newRookRow, newRookColumn));
-        // Remove the moved Piece from the old Tile
+        // Set the moved rook to the new Tile
+        m_boardObject[newRookRow][newRookColumn] = new Tile(newRookTile.GetColor(), newRookTile.GetRow(), newRookTile.GetColumn(), Factory.MovedPieceFactory(this.m_boardObject[oldRookRow][oldRookColumn].GetPiece(), newRookRow, newRookColumn));
+        // Remove the moved rook from the old Tile
         m_boardObject[oldRookRow][oldRookColumn] = new Tile(oldRookTile.GetColor(), oldRookTile.GetRow(), oldRookTile.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder builder = new BoardBuilder(m_boardObject, Utilities.Reverse(this.WhoseTurnIsIt()));            
+        final BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));            
 
         // Return the newly-moved board
         return builder.Build();
@@ -1128,7 +1128,8 @@ public final class Board{
         final int capturedPawnRow = a_candidate.GetCapturedPawnRow();
         final int capturedPawnColumn = a_candidate.GetCapturedPawnColumn();
 
-        final Tile newTile = m_boardObject[newRow][newColumn];
+
+        final Tile newTile = m_boardObject[newRow][newColumn];// bp
         final Tile oldTile = m_boardObject[oldRow][oldColumn];
         final Tile pawnTile = m_boardObject[capturedPawnRow][capturedPawnColumn];
         
@@ -1142,7 +1143,7 @@ public final class Board{
         }
         
         // Set the moved Piece to the new Tile
-        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Utilities.DuplicatePiece(a_candidate.GetPiece(), newRow, newColumn));
+        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
         
         // Remove the moved Piece from the old Tile
         m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
@@ -1151,7 +1152,7 @@ public final class Board{
         m_boardObject[capturedPawnRow][capturedPawnColumn] = new Tile(pawnTile.GetColor(), pawnTile.GetRow(), pawnTile.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder builder = new BoardBuilder(m_boardObject, Utilities.Reverse(this.WhoseTurnIsIt()));
+        final BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Return the newly-moved board
         return builder.Build();
@@ -1188,7 +1189,7 @@ public final class Board{
         final Tile promotedTile = this.m_boardObject[promotedRow][promotedColumn];
         
         // Remove the old pawn and put the promoted piece in its place
-        this.m_boardObject[promotedRow][promotedColumn] = new Tile(promotedTile.GetColor(), promotedTile.GetRow(), promotedTile.GetColumn(), Factory.PieceFactory(a_promotedPiece));
+        this.m_boardObject[promotedRow][promotedColumn] = new Tile(promotedTile.GetColor(), promotedTile.GetRow(), promotedTile.GetColumn(), Factory.MovedPieceFactory(a_promotedPiece, promotedRow, promotedColumn));
 
         // Initialize a new BoardBuilder object with the configuration of the new Board
         BoardBuilder builder = new BoardBuilder(this.m_boardObject, this.WhoseTurnIsIt());
@@ -1197,45 +1198,6 @@ public final class Board{
         return builder.Build();
     }
 
-    /*
-    NAME
-        public final Board InternalUndo();
-    
-    SYNOPSIS
-        public final Board InternalUndo();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns the Board object that was created 1 move ago.
-        If the user is attempting to undo the first move, it will simply
-        return itself as is. One of these two options will always occur.
-    
-    RETURNS
-        The board from 1 move ago if enough moves have been made,
-        or the current board if this is only the first move.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    /*
-    public final Board InternalUndo(){
-        // Do not allow the player to undo any moves if this is his/her first move
-        if(Game.GetGameHistory().size() <= Utilities.ONE){
-            return this;
-        }else{
-            // Get the old board two moves ago
-            Board old = Game.GetGameHistory().get(Game.GetGameHistory().size() - Utilities.ONE); 
-            
-            // Remove the last two boards in the game history array
-            Game.GetGameHistory().remove(Game.GetGameHistory().size() - Utilities.ONE);
-            
-            // Return the old board
-            return old;
-        }
-    }
-    */
     /*
     NAME
         public final Board Undo();
@@ -1273,21 +1235,6 @@ public final class Board{
             
             // Return the old board
             return old;
-        }
-    }
-    */
-    /*
-    public final void PrintGameHistory(){
-        if(!m_gameHistory.isEmpty()){
-            for(int index = Utilities.ZERO; index + Utilities.ONE < m_gameHistory.size(); index++){
-                System.out.print(index + Utilities.ONE + ". " + m_gameHistory.get(index).GetStringMove());
-                if(index + Utilities.ONE < m_gameHistory.size()){
-                    System.out.print("\t" + m_gameHistory.get(index + Utilities.ONE).GetStringMove());
-                }
-                System.out.println();            
-            }
-        }else{
-            return;
         }
     }
     */

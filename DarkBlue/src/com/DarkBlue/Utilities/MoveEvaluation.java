@@ -174,7 +174,7 @@ public interface MoveEvaluation{
     /*
     NAME
         public static ArrayList<Move> AddCurrentDirectionalMoves(final Piece a_piece, final Board a_board, final Delta[] a_allDirectionalMoves);
-    
+
     SYNOPSIS
         public static ArrayList<Move> AddCurrentDirectionalMoves(final Piece a_piece, final Board a_board, final Delta[] a_allDirectionalMoves);
     
@@ -219,7 +219,7 @@ public interface MoveEvaluation{
 
             int newRow = a_piece.GetCurrentRow() + a_allDirectionalMoves[index].GetRowDelta();
             int newColumn = a_piece.GetCurrentColumn() + a_allDirectionalMoves[index].GetColumnDelta();
-            if(Utilities.HasValidCoordinates(newRow, newColumn)){
+            if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
                 Move candidate;
                 if(a_board.GetTile(newRow, newColumn).IsEmpty()){
                     candidate = new RegularMove(a_piece, newRow, newColumn);
@@ -231,6 +231,11 @@ public interface MoveEvaluation{
                     if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
                         currentDirectionalMoves.add(candidate);
                     }
+                    
+                    clone = null;
+                    tempWhite = null;
+                    tempBlack = null;
+                    candidate = null;
                 }else{
                     final Piece victim = a_board.GetTile(newRow, newColumn).GetPiece();
                     if(a_board.GetTile(newRow, newColumn).IsOccupied() && victim.IsEnemy(a_piece) && !victim.IsKing()){
@@ -277,10 +282,8 @@ public interface MoveEvaluation{
         Likewise, a knight can only move two tiles in one direction and one tile
         in a perpendicular direction or vice versa.
         Since these moves do not occur linearly, we must iterate through each and every one.
-        Just because one tile is not valid does not mean another valid tile is right next to it.
-        Note that the ArrayList for the spectrum contains Move objects rather than
-        Delta objects because these are being performed to and from a specific square, possibly with
-        a specific victim piece. Any move that is otherwise valid will not be added if
+        Just because one tile is not valid does not mean another valid tile is not right next to it.
+        Any move that is otherwise valid will not be added if
         the side's king is threatened because of it.
     
     RETURNS
@@ -318,7 +321,7 @@ public interface MoveEvaluation{
             newColumn = a_piece.GetCurrentColumn() + a_allSpectrumMoves[index].GetColumnDelta();
             
             // Do not continue evaluating this move if the destination tile is invalid
-            if(Utilities.HasValidCoordinates(newRow, newColumn)){
+            if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
                 // Instantiate a candidate move (This could be turned into a regular or attacking move)
                 Move candidate;
                 
@@ -338,6 +341,11 @@ public interface MoveEvaluation{
                         currentSpectrumMoves.add(candidate);
                     }
                     
+                    clone = null;
+                    tempWhite = null;
+                    tempBlack = null;
+                    candidate = null;
+                    
                 }else{
                     // Find the victim of this attacking move
                     Piece victim = a_board.GetTile(newRow, newColumn).GetPiece();
@@ -355,6 +363,11 @@ public interface MoveEvaluation{
                         if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
                             currentSpectrumMoves.add(candidate);
                         }
+                        
+                        clone = null;
+                        tempWhite = null;
+                        tempBlack = null;
+                        candidate = null;
                     }
                 }
             }else{
@@ -389,11 +402,23 @@ public interface MoveEvaluation{
         Ryan King
     */
     public static ArrayList<Move> AddCurrentRegularMoves(final Piece a_piece, final Board a_board, final Delta[] a_allRegularMoves){
-        int newRow, newColumn, limit;
-        ArrayList<Move> regularMoves = new ArrayList<>();
+        int newRow, newColumn;
+        final int limit;
+        final ArrayList<Move> regularMoves = new ArrayList<>();
         
-        // Determine how many tiles this pawn can move
-        if(!a_piece.HasMoved()){
+        // Determine if this pawn is blocked
+        if(a_piece.IsWhite()){
+        	if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow() - Utilities.ONE, a_piece.GetCurrentColumn()) && a_board.GetTile(a_piece.GetCurrentRow() - Utilities.ONE, a_piece.GetCurrentColumn()).IsOccupied()){
+        		return regularMoves;
+        	}
+        }else{
+        	if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow() + Utilities.ONE, a_piece.GetCurrentColumn()) && a_board.GetTile(a_piece.GetCurrentRow() + Utilities.ONE, a_piece.GetCurrentColumn()).IsOccupied()){
+        		return regularMoves;
+        	}
+        }
+        
+        // Since this pawn isn't blocked, determine how many tiles it can move
+        if(!a_piece.HasMoved() && ((a_piece.IsWhite() && a_piece.GetCurrentRow() == Utilities.SIX) || (a_piece.IsBlack() && a_piece.GetCurrentRow() == Utilities.ONE))){
             limit = Utilities.TWO;
         }else{
             limit = Utilities.ONE;
@@ -418,7 +443,7 @@ public interface MoveEvaluation{
             newColumn = a_piece.GetCurrentColumn() + a_allRegularMoves[index].GetColumnDelta();
             
             // Do not allow this move if it is not to a valid tile
-            if(Utilities.HasValidCoordinates(newRow, newColumn)){
+            if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
                 RegularMove candidate = new RegularMove(a_piece, newRow, newColumn);
                                 
                 // If the player's king is safe with this move made, add it.
@@ -428,6 +453,7 @@ public interface MoveEvaluation{
                     tempWhite.InitializePieces(clone);
                     tempBlack.InitializePieces(clone);
                     
+                    // Only add this move if it keeps the player's king safe
                     if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), mover.GetColor())){
                         regularMoves.add(candidate);
                     }
@@ -492,7 +518,7 @@ public interface MoveEvaluation{
             newColumn = a_piece.GetCurrentColumn() + a_allAttackingMoves[index].GetColumnDelta();
             
             // Do not add this move if the coordinates go off the board at either side
-            if(Utilities.HasValidCoordinates(newRow, newColumn)){
+            if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
                 Piece victim = a_board.GetTile(newRow, newColumn).GetPiece();
                 if(victim != null && a_piece.IsEnemy(victim) && !victim.IsKing()){
                     AttackingMove move = new AttackingMove(a_piece, newRow, newColumn, victim);
@@ -575,7 +601,7 @@ public interface MoveEvaluation{
                 }
                 
                 // Determine if the destination coordinates are valid before adding the move
-                if(!Utilities.HasValidCoordinates(victimRow, victimColumn)){
+                if(!BoardUtilities.HasValidCoordinates(victimRow, victimColumn)){
                     continue;
                 }else{
                     final Piece victim = a_board.GetTile(victimRow, victimColumn).GetPiece();
@@ -628,7 +654,7 @@ public interface MoveEvaluation{
         that can immediately threaten the king, this entire method fails and returns false.
         
     RETURNS
-        True if every empty tile adjacent to the king is either safe or occupied by a friendly piece, and false otherwise.
+        True if every tile adjacent to the king is either safe or occupied by a friendly piece, and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
@@ -642,7 +668,7 @@ public interface MoveEvaluation{
         for(int index = Utilities.ZERO; index < MoveEvaluation.m_allKingMoves.length; index++){
             candidateRow = a_row + MoveEvaluation.m_allKingMoves[index].GetRowDelta();
             candidateColumn = a_column + MoveEvaluation.m_allKingMoves[index].GetColumnDelta();
-            if(!Utilities.HasValidCoordinates(candidateRow, candidateColumn)){
+            if(!BoardUtilities.HasValidCoordinates(candidateRow, candidateColumn)){
                 continue;
             }else{
                 // Find the piece on the space
@@ -650,17 +676,29 @@ public interface MoveEvaluation{
                 
                 // Check diagonal directions
                 if(a_color.IsBlack() && neighbor != null){
-                    // Unsafe if the neighbor is a white pawn, queen, king, or bishop
+                    // Unsafe if the neighbor is a white pawn (only if coming from below), queen, king, or bishop
                     if(candidateRow > a_row && candidateColumn < a_column && neighbor.IsWhite()
                             && (neighbor.IsPawn() || neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Lower left
                         return false;
                     }else if(candidateRow > a_row && candidateColumn > a_column && neighbor.IsWhite()
                             && (neighbor.IsPawn() || neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Lower right
                         return false;
+                    }else if(candidateRow < a_row && candidateColumn < a_column && neighbor.IsWhite()
+                            && (neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Upper left
+                        return false;
+                    }else if(candidateRow < a_row && candidateColumn > a_column && neighbor.IsWhite()
+                            && (neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Upper right
+                        return false;
                     }
                 }else if(a_color.IsWhite() && neighbor != null){
-                    // Unsafe if the neighbor is a black pawn, queen, king, or bishop
-                    if(candidateRow < a_row && candidateColumn < a_column && neighbor.IsBlack()
+                    // Unsafe if the neighbor is a black pawn (only if coming from above), queen, king, or bishop             	
+                	if(candidateRow > a_row && candidateColumn < a_column && neighbor.IsBlack()
+                            && (neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Lower left
+                        return false;
+                    }else if(candidateRow > a_row && candidateColumn > a_column && neighbor.IsBlack()
+                            && (neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Lower right
+                        return false;
+                    }else if(candidateRow < a_row && candidateColumn < a_column && neighbor.IsBlack()
                             && (neighbor.IsPawn() || neighbor.IsKing() || neighbor.IsBishop() || neighbor.IsQueen())){// Upper left
                         return false;
                     }else if(candidateRow < a_row && candidateColumn > a_column && neighbor.IsBlack()
@@ -728,7 +766,7 @@ public interface MoveEvaluation{
                 candidateRow = a_row + MoveEvaluation.m_allKnightMoves[index].GetRowDelta();
                 candidateColumn = a_column + MoveEvaluation.m_allKnightMoves[index].GetColumnDelta();    
                 
-                if(Utilities.HasValidCoordinates(candidateRow, candidateColumn)){
+                if(BoardUtilities.HasValidCoordinates(candidateRow, candidateColumn)){
                         if(a_board.GetTile(candidateRow, candidateColumn).IsOccupied()
                                 && a_board.GetTile(candidateRow, candidateColumn).GetPiece().IsKnight() 
                                 && a_board.GetTile(candidateRow, candidateColumn).GetPiece().GetColor().IsEnemy(a_color)){
@@ -832,7 +870,7 @@ public interface MoveEvaluation{
         
         // Check in this direction
         try{
-            while(Utilities.HasValidCoordinates(candidateRow, candidateColumn)){
+            while(BoardUtilities.HasValidCoordinates(candidateRow, candidateColumn)){
                 if(a_board.GetTile(candidateRow, candidateColumn).IsOccupied() 
                 && a_board.GetTile(candidateRow, candidateColumn).GetPiece().GetColor().IsAlly(a_color)){
                     // The direction is safe if a friendly piece is found
@@ -1111,29 +1149,14 @@ public interface MoveEvaluation{
     AUTHOR
         Ryan King
     */
-    public static boolean IsEnPassantMove(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Piece a_victim){
-        /*
-        return (((m_candidate.IsWhite() && m_destinationRow == m_startRow - Utilities.ONE) 
-                || (m_candidate.IsBlack() && m_destinationRow == m_startRow + Utilities.ONE)) 
-                && (m_destinationColumn == m_startColumn + Utilities.ONE || m_destinationColumn == m_startColumn - Utilities.ONE) 
-                && (Utilities.HasValidCoordinates(m_destinationRow, m_startRow - Utilities.ONE)
-                        || Utilities.HasValidCoordinates(m_destinationRow, m_startRow + Utilities.ONE))
-                && m_board.GetTile(m_destinationRow, m_destinationColumn).IsEmpty()
-                && (m_previouslyMoved.IsPawn() 
-                && m_previouslyMoved.IsEnemy(m_candidate)
-                && m_previouslyMoved.HowManyMoves() == Utilities.ONE
-                && Math.abs(m_previouslyMoved.GetCurrentRow() - m_oldRow) == Utilities.TWO
-                && m_oldColumn == m_previouslyMoved.GetCurrentColumn()));
-        */
-        return a_victim != null
-                    && a_candidate.IsPawn()
-                    && a_victim.IsPawn() 
-                    && a_victim.Equals(DarkBlue.GetPreviouslyMoved()) 
-                    && (a_victim.GetCurrentRow() == a_destinationRow - Utilities.ONE
-                            || a_victim.GetCurrentRow() == a_destinationRow + Utilities.ONE)
-                    && a_victim.GetCurrentColumn() == a_destinationColumn;
+    public static boolean IsEnPassantMove(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Board a_board){       
+        return a_candidate.IsPawn()
+        		&& ((a_candidate.IsWhite() && a_candidate.GetCurrentRow() == Utilities.THREE) || (a_candidate.IsBlack() && a_candidate.GetCurrentRow() == Utilities.FOUR))
+                    && a_board.GetTile(a_destinationRow, a_destinationColumn).IsEmpty()
+                    && ( ((a_candidate.IsWhite() && a_destinationRow == a_candidate.GetCurrentRow() - Utilities.ONE) && (a_destinationColumn == a_candidate.GetCurrentColumn() - Utilities.ONE || a_destinationColumn == a_candidate.GetCurrentColumn() + Utilities.ONE))
+                    || ((a_candidate.IsBlack() && a_destinationRow == a_candidate.GetCurrentRow() + Utilities.ONE) && (a_destinationColumn == a_candidate.GetCurrentColumn() - Utilities.ONE || a_destinationColumn == a_candidate.GetCurrentColumn() + Utilities.ONE)) );
     }
-    
+
     /*
     NAME
         private final boolean IsCastlingMove();

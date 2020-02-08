@@ -85,29 +85,6 @@ public abstract class Move{
     
     /*
     NAME
-        public abstract String GetStringMove();
-    
-    SYNOPSIS
-        public abstract String GetStringMove();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns a string representation of the move.
-        For example, a regular move to board[4][4] returns ?e4.
-        A capture move on the same spots returns ?xe4
-        (? does not turn into anything if the Piece is a Pawn).
-    
-    RETURNS
-        String moveString: A string representation of the move.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract String GetStringMove();
-    
-    /*
-    NAME
         public final Piece GetPiece();
     
     SYNOPSIS

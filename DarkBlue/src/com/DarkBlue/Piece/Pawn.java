@@ -1,6 +1,7 @@
 package com.DarkBlue.Piece;
 
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.JOptionPane;
 
 import com.DarkBlue.Move.*;
@@ -150,6 +151,150 @@ public final class Pawn extends Piece{
     /**/
     /*
     NAME
+        public final boolean IsPawn();
+    
+    SYNOPSIS
+        public final boolean IsPawn();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a pawn.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsPawn(){
+    	return true;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsKing();
+    
+    SYNOPSIS
+        public final boolean IsKing();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a king.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsKing(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsRook();
+    
+    SYNOPSIS
+        public final boolean IsRook();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a rook.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsRook(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsBishop();
+    
+    SYNOPSIS
+        public final boolean IsBishop();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a bishop.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsBishop(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsQueen();
+    
+    SYNOPSIS
+        public final boolean IsQueen();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a queen.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsQueen(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsKnight();
+    
+    SYNOPSIS
+        public final boolean IsKnight();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a knight.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsKnight(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
         public ArrayList<Move> GetCurrentRegularMoves();
     
     SYNOPSIS
@@ -222,17 +367,22 @@ public final class Pawn extends Piece{
     /**/
     /*
     NAME
-        public Board Promote(final Board a_board);
+        public Board Promote(final Board a_board, final boolean a_isHuman);
     
     SYNOPSIS
-        public Board Promote(final Board a_board);
+        public Board Promote(final Board a_board, final boolean a_isHuman);
     
         Board a_board ------------> The board where a pawn is going to be promoted.
+        
+        boolean a_isHuman --------> A flag indicating whether the player is human or not.
     
     DESCRIPTION
         This method promotes a pawn that has reached the farthest possible rank.
-        The player will have the choice of converting it to a new queen, rook,
-        bishop, or knight, no matter how many of those pieces currently exist on the board.    
+        A human player will have the choice of converting it to a new queen, rook,
+        bishop, or knight by using a set of 4 buttons.
+        A computer player will choose the best option to instantiate the desired piece.
+        Either type of player will have the choice of converting it to any piece,
+        no matter how many of those pieces currently exist on the board.
     
     RETURNS
         Nothing
@@ -240,41 +390,50 @@ public final class Pawn extends Piece{
     AUTHOR
         Ryan King
     */
-    public Board Promote(final Board a_board){
+    public Board Promote(final Board a_board, final boolean a_isHuman){
         // Initialize options we'll need for buttons
-        Object[] options = {"Knight", "Bishop", "Rook", "Queen"};
+        Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
         
         // Data we'll need to instantiate the piece
-        Piece newPiece;
+        final Piece newPiece;
         
         // Keep looping until the user chooses an option.
         // If s/he closes out, start up again.
         int buttonInt;
-        while(true){
+        
+        if(a_isHuman){
+        
+        	while(true){
             
-            // Determine which piece the user wants to promote this pawn to
-            buttonInt = JOptionPane.showOptionDialog(null, PROMOTION, DarkBlue.TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
+        		// Determine which piece the user wants to promote this pawn to
+        		buttonInt = JOptionPane.showOptionDialog(null, PROMOTION, DarkBlue.TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
 
-            // Only break out if the user chose a piece
-            if(buttonInt != JOptionPane.CLOSED_OPTION){
-                break;
-            }
+        		// Only break out if the user chose a piece
+        		if(buttonInt != JOptionPane.CLOSED_OPTION){
+        			break;
+        		}
+        	}
+        
+        }else{
+        	
+        	// Again, make another stupid AI for now
+        	Random random = new Random();
+        	buttonInt = random.nextInt(Utilities.FOUR);
         }
         
         // Instantiate the chosen piece
-        switch(buttonInt){
-            case Utilities.THREE: newPiece = new Queen(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-            break;
-            case Utilities.TWO: newPiece = new Rook(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-            break;
-            case Utilities.ONE: newPiece = new Bishop(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-            break;
-            case Utilities.ZERO: newPiece = new Knight(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-            break;
-            default: newPiece = null;
-            break;
-        }
-        
+    	switch(buttonInt){
+        	case Utilities.ZERO: newPiece = new Queen(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
+        	break;
+        	case Utilities.ONE: newPiece = new Rook(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
+        	break;
+        	case Utilities.TWO: newPiece = new Bishop(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
+        	break;
+        	case Utilities.THREE: newPiece = new Knight(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
+        	break;
+        	default: newPiece = null;
+        	break;
+    	}
         
         // Return the board with the newly-promoted piece
         return a_board.Promote(newPiece);

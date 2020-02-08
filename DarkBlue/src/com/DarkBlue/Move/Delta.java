@@ -48,7 +48,7 @@ public final class Delta{
     DESCRIPTION
         This no-arg constructor initializes a new Delta object
         with zero as both the row and column arguments.
-        This is an error Delta returned by the Game.ParseTile() method.
+        This represents an error condition.
     
     RETURNS
         Nothing
@@ -66,12 +66,12 @@ public final class Delta{
         public static final boolean IsErrorDelta(final Delta a_delta);
     
     SYNOPSIS
-        public static final boolean IsErrorDelta(final Delta a_delta);
+        public final boolean IsErrorDelta();
     
-        Delta a_delta ------> The delta to check.
+        No parameters.
     
     DESCRIPTION
-        This method returns if the argument delta object is the error delta,
+        This method returns if this delta object is the error delta,
         i.e. if it has zero as both its row and column values.
     
     RETURNS
@@ -81,8 +81,8 @@ public final class Delta{
     AUTHOR
         Ryan King
     */
-    public static final boolean IsErrorDelta(final Delta a_delta){
-        return a_delta.GetRowDelta() == Utilities.ZERO && a_delta.GetColumnDelta() == Utilities.ZERO;
+    public final boolean IsErrorDelta(){
+        return this.GetRowDelta() == Utilities.ZERO && this.GetColumnDelta() == Utilities.ZERO;
     }
     
     /*

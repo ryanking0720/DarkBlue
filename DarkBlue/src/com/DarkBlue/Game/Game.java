@@ -126,13 +126,13 @@ public interface Game{
         
         // Do not proceed if the tile is invalid
         // Return the error delta in this case
-        if(!Utilities.IsValidTile(text)){
+        if(!BoardUtilities.IsValidTile(text)){
             return new Delta();
         }
         
         // Parse the row and column into variables
-        row = Utilities.ToBoardRow(text);
-        column = Utilities.ToBoardColumn(text);
+        row = BoardUtilities.ToBoardRow(text);
+        column = BoardUtilities.ToBoardColumn(text);
                 
         // Return a delta object to signify the new pair of integers
         return new Delta(row, column);

@@ -5,6 +5,7 @@ import com.DarkBlue.Piece.King;
 import com.DarkBlue.Piece.Knight;
 import com.DarkBlue.Piece.Pawn;
 import com.DarkBlue.Piece.Piece;
+import com.DarkBlue.Piece.PieceType;
 import com.DarkBlue.Piece.Queen;
 import com.DarkBlue.Piece.Rook;
 import com.DarkBlue.Board.Tile;
@@ -122,6 +123,23 @@ public interface Factory{
         }
     }
     
+    public static Piece MovedPieceFactory(final Piece a_candidate, final int a_newRow, final int a_newColumn){
+        // Make a deep copy of the piece that just moved
+    	if(a_candidate == null){
+    		return null;
+    	}
+    	
+        switch(a_candidate.GetPieceType()){
+            case PAWN: return new Pawn(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
+            case ROOK: return new Rook(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
+            case KNIGHT: return new Knight(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
+            case BISHOP: return new Bishop(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
+            case QUEEN: return new Queen(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
+            case KING: return new King(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
+            default: return null;
+        }
+    }
+    
     /**/
     /*
     NAME
@@ -190,11 +208,12 @@ public interface Factory{
                     // This is a castling move
                     move = new CastlingMove((King)a_candidate, a_destinationRow, a_destinationColumn);
                     
+                    /*
                     final Rook rook = (Rook) a_board.GetTile(((CastlingMove)move).GetRookCurrentRow(), ((CastlingMove)move).GetRookCurrentColumn()).GetPiece();
                     
                     final Tile rookTile = a_board.GetTile(rook.GetCurrentRow(), rook.GetCurrentColumn());
-                    
-                    a_board.GetBoard()[rook.GetCurrentRow()][rook.GetCurrentColumn()] = new Tile(rookTile.GetColor(), rookTile.GetRow(), rookTile.GetColumn(), Factory.PieceFactory(rook));                
+                    */
+                    //a_board.GetBoard()[rook.GetCurrentRow()][rook.GetCurrentColumn()] = new Tile(rookTile.GetColor(), rookTile.GetRow(), rookTile.GetColumn(), Factory.PieceFactory(rook));                
                 }else{// This is a regular or attacking move
                     if(a_victim != null){
                         return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim);
@@ -203,10 +222,10 @@ public interface Factory{
                     }
                 }
             }else{// This could be a regular move, an attacking move, or an en passant move
-                if(MoveEvaluation.IsEnPassantMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim)){
+                if(MoveEvaluation.IsEnPassantMove(a_candidate, a_destinationRow, a_destinationColumn, a_board)){
                     // This is an en passant move
                     final Pawn victim;
-                        if(Utilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE)
+                        if(BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE)
                                 && a_board.GetTile(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE).IsOccupied()){
                             victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn + Utilities.ONE).GetPiece();
                         }else{
@@ -224,7 +243,7 @@ public interface Factory{
             }
         }
 
-        // Return the complete move
+        // Return the complete move if the method has not done so already
         return move;
     }
 }

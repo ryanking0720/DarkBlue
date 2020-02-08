@@ -61,11 +61,6 @@ import java.util.ArrayList;
  */
 public final class King extends Piece{
     
-    private static final Delta[] m_allCastlingMoves = {
-        new Delta(Utilities.ZERO, Utilities.TWO),// Kingside
-        new Delta(Utilities.ZERO, Utilities.NEGATIVE_TWO)// Queenside
-    };
-    
     private final ArrayList<Move> m_currentCastlingMoves;
     
     /*
@@ -153,16 +148,18 @@ public final class King extends Piece{
         Ryan King
     */
     @Override
-    public void AddCurrentLegalMoves(final Board a_board){
+    public final void AddCurrentLegalMoves(final Board a_board){
         // Clear out the legal moves to prepare for new evaluation
         m_currentLegalMoves.clear();
         m_currentCastlingMoves.clear();
 
         // Add the current moves in the king's spectrum
-        this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKingMoves));
+        this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKingMoves));      
         
         // Evaluate castling moves if the king has not moved and is not in check
-        if(!this.HasMoved() && MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
+        if(!this.HasMoved() && this.GetCurrentColumn() == Utilities.FOUR
+        		&& (this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO)
+        		&& MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
             this.AddCurrentCastlingMoves(a_board);
         }
         
@@ -170,6 +167,150 @@ public final class King extends Piece{
         if(!this.m_currentCastlingMoves.isEmpty()){
             this.m_currentLegalMoves.addAll(this.m_currentCastlingMoves);
         }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsPawn();
+    
+    SYNOPSIS
+        public final boolean IsPawn();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a pawn.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsPawn(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsKing();
+    
+    SYNOPSIS
+        public final boolean IsKing();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a king.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsKing(){
+    	return true;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsRook();
+    
+    SYNOPSIS
+        public final boolean IsRook();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a rook.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsRook(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsBishop();
+    
+    SYNOPSIS
+        public final boolean IsBishop();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a bishop.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsBishop(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsQueen();
+    
+    SYNOPSIS
+        public final boolean IsQueen();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a queen.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsQueen(){
+    	return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsKnight();
+    
+    SYNOPSIS
+        public final boolean IsKnight();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a knight.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsKnight(){
+    	return false;
     }
     
     /*
@@ -202,28 +343,32 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    private void AddCurrentCastlingMoves(final Board a_board){
+    private final void AddCurrentCastlingMoves(final Board a_board){
         if((this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN && this.GetCurrentColumn() == Utilities.FOUR) 
                 || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO && this.GetCurrentColumn() == Utilities.FOUR)
                 && !this.HasMoved()){
             int kingDestinationRow = this.GetCurrentRow(), kingDestinationColumn;
-            for(int index = Utilities.ZERO; index < Utilities.TWO; index++){
-            
-                // Determine the column to which the king will be moving
-                kingDestinationColumn = this.GetCurrentColumn() + King.m_allCastlingMoves[index].GetColumnDelta();            
-            
-                // Do not instantiate the move if the king cannot castle for any reason
-                if(this.CanKingsideCastle(a_board) || this.CanQueensideCastle(a_board)){
-                    
-                    // Instantiate the move
-                    CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn);    
+
+            // Do not instantiate the move if the king cannot castle for any reason
+            if(this.CanKingsideCastle(a_board)){                
+            	kingDestinationColumn = Utilities.SIX;
+            	
+                // Instantiate the move
+                CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn);    
                 
-                    // Add the move to the list
-                    m_currentCastlingMoves.add(castle);
-                }else{
-                    continue;
-                }        
-            }// End of for loop
+                // Add the move to the list
+                m_currentCastlingMoves.add(castle);
+            }  
+            
+            if(this.CanQueensideCastle(a_board)){                
+            	kingDestinationColumn = Utilities.TWO;
+            	
+                // Instantiate the move
+                CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn);    
+                
+                // Add the move to the list
+                m_currentCastlingMoves.add(castle);
+            }
         }else{
             return;
         }
@@ -254,7 +399,7 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    public boolean CanKingsideCastle(final Board a_board){
+    public final boolean CanKingsideCastle(final Board a_board){
         int row = this.GetCurrentRow(), column = this.GetCurrentColumn() + Utilities.ONE, 
                 // The king's rook always starts at column 7 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.SEVEN;
@@ -303,7 +448,7 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    public boolean CanQueensideCastle(final Board a_board){
+    public final boolean CanQueensideCastle(final Board a_board){
         int row = this.GetCurrentRow(), column = this.GetCurrentColumn() - Utilities.ONE,
                 // The queen's rook always starts at column 0 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
@@ -314,6 +459,11 @@ public final class King extends Piece{
                 return false;
             }
             column--;
+        }
+        
+        // Check the tile next to the rook
+        if(a_board.GetTile(row, column).IsOccupied()){
+            return false;
         }
         
         // Only return true if there's a friendly rook that has not moved
@@ -345,7 +495,7 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    public ArrayList<Move> GetCurrentCastlingMoves(){
+    public final ArrayList<Move> GetCurrentCastlingMoves(){
         return m_currentCastlingMoves;
     }
 }

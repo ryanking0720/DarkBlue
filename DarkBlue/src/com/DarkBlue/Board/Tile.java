@@ -246,10 +246,10 @@ public final class Tile{
     
     /*
     NAME
-        public final String ToAlgebraic();
+        public final String toString();
     
     SYNOPSIS
-        public final String ToAlgebraic();
+        public final String toString();
     
         No parameters.
     
@@ -262,9 +262,11 @@ public final class Tile{
     AUTHOR
         Ryan King
     */
-    public final String ToAlgebraic(){
-        return Utilities.ToAlgebraic(this.m_row, this.m_column);
+    @Override
+    public final String toString(){
+        return BoardUtilities.ToAlgebraic(this.m_row, this.m_column);
     }
+
     
     public final boolean Equals(final Tile a_tile) {
         return this.GetPiece().Equals(a_tile.GetPiece())

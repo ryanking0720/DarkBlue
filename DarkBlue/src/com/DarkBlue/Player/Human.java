@@ -57,4 +57,57 @@ public final class Human extends Player{
     public Human(final Player a_player, final Board a_board){
         super(a_player, a_board);
     }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsHuman();
+    
+    SYNOPSIS
+        public final boolean IsHuman();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if this player's type is human.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsHuman(){
+        return true;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsComputer();
+    
+    SYNOPSIS
+        public final boolean IsComputer();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if this player's type is computer.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsComputer(){
+        return false;
+    }
+    
+    @Override
+    public final PlayerType GetPlayerType(){
+    	return PlayerType.HUMAN;
+    }
 }

@@ -380,10 +380,10 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public boolean IsHuman();
+        public abstract boolean IsHuman();
     
     SYNOPSIS
-        public boolean IsHuman();
+        public abstract boolean IsHuman();
     
         No parameters.
     
@@ -397,17 +397,15 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public final boolean IsHuman(){
-        return this.m_type == PlayerType.HUMAN;
-    }
+    public abstract boolean IsHuman();
     
     /**/
     /*
     NAME
-        public boolean IsComputer();
+        public abstract boolean IsComputer();
     
     SYNOPSIS
-        public boolean IsComputer();
+        public abstract boolean IsComputer();
     
         No parameters.
     
@@ -421,9 +419,7 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public final boolean IsComputer(){
-        return this.m_type == PlayerType.COMPUTER;
-    }
+    public abstract boolean IsComputer();
     
     /**/
     /*
@@ -774,7 +770,23 @@ public abstract class Player{
         return MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() == Utilities.ZERO;
     }
     
+    public final int PieceValue(){
+    	int total = Utilities.ZERO;
+    	
+    	for(Piece piece : this.m_activePieces){
+    		total += piece.GetValue();
+    	}
+    	
+    	return total;
+    }
     
+    public final boolean HasCastled(final String a_moveHistory){
+    	if(a_moveHistory.contains(Utilities.KINGSIDE_CASTLE) || a_moveHistory.contains(Utilities.QUEENSIDE_CASTLE)){
+    		return true;
+    	}else{
+    		return false;
+    	}
+    }
     
     /**/
     /*
@@ -798,9 +810,7 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public PlayerType GetPlayerType(){
-        return this.m_type;
-    }
+    public abstract PlayerType GetPlayerType();
     
     /**/
     /*

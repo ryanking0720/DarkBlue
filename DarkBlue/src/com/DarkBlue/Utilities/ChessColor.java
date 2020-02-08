@@ -15,7 +15,7 @@ public enum ChessColor{
     }
     
     public boolean IsEnemy(final ChessColor a_color){
-        return this == Utilities.Reverse(a_color);
+        return this == BoardUtilities.Reverse(a_color);
     }
     
     public boolean IsWhite(){
