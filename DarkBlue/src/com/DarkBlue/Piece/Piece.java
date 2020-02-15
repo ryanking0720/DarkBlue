@@ -3,9 +3,11 @@ package com.DarkBlue.Piece;
 import com.DarkBlue.Utilities.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import com.DarkBlue.Move.*;
 import com.DarkBlue.Board.Board;
+import com.DarkBlue.Board.Tile;
 
 public abstract class Piece{
     protected final ChessColor m_color;//White or black
@@ -19,6 +21,7 @@ public abstract class Piece{
     protected final int m_moves;//How many times has the piece moved?
     //Current legal moves are stored as Moves because they can only occur on the piece's current spot and on the current turn.
     protected final ArrayList<Move> m_currentLegalMoves;//All the legal moves usable for the current turn only.
+    protected final HashSet<String> m_attackedTiles;
     
     /* All abstract methods. */
     
@@ -80,13 +83,14 @@ public abstract class Piece{
     public Piece(final ChessColor a_color, final PieceType a_type, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn, final int a_value){
         this.m_color = a_color;
         this.m_pieceType = a_type;
-        this.m_icon = a_icon;
+        this.m_icon = (m_color.IsWhite() ? Character.toUpperCase(a_icon) : Character.toLowerCase(a_icon));
         this.m_boardIcon = a_boardIcon;
         this.m_value = a_value;
         this.m_currentRow = a_currentRow;
         this.m_currentColumn = a_currentColumn;
         this.m_moves = Utilities.ZERO;
         this.m_currentLegalMoves = new ArrayList<>();
+        this.m_attackedTiles = new HashSet<>();
         //The icons and value will be properly set later on
     }
     
@@ -122,8 +126,9 @@ public abstract class Piece{
         this.m_boardIcon = a_piece.GetBoardIcon();
         this.m_value = a_piece.GetValue();
         this.m_currentLegalMoves = new ArrayList<>();
-
+        this.m_attackedTiles = new HashSet<>();
         this.m_currentLegalMoves.addAll(MoveEvaluation.CopyCurrentMoves(a_piece.GetCurrentLegalMoves()));
+        this.m_attackedTiles.addAll(a_piece.m_attackedTiles);
     }
     
     /* Protected assignment methods for final fields */
@@ -571,6 +576,16 @@ public abstract class Piece{
     protected static final int AssignKingValue(final ChessColor a_color){
         return Utilities.NINE_HUNDRED_NINETY_NINE * AssignMultiplier(a_color);
     }
+    
+    // Mutators
+    
+    public final void AddAttackedTile(final Tile a_tile){
+    	final String tile = BoardUtilities.ToAlgebraic(a_tile.GetRow(), a_tile.GetColumn());
+    	
+    	if(!this.m_attackedTiles.contains(tile)){
+    		this.m_attackedTiles.add(tile);
+    	}
+    }
 
     // Accessors for every field.
     
@@ -761,6 +776,10 @@ public abstract class Piece{
     */
     public final ArrayList<Move> GetCurrentLegalMoves(){
         return this.m_currentLegalMoves;
+    }
+    
+    public final HashSet<String> GetAttackedTiles(){
+    	return this.m_attackedTiles;
     }
     
     /**/
@@ -990,7 +1009,7 @@ public abstract class Piece{
         Ryan King
     */
     public final boolean IsWhite(){
-        return m_color == ChessColor.WHITE;
+        return this.m_color == ChessColor.WHITE;
     }
     
     /**/
@@ -1014,7 +1033,7 @@ public abstract class Piece{
         Ryan King
     */
     public final boolean IsBlack(){
-        return m_color == ChessColor.BLACK;
+        return this.m_color == ChessColor.BLACK;
     }
     
     /**/
@@ -1224,7 +1243,7 @@ public abstract class Piece{
     public final boolean Equals(final Piece a_piece){ 
         try{        
             return this.IsAlly(a_piece)
-                    && this.IsSameType(a_piece)
+            			&& this.IsSameType(a_piece)
                     /*
                     && this.IsSameRow(a_piece)
                     && this.IsSameColumn(a_piece)

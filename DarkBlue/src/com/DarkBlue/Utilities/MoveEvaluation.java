@@ -170,6 +170,203 @@ public interface MoveEvaluation{
         new Delta(Utilities.ZERO, Utilities.NEGATIVE_ONE)
     };
     
+    public static final double[][] m_whiteKingPositions = {
+    	{-3, -4, -4, -5, -5, -4, -4, -3},
+    	{-3, -4, -4, -5, -5, -4, -4, -3},
+    	{-3, -4, -4, -5, -5, -4, -4, -3},
+    	{-3, -4, -4, -5, -5, -4, -4, -3},
+    	{-2, -3, -3, -4, -4, -3, -3, -2},
+    	{-1, -2, -2, -2, -2, -2, -2, -1},
+    	{2, 0, 0, 0, 0, 0, 0, 2},
+    	{2, 3, 1, 0, 0, 1, 2, 3}
+    };
+    
+    public static final double[][] m_blackKingPositions = {
+    	{2, 3, 1, 0, 0, 1, 2, 3},
+    	{2, 0, 0, 0, 0, 0, 0, 2},
+    	{-1, -2, -2, -2, -2, -2, -2, -1},
+    	{-2, -3, -3, -4, -4, -3, -3, -2},
+    	{-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3}
+    };
+    
+    public static final double[][] m_whiteQueenPositions = {
+    	{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+    	{-1, 0, 0, 0, 0, 0, 0, -1},
+    	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
+    	{-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
+    	{-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
+    	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
+    	{-1, 0, 0, 0, 0, 0, 0, -1},
+    	{-2, -1, -1, -0.5, -0.5, -1, -1, -2}
+    };
+    
+    public static final double[][] m_blackQueenPositions = {
+    	{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+    	{-1, 0, 0, 0, 0, 0, 0, -1},
+    	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
+    	{-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
+    	{-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
+    	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
+    	{-1, 0, 0, 0, 0, 0, 0, -1},
+    	{-2, -1, -1, -0.5, -0.5, -1, -1, -2} 		
+    };
+    
+    public static final double[][] m_whiteRookPositions = {
+    	{0, 0, 0, 0, 0, 0, 0, 0},
+    	{-0.5, 1, 1, 1, 1, 1, 1, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static final double[][] m_blackRookPositions = {
+    	{0, 0, 0, 0, 0, 0, 0, 0},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+    	{-0.5, 1, 1, 1, 1, 1, 1, -0.5},
+    	{0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static final double[][] m_whiteBishopPositions = {
+    	{-2, -1, -1, -1, -1, -1, -1, -2},
+    	{-1, 0, 0, 0, 0, 0, 0, -1},
+    	{-1, 0, 0.5, 1, 1, 0.5, 0, -1},
+    	{-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1},
+    	{-1, 0, 1, 1, 1, 1, 0, -1},
+    	{-1, 1, 1, 1, 1, 1, 1, -1},
+    	{-1, 0.5, 0, 0, 0, 0, 0.5, -1},
+    	{-2, -1, -1, -1, -1, -1, -1, -2}
+    };
+    
+    public static final double[][] m_blackBishopPositions = {
+    	{-2, -1, -1, -1, -1, -1, -1, -2},
+    	{-1, 0.5, 0, 0, 0, 0, 0.5, -1},
+    	{-1, 1, 1, 1, 1, 1, 1, -1},
+    	{-1, 0, 1, 1, 1, 1, 0, -1},
+    	{-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1},
+    	{-1, 0, 0.5, 1, 1, 0.5, 0, -1},
+    	{-1, 0, 0, 0, 0, 0, 0, -1},
+    	{-2, -1, -1, -1, -1, -1, -1, -2}
+    };
+    
+    public static final double[][] m_whiteKnightPositions = {
+    	{-5, -4, -3, -3, -3, -3, -4, -5},
+    	{-4, -2, 0, 0, 0, 0, -2, -4},
+    	{-3, 0, 1, 1.5, 1.5, 1, 0, -3},
+    	{-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3},
+    	{-3, 0, 1.5, 2, 2, 1.5, 0, -3},
+    	{-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3},
+    	{-4, -2, 0, 0.5, 0.5, 0, -2, -4},
+    	{-5, -4, -3, -3, -3, -3, -4, -5}
+    };
+    
+    public static final double[][] m_blackKnightPositions = {
+    	{-5, -4, -3, -3, -3, -3, -4, -5},
+    	{-4, -2, 0, 0.5, 0.5, 0, -2, -4},
+    	{-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3},
+    	{-3, 0, 1.5, 2, 2, 1.5, 0, -3},
+    	{-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3},
+    	{-3, 0, 1, 1.5, 1.5, 1, 0, -3},
+    	{-4, -2, 0, 0, 0, 0, -2, -4},
+    	{-5, -4, -3, -3, -3, -3, -4, -5}
+    };
+    
+    public static final double[][] m_whitePawnPositions = {
+    	{0, 0, 0, 0, 0, 0, 0, 0},
+    	{5, 5, 5, 5, 5, 5, 5, 5},
+    	{1, 1, 2, 3, 3, 2, 1, 1},
+    	{0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5},
+    	{0, 0, 0, 2, 2, 0, 0, 0},
+    	{0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5},
+    	{0.5, 1, 1, -2, -2, 1, 1, 0.5},
+    	{0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static final double[][] m_blackPawnPositions = {
+    	{0, 0, 0, 0, 0, 0, 0, 0},
+    	{0.5, 1, 1, -2, -2, 1, 1, 0.5},
+    	{0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5},
+    	{0, 0, 0, 2, 2, 0, 0, 0},
+    	{0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5},
+    	{1, 1, 2, 3, 3, 2, 1, 1},
+    	{5, 5, 5, 5, 5, 5, 5, 5},
+    	{0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static double AssignPositionMultiplier(final PieceType a_type, final ChessColor a_color, final int a_row, final int a_column){
+    	if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
+    		switch(a_type){
+    			case PAWN: return AssignPawnMultiplier(a_color, a_row, a_column);
+    			case ROOK: return AssignRookMultiplier(a_color, a_row, a_column);
+    			case KNIGHT: return AssignKnightMultiplier(a_color, a_row, a_column);
+    			case BISHOP: return AssignBishopMultiplier(a_color, a_row, a_column);
+    			case QUEEN: return AssignQueenMultiplier(a_color, a_row, a_column);
+    			case KING: return AssignKingMultiplier(a_color, a_row, a_column);
+    			default: return -999;
+    		}
+    	}else{
+    		return -999;
+    	}
+    }
+    
+    public static double AssignKingMultiplier(final ChessColor a_color, final int a_row, final int a_column){
+    	if(a_color.IsWhite()){
+    		return m_whiteKingPositions[a_row][a_column];
+    	}else{
+    		return m_blackKingPositions[a_row][a_column];
+    	}
+    }
+    
+    public static double AssignQueenMultiplier(final ChessColor a_color, final int a_row, final int a_column){
+    	if(a_color.IsWhite()){
+    		return m_whiteQueenPositions[a_row][a_column];
+    	}else{
+    		return m_blackQueenPositions[a_row][a_column];
+    	}
+    }
+    
+    public static double AssignBishopMultiplier(final ChessColor a_color, final int a_row, final int a_column){
+    	if(a_color.IsWhite()){
+    		return m_whiteBishopPositions[a_row][a_column];
+    	}else{
+    		return m_blackBishopPositions[a_row][a_column];
+    	}
+    }
+    
+    public static double AssignKnightMultiplier(final ChessColor a_color, final int a_row, final int a_column){
+    	if(a_color.IsWhite()){
+    		return m_whiteKnightPositions[a_row][a_column];
+    	}else{
+    		return m_blackKnightPositions[a_row][a_column];
+    	}
+    }
+    
+    public static double AssignRookMultiplier(final ChessColor a_color, final int a_row, final int a_column){
+    	if(a_color.IsWhite()){
+    		return m_whiteRookPositions[a_row][a_column];
+    	}else{
+    		return m_blackRookPositions[a_row][a_column];
+    	}
+    }
+    
+    public static double AssignPawnMultiplier(final ChessColor a_color, final int a_row, final int a_column){
+    	if(a_color.IsWhite()){
+    		return m_whitePawnPositions[a_row][a_column];
+    	}else{
+    		return m_blackPawnPositions[a_row][a_column];
+    	}
+    }
+    
     /**/
     /*
     NAME
@@ -220,6 +417,9 @@ public interface MoveEvaluation{
             int newRow = a_piece.GetCurrentRow() + a_allDirectionalMoves[index].GetRowDelta();
             int newColumn = a_piece.GetCurrentColumn() + a_allDirectionalMoves[index].GetColumnDelta();
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
+            	
+            	a_piece.AddAttackedTile(a_board.GetTile(newRow, newColumn));
+            	
                 Move candidate;
                 if(a_board.GetTile(newRow, newColumn).IsEmpty()){
                     candidate = new RegularMove(a_piece, newRow, newColumn);
@@ -322,6 +522,8 @@ public interface MoveEvaluation{
             
             // Do not continue evaluating this move if the destination tile is invalid
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
+            	
+            	a_piece.AddAttackedTile(a_board.GetTile(newRow, newColumn));
                 // Instantiate a candidate move (This could be turned into a regular or attacking move)
                 Move candidate;
                 
@@ -519,6 +721,9 @@ public interface MoveEvaluation{
             
             // Do not add this move if the coordinates go off the board at either side
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
+            	
+            	a_piece.AddAttackedTile(a_board.GetTile(newRow, newColumn));
+            	
                 Piece victim = a_board.GetTile(newRow, newColumn).GetPiece();
                 if(victim != null && a_piece.IsEnemy(victim) && !victim.IsKing()){
                     AttackingMove move = new AttackingMove(a_piece, newRow, newColumn, victim);
@@ -570,6 +775,10 @@ public interface MoveEvaluation{
         
         ArrayList<Move> enPassantMoves = new ArrayList<>();
         
+        if(!a_piece.IsPawn()){
+        	return null;
+        }
+        
         if((a_piece.IsWhite() && a_piece.GetCurrentRow() == Utilities.THREE) || (a_piece.IsBlack() && a_piece.GetCurrentRow() == Utilities.FOUR)){        
 
             for(int index = Utilities.ZERO; index < MoveEvaluation.m_allEnPassantMoves.length; index++){
@@ -579,7 +788,7 @@ public interface MoveEvaluation{
                 Human tempBlack = new Human(ChessColor.BLACK, clone);
                 tempWhite.InitializePieces(clone);
                 tempBlack.InitializePieces(clone);
-                Player mover;
+                final Player mover;
                 
                 if(clone.WhoseTurnIsIt().IsWhite()){
                     mover = tempWhite;
@@ -1153,8 +1362,8 @@ public interface MoveEvaluation{
         return a_candidate.IsPawn()
         		&& ((a_candidate.IsWhite() && a_candidate.GetCurrentRow() == Utilities.THREE) || (a_candidate.IsBlack() && a_candidate.GetCurrentRow() == Utilities.FOUR))
                     && a_board.GetTile(a_destinationRow, a_destinationColumn).IsEmpty()
-                    && ( ((a_candidate.IsWhite() && a_destinationRow == a_candidate.GetCurrentRow() - Utilities.ONE) && (a_destinationColumn == a_candidate.GetCurrentColumn() - Utilities.ONE || a_destinationColumn == a_candidate.GetCurrentColumn() + Utilities.ONE))
-                    || ((a_candidate.IsBlack() && a_destinationRow == a_candidate.GetCurrentRow() + Utilities.ONE) && (a_destinationColumn == a_candidate.GetCurrentColumn() - Utilities.ONE || a_destinationColumn == a_candidate.GetCurrentColumn() + Utilities.ONE)) );
+                    && (((a_candidate.IsWhite() && a_destinationRow == a_candidate.GetCurrentRow() - Utilities.ONE) && (a_destinationColumn == a_candidate.GetCurrentColumn() - Utilities.ONE || a_destinationColumn == a_candidate.GetCurrentColumn() + Utilities.ONE) && BoardUtilities.HasValidCoordinates(a_destinationRow + Utilities.ONE, a_destinationColumn) && a_board.GetTile(a_destinationRow + Utilities.ONE, a_destinationColumn).GetPiece().IsPawn() && a_board.GetTile(a_destinationRow + Utilities.ONE, a_destinationColumn).GetPiece().IsEnemy(a_candidate))
+                    || ((a_candidate.IsBlack() && a_destinationRow == a_candidate.GetCurrentRow() + Utilities.ONE) && (a_destinationColumn == a_candidate.GetCurrentColumn() - Utilities.ONE || a_destinationColumn == a_candidate.GetCurrentColumn() + Utilities.ONE)) && BoardUtilities.HasValidCoordinates(a_destinationRow - Utilities.ONE, a_destinationColumn) && a_board.GetTile(a_destinationRow - Utilities.ONE, a_destinationColumn).GetPiece().IsPawn() && a_board.GetTile(a_destinationRow - Utilities.ONE, a_destinationColumn).GetPiece().IsEnemy(a_candidate));
     }
 
     /*

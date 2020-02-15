@@ -6,6 +6,7 @@ import com.DarkBlue.Utilities.*;
 import com.DarkBlue.Board.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public abstract class Player{
     
@@ -26,6 +27,8 @@ public abstract class Player{
     
     // All the legal moves the player can make on the current turn
     protected final ArrayList<Move> m_allCurrentLegalMoves;
+    
+    protected final HashSet<String> m_attackedTiles;
 
     /**/
     /*
@@ -57,6 +60,7 @@ public abstract class Player{
         this.m_activePieces = new ArrayList<>();
         this.m_capturedPieces = new ArrayList<>();
         this.m_allCurrentLegalMoves = new ArrayList<>();
+        this.m_attackedTiles = new HashSet<>();
     }
     /**/
     /*
@@ -95,6 +99,9 @@ public abstract class Player{
         for(int index = Utilities.ZERO; index < a_player.GetCapturedPieces().size(); index++){
             this.m_capturedPieces.add(a_player.GetCapturedPieces().get(index));
         }
+        
+        this.m_attackedTiles = new HashSet<>();
+        this.m_attackedTiles.addAll(a_player.m_attackedTiles);
         
         // Initialize the Pieces and Moves according to the Board argument
         this.Refresh(a_board);
@@ -251,6 +258,14 @@ public abstract class Player{
         this.m_activePieces.add(a_piece);
     }
     
+    public final void AddAttackedTile(final Tile a_tile){
+    	final String tile = BoardUtilities.ToAlgebraic(a_tile.GetRow(), a_tile.GetColumn());
+    	
+    	if(!this.m_attackedTiles.contains(tile)){
+    		this.m_attackedTiles.add(tile);
+    	}
+    }
+    
     /**/
     /*
     NAME
@@ -297,11 +312,13 @@ public abstract class Player{
         Ryan King
     */
     public final void InitializeCurrentLegalMoves(final Board a_board){
+    	this.m_attackedTiles.clear();
         this.m_allCurrentLegalMoves.clear();
         for(int index = Utilities.ZERO; index < m_activePieces.size(); index++){
             Piece piece = this.m_activePieces.get(index);
             piece.AddCurrentLegalMoves(a_board);
             this.m_allCurrentLegalMoves.addAll(piece.GetCurrentLegalMoves());
+            this.m_attackedTiles.addAll(piece.GetAttackedTiles());
         }
     }
     
@@ -543,8 +560,8 @@ public abstract class Player{
     */
     public final boolean HasKingAndKnight(){
         return this.m_activePieces.size() == Utilities.TWO
-                && (this.m_activePieces.get(Utilities.ZERO).IsKing() && this.m_activePieces.get(Utilities.ONE).IsKnight())
-                || (this.m_activePieces.get(Utilities.ONE).IsKing() && this.m_activePieces.get(Utilities.ZERO).IsKnight());
+                && ((this.m_activePieces.get(Utilities.ZERO).IsKing() && this.m_activePieces.get(Utilities.ONE).IsKnight())
+                || (this.m_activePieces.get(Utilities.ONE).IsKing() && this.m_activePieces.get(Utilities.ZERO).IsKnight()));
     }
     
     /**/
@@ -570,8 +587,8 @@ public abstract class Player{
     */
     public final boolean HasKingAndBishop(){
         return this.m_activePieces.size() == Utilities.TWO
-                && (this.m_activePieces.get(Utilities.ZERO).IsKing() && this.m_activePieces.get(Utilities.ONE).IsBishop())
-                || (this.m_activePieces.get(Utilities.ONE).IsKing() && this.m_activePieces.get(Utilities.ZERO).IsBishop());
+                && ((this.m_activePieces.get(Utilities.ZERO).IsKing() && this.m_activePieces.get(Utilities.ONE).IsBishop())
+                || (this.m_activePieces.get(Utilities.ONE).IsKing() && this.m_activePieces.get(Utilities.ZERO).IsBishop()));
     }
     
     /**/
@@ -747,10 +764,10 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public static boolean IsInStalemate(final Board a_board);
+        public final boolean IsInStalemate(final Board a_board);
     
     SYNOPSIS
-        public static boolean IsInStalemate(final Board a_board);
+        public final boolean IsInStalemate(final Board a_board);
     
         Board a_board ------> The player whose turn it is.
     
@@ -770,16 +787,88 @@ public abstract class Player{
         return MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() == Utilities.ZERO;
     }
     
+    /**/
+    /*
+    NAME
+        public final int PieceValue();
+    
+    SYNOPSIS
+        public final int PieceValue();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method calculates the value of each piece this player has.
+        Each piece is assigned a tile value based on its position.
+    
+    RETURNS
+        int total: The total value of the player's pieces.
+    
+    AUTHOR
+        Ryan King
+    */
     public final int PieceValue(){
     	int total = Utilities.ZERO;
     	
     	for(Piece piece : this.m_activePieces){
-    		total += piece.GetValue();
+    		total += (piece.GetValue() + MoveEvaluation.AssignPositionMultiplier(piece.GetPieceType(), piece.GetColor(), piece.GetCurrentRow(), piece.GetCurrentColumn()));
     	}
     	
     	return total;
     }
     
+    public final int AttackScore(){
+    	int total = Utilities.ZERO;
+
+    	for(final Move move : this.UglyMoves()){
+    		if(move.IsAttacking() || move.IsEnPassant()){
+    			final Piece mover = move.GetPiece();
+    			final Piece victim = move.GetVictim();
+    			
+    			if(mover.GetValue() <= victim.GetValue()){
+    				total++;
+    			}
+    		}
+    	}
+    	
+    	return total;// Multiply this by a multiplier in Minimax
+    }
+    
+    public final int PieceEvaluations(){
+        int score = Utilities.ZERO;
+        int bishops = Utilities.ZERO;
+        
+        for (final Piece piece : this.GetActivePieces()){
+            score += piece.GetValue() + MoveEvaluation.AssignPositionMultiplier(piece.GetPieceType(), piece.GetColor(), piece.GetCurrentRow(), piece.GetCurrentColumn());
+            if(piece.IsBishop()){
+                bishops++;
+            }
+        }
+        return score + (bishops >= Utilities.TWO ? Utilities.FIFTY : Utilities.ZERO);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean HasCastled(final String a_moveHistory);
+    
+    SYNOPSIS
+        public final boolean HasCastled(final String a_moveHistory);
+    
+        String a_moveHistory ------> The player's move history.
+    
+    DESCRIPTION
+        This method determines if a player has castled by looking at
+        his/her move history string from the GUI and checking to see
+        if it contains a string representing a castling move.
+    
+    RETURNS
+        boolean: True if the player's history contains 0-0 or 0-0-0 and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
     public final boolean HasCastled(final String a_moveHistory){
     	if(a_moveHistory.contains(Utilities.KINGSIDE_CASTLE) || a_moveHistory.contains(Utilities.QUEENSIDE_CASTLE)){
     		return true;
@@ -791,12 +880,12 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public PlayerType GetPlayerType();
+        public abstract PlayerType GetPlayerType();
     
     SYNOPSIS
-        public PlayerType GetPlayerType();
+        public abstract PlayerType GetPlayerType();
     
-        No parameters
+        No parameters.
     
     DESCRIPTION
         This method returns which type of player

@@ -62,19 +62,25 @@ import java.util.ArrayList;
 public final class King extends Piece{
     
     private final ArrayList<Move> m_currentCastlingMoves;
+    private final boolean m_canKingsideCastle;
+    private final boolean m_canQueensideCastle;
     
     /*
     NAME
-        public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn);
+        public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn, final boolean a_canKingsideCastle, final boolean a_canQueensideCastle);
     
     SYNOPSIS
-        public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn);
+        public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn, final boolean a_canKingsideCastle, final boolean a_canQueensideCastle);
         
-        ChessColor a_color --------> The color of the piece, used primarily by the GUI.
+        ChessColor a_color -------------> The color of the piece, used primarily by the GUI.
 
-        int a_currentRow ----------> The piece's current row.
+        int a_currentRow ---------------> The piece's current row.
         
-        int a_currentColumn -------> The piece's current column.
+        int a_currentColumn ------------> The piece's current column.
+        
+        boolean a_canKingsideCastle ----> If the king can kingside castle.
+        
+        boolean a_canQueensideCastle ---> If the king can queenside castle.
     
     DESCRIPTION
         This constructor constructs a new King object by calling the Piece 
@@ -89,25 +95,33 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
+    public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn, final boolean a_canKingsideCastle, final boolean a_canQueensideCastle){
         
-        super(a_color, PieceType.KING, Utilities.KING_ICON, AssignPieceBoardIcon(PieceType.KING, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.KING, a_color));
+        super(a_color, PieceType.KING, Utilities.WHITE_KING_ICON, AssignPieceBoardIcon(PieceType.KING, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.KING, a_color));
         
         this.m_currentCastlingMoves = new ArrayList<>();
+        this.m_canKingsideCastle = a_canKingsideCastle;
+        this.m_canQueensideCastle = a_canQueensideCastle;
     }
     
     /*
     NAME
-        public King(final Piece a_piece);
+        public King(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
     
     SYNOPSIS
-        public King(final Piece a_piece);
+        public King(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece --------> The Piece to be copied.
+        
+        int a_newRow ---------> The piece's new row.
+        
+        int a_newColumn ------> The piece's new column.
+        
+        int a_newMoves -------> The piece's new number of moves.
     
     DESCRIPTION
         This copy constructor constructs a new King object by passing in
-        a Piece object and cloning its fields.
+        a Piece object and cloning most of its fields.
         
     RETURNS
         Nothing
@@ -122,6 +136,9 @@ public final class King extends Piece{
         this.m_currentCastlingMoves = new ArrayList<>();
         
         this.m_currentCastlingMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentCastlingMoves()));
+        
+        this.m_canKingsideCastle = (!candidate.HasMoved() && candidate.CanKingsideCastle());
+        this.m_canQueensideCastle = (!candidate.HasMoved() && candidate.CanQueensideCastle());
     }
     
     /*
@@ -152,6 +169,8 @@ public final class King extends Piece{
         // Clear out the legal moves to prepare for new evaluation
         m_currentLegalMoves.clear();
         m_currentCastlingMoves.clear();
+        
+        this.m_attackedTiles.clear();
 
         // Add the current moves in the king's spectrum
         this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKingMoves));      
@@ -159,7 +178,7 @@ public final class King extends Piece{
         // Evaluate castling moves if the king has not moved and is not in check
         if(!this.HasMoved() && this.GetCurrentColumn() == Utilities.FOUR
         		&& (this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO)
-        		&& MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
+        		&& (this.m_canKingsideCastle || this.m_canQueensideCastle) && MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
             this.AddCurrentCastlingMoves(a_board);
         }
         
@@ -315,10 +334,10 @@ public final class King extends Piece{
     
     /*
     NAME
-        public void AddCurrentCastlingMoves(final Board a_board);
+        public final void AddCurrentCastlingMoves(final Board a_board);
     
     SYNOPSIS
-        public void AddCurrentCastlingMoves(final Board a_board);
+        public final void AddCurrentCastlingMoves(final Board a_board);
     
         Board a_board ----> The chessboard which contains the current game.
     
@@ -350,7 +369,7 @@ public final class King extends Piece{
             int kingDestinationRow = this.GetCurrentRow(), kingDestinationColumn;
 
             // Do not instantiate the move if the king cannot castle for any reason
-            if(this.CanKingsideCastle(a_board)){                
+            if(this.CanKingsideCastleOnThisTurn(a_board)){                
             	kingDestinationColumn = Utilities.SIX;
             	
                 // Instantiate the move
@@ -360,7 +379,7 @@ public final class King extends Piece{
                 m_currentCastlingMoves.add(castle);
             }  
             
-            if(this.CanQueensideCastle(a_board)){                
+            if(this.CanQueensideCastleOnThisTurn(a_board)){                
             	kingDestinationColumn = Utilities.TWO;
             	
                 // Instantiate the move
@@ -376,10 +395,39 @@ public final class King extends Piece{
     
     /*
     NAME
-        public boolean CanKingsideCastle(final Board a_board);
+        public final void RemoveCastlingMoves();
     
     SYNOPSIS
-        public boolean CanKingsideCastle(final Board a_board);
+        public final void RemoveCastlingMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method removes all castling moves from both the
+        king's castling move array as well as its current legal move array.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    public final void RemoveCastlingMoves(){
+    	this.m_currentCastlingMoves.clear();
+    	
+    	for(Move move : this.GetCurrentLegalMoves()){
+    		if(move.IsCastling()){
+    			this.m_currentLegalMoves.remove(move);
+    		}
+    	}
+    }
+    
+    /*
+    NAME
+        public final boolean CanKingsideCastleOnThisTurn(final Board a_board);
+    
+    SYNOPSIS
+        public final boolean CanKingsideCastleOnThisTurn(final Board a_board);
     
         Board a_board ----> The chessboard that contains the current state of the game.
     
@@ -399,10 +447,19 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean CanKingsideCastle(final Board a_board){
+    public final boolean CanKingsideCastleOnThisTurn(final Board a_board){
+    	if(!this.CanKingsideCastle()){
+    		return false;
+    	}
+    	
         int row = this.GetCurrentRow(), column = this.GetCurrentColumn() + Utilities.ONE, 
                 // The king's rook always starts at column 7 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.SEVEN;
+        
+        // See if there's a friendly rook that has not moved
+        if(!HasKingsideCastlingRook(a_board)){
+            return false;
+        }
         
         // Evaluate each tile the king will move across
         while(column < Utilities.SEVEN){
@@ -412,23 +469,51 @@ public final class King extends Piece{
             column++;
         }
         
-        // Only return true if there's a friendly rook that has not moved
+        return true;
+    }
+    
+    /*
+    NAME
+        public final boolean HasKingsideCastlingRook(final Board a_board);
+    
+    SYNOPSIS
+        public final boolean HasKingsideCastlingRook(final Board a_board);
+    
+        Board a_board ----> The chessboard that contains the current state of the game.
+    
+    DESCRIPTION
+        This method determines if there exists a friendly rook to the king's right (white)
+        or left (black) that has not moved yet and could potentially castle with him.
+
+    RETURNS
+        True if such a rook is found, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean HasKingsideCastlingRook(final Board a_board){
+    	final int row = this.GetCurrentRow(), column = this.GetCurrentColumn() + Utilities.ONE, 
+                // The king's rook always starts at column 7 of my board.
+        rookRow = this.GetCurrentRow(), rookColumn = Utilities.SEVEN;
+        
+        // See if there's a friendly rook that has not moved
         if(a_board.GetTile(rookRow, rookColumn).IsOccupied() 
                 && a_board.GetTile(rookRow, rookColumn).GetPiece().IsRook()
                 && a_board.GetTile(rookRow, rookColumn).GetPiece().IsAlly(this)
                 && !a_board.GetTile(rookRow, rookColumn).GetPiece().HasMoved()){
             return true;
-        }else{
-            return false;
         }
+        
+        return false;
     }
     
     /*
     NAME
-        public boolean CanQueensideCastle(final Board a_board);
+        public boolean CanQueensideCastleOnThisTurn(final Board a_board);
     
     SYNOPSIS
-        public boolean CanQueensideCastle(final Board a_board);
+        public boolean CanQueensideCastleOnThisTurn(final Board a_board);
     
         Board a_board ----> The chessboard that contains the current state of the game.
     
@@ -448,10 +533,19 @@ public final class King extends Piece{
     AUTHOR
         Ryan King
     */
-    public final boolean CanQueensideCastle(final Board a_board){
+    public final boolean CanQueensideCastleOnThisTurn(final Board a_board){
+    	if(!this.CanQueensideCastle()){
+    		return false;
+    	}
+    	
         int row = this.GetCurrentRow(), column = this.GetCurrentColumn() - Utilities.ONE,
                 // The queen's rook always starts at column 0 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
+        
+        // See if there's a friendly rook that has not moved
+        if(!HasQueensideCastlingRook(a_board)){
+            return false;
+        }       
             
         // Evaluate each tile the king will move across
         while(column > Utilities.ONE){
@@ -466,15 +560,112 @@ public final class King extends Piece{
             return false;
         }
         
-        // Only return true if there's a friendly rook that has not moved
+        return true;
+    }
+    
+    /*
+    NAME
+        public final boolean HasQueensideCastlingRook(final Board a_board);
+    
+    SYNOPSIS
+        public final boolean HasQueensideCastlingRook(final Board a_board);
+    
+        Board a_board ----> The chessboard that contains the current state of the game.
+    
+    DESCRIPTION
+        This method determines if there exists a friendly rook to the king's left (white)
+        or right (black) that has not moved yet and could potentially castle with him.
+
+    RETURNS
+        True if such a rook is found, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean HasQueensideCastlingRook(final Board a_board){
+    	final int row = this.GetCurrentRow(), column = this.GetCurrentColumn() - Utilities.ONE,
+                // The queen's rook always starts at column 0 of my board.
+        rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
+        
+        // See if there's a friendly rook that has not moved
         if(a_board.GetTile(rookRow, rookColumn).IsOccupied() 
                 && a_board.GetTile(rookRow, rookColumn).GetPiece().IsRook()
                 && a_board.GetTile(rookRow, rookColumn).GetPiece().IsAlly(this)
                 && !a_board.GetTile(rookRow, rookColumn).GetPiece().HasMoved()){
             return true;
-        }else{
-            return false;
         }
+        
+        return false;
+    }
+    
+    /*
+    NAME
+        public final boolean CanKingsideCastle();
+    
+    SYNOPSIS
+        public final boolean CanKingsideCastle();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns a field that says if the king can kingside castle.
+
+    RETURNS
+        boolean m_canKingsideCastle: If the king can perform a kingside castle.
+    
+    AUTHOR
+        Ryan King, but inspired by Black Widow Chess by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/pieces/King.java
+    */
+    public final boolean CanKingsideCastle(){
+    	return this.m_canKingsideCastle;
+    }
+    
+    /*
+    NAME
+        public final boolean CanQueensideCastle();
+    
+    SYNOPSIS
+        public final boolean CanQueensideCastle();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns a field that says if the king can queenside castle.
+
+    RETURNS
+        boolean m_canQueensideCastle: If the king can perform a queenside castle.
+    
+    AUTHOR
+        Ryan King, but inspired by Black Widow Chess by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/pieces/King.java
+    */
+    public final boolean CanQueensideCastle(){
+    	return this.m_canQueensideCastle;
+    }
+    
+    /*
+    NAME
+        public final boolean IsInOriginalSpot();
+    
+    SYNOPSIS
+        public final boolean IsInOriginalSpot();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if a king is in his original spot according to the starting position of chess.
+
+    RETURNS
+        boolean: True if the king is in his original spot and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean IsInOriginalSpot(){
+    	return this.GetCurrentColumn() == Utilities.FOUR && ((this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO));
     }
     
     /*

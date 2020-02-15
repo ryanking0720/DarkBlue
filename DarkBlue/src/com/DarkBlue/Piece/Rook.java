@@ -49,7 +49,7 @@ public final class Rook extends Piece{
     */
     public Rook(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
         
-        super(a_color, PieceType.ROOK, Utilities.ROOK_ICON, AssignPieceBoardIcon(PieceType.ROOK, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.ROOK, a_color));
+        super(a_color, PieceType.ROOK, Utilities.WHITE_ROOK_ICON, AssignPieceBoardIcon(PieceType.ROOK, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.ROOK, a_color));
         
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
@@ -122,6 +122,8 @@ public final class Rook extends Piece{
         this.m_currentUpMoves.clear();
         this.m_currentRightMoves.clear();
         this.m_currentLeftMoves.clear();
+        
+        this.m_attackedTiles.clear();
 
         this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
         this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));

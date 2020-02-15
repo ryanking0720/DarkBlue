@@ -46,7 +46,7 @@ public final class Pawn extends Piece{
     */
     public Pawn(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
 
-        super(a_color, PieceType.PAWN, Utilities.PAWN_ICON, AssignPieceBoardIcon(PieceType.PAWN, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.PAWN, a_color));
+        super(a_color, PieceType.PAWN, Utilities.WHITE_PAWN_ICON, AssignPieceBoardIcon(PieceType.PAWN, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.PAWN, a_color));
         
         m_currentRegularMoves = new ArrayList<>();
         m_currentAttackingMoves = new ArrayList<>();
@@ -116,6 +116,8 @@ public final class Pawn extends Piece{
         this.m_currentRegularMoves.clear();
         this.m_currentAttackingMoves.clear();
         this.m_currentEnPassantMoves.clear();
+        
+        this.m_attackedTiles.clear();
         
         // Instantiate aliases for Delta arrays for regular and attacking move checking
         final Delta[] regularMoves, attackingMoves;

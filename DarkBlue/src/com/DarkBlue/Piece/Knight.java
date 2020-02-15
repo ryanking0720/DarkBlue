@@ -32,7 +32,7 @@ public final class Knight extends Piece{
         Ryan King
     */
     public Knight(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-        super(a_color, PieceType.KNIGHT, Utilities.KNIGHT_ICON, AssignPieceBoardIcon(PieceType.KNIGHT, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.KNIGHT, a_color));
+        super(a_color, PieceType.KNIGHT, Utilities.WHITE_KNIGHT_ICON, AssignPieceBoardIcon(PieceType.KNIGHT, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.KNIGHT, a_color));
     }
     
     /*
@@ -83,6 +83,8 @@ public final class Knight extends Piece{
     public final void AddCurrentLegalMoves(final Board a_board){
         // Clear out the legal moves from the previous turn
         this.m_currentLegalMoves.clear();
+        
+        this.m_attackedTiles.clear();
         
         // Add the moves that are currently deemed legal
         this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKnightMoves));

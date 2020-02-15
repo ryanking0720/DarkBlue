@@ -72,7 +72,7 @@ public final class AttackingMove extends Move{
         String moveString = "";
         
         if(!m_piece.IsPawn()){
-            moveString += Character.toString(Character.toUpperCase(this.m_piece.GetIcon()));
+            moveString += Character.toString(this.m_piece.GetIcon()).toUpperCase();
         }else{
             moveString += BoardUtilities.ToAlgebraicColumn(this.m_piece.GetCurrentColumn());
         }

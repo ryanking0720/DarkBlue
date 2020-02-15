@@ -62,7 +62,7 @@ public final class Queen extends Piece{
         Ryan King
     */
     public Queen(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-        super(a_color, PieceType.QUEEN, Utilities.QUEEN_ICON, AssignPieceBoardIcon(PieceType.QUEEN, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.QUEEN, a_color));
+        super(a_color, PieceType.QUEEN, Utilities.WHITE_QUEEN_ICON, AssignPieceBoardIcon(PieceType.QUEEN, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.QUEEN, a_color));
         
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
@@ -156,6 +156,8 @@ public final class Queen extends Piece{
         m_currentUpAndRightMoves.clear();
         m_currentUpAndLeftMoves.clear();
         m_currentDownAndLeftMoves.clear();
+        
+        this.m_attackedTiles.clear();
         
         // Add the new legal moves for this turn
         this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));

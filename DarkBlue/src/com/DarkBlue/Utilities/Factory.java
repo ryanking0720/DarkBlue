@@ -80,7 +80,7 @@ public interface Factory{
             case KNIGHT: return new Knight(a_candidate.GetColor(), a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn());
             case BISHOP: return new Bishop(a_candidate.GetColor(), a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn());
             case QUEEN: return new Queen(a_candidate.GetColor(), a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn());
-            case KING: return new King(a_candidate.GetColor(), a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn());
+            case KING: return new King(a_candidate.GetColor(), a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn(), ((King)a_candidate).CanKingsideCastle(), ((King)a_candidate).CanQueensideCastle());
             default: return null;
         }
     }
@@ -206,7 +206,7 @@ public interface Factory{
             if(a_candidate.IsKing()){// This could be a castling move
                 if(MoveEvaluation.IsCastlingMove(a_candidate, sourceRow, sourceColumn, a_destinationRow, a_destinationColumn)){
                     // This is a castling move
-                    move = new CastlingMove((King)a_candidate, a_destinationRow, a_destinationColumn);
+                    return new CastlingMove((King)a_candidate, a_destinationRow, a_destinationColumn);
                     
                     /*
                     final Rook rook = (Rook) a_board.GetTile(((CastlingMove)move).GetRookCurrentRow(), ((CastlingMove)move).GetRookCurrentColumn()).GetPiece();
@@ -225,13 +225,15 @@ public interface Factory{
                 if(MoveEvaluation.IsEnPassantMove(a_candidate, a_destinationRow, a_destinationColumn, a_board)){
                     // This is an en passant move
                     final Pawn victim;
-                        if(BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE)
-                                && a_board.GetTile(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE).IsOccupied()){
-                            victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn + Utilities.ONE).GetPiece();
-                        }else{
-                            victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn - Utilities.ONE).GetPiece();
-                        }
-                    move = new EnPassantMove((Pawn)a_candidate, a_destinationRow, a_destinationColumn, victim);
+                    
+                    if(BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE)
+                            && a_board.GetTile(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE).IsOccupied()){
+                        victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn + Utilities.ONE).GetPiece();
+                    }else{
+                        victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn - Utilities.ONE).GetPiece();
+                    }
+                    
+                    return new EnPassantMove((Pawn)a_candidate, a_destinationRow, a_destinationColumn, victim);
                 }else{// This isn't an en passant move
                     // This is a regular or attacking move
                     if(a_victim != null){
@@ -244,6 +246,6 @@ public interface Factory{
         }
 
         // Return the complete move if the method has not done so already
-        return move;
+        //return move;
     }
 }

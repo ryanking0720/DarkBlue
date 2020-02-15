@@ -7,12 +7,20 @@ import com.DarkBlue.Piece.*;
 
 public interface Utilities{
     // Icons for pieces to be used in algebraic notation
-    public static final char PAWN_ICON = 'P';
-    public static final char ROOK_ICON = 'R';
-    public static final char KNIGHT_ICON = 'N';
-    public static final char BISHOP_ICON = 'B';
-    public static final char QUEEN_ICON = 'Q';
-    public static final char KING_ICON = 'K';
+    public static final char WHITE_PAWN_ICON = 'P';
+    public static final char WHITE_ROOK_ICON = 'R';
+    public static final char WHITE_KNIGHT_ICON = 'N';
+    public static final char WHITE_BISHOP_ICON = 'B';
+    public static final char WHITE_QUEEN_ICON = 'Q';
+    public static final char WHITE_KING_ICON = 'K';
+    
+    // Icons for pieces to be used in algebraic notation
+    public static final char BLACK_PAWN_ICON = 'p';
+    public static final char BLACK_ROOK_ICON = 'r';
+    public static final char BLACK_KNIGHT_ICON = 'n';
+    public static final char BLACK_BISHOP_ICON = 'b';
+    public static final char BLACK_QUEEN_ICON = 'q';
+    public static final char BLACK_KING_ICON = 'k';
     
     // Icons for pieces to be used on the board
     public static final char WHITE_PAWN_BOARD_ICON = '♙';

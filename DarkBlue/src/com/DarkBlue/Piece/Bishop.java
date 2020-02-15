@@ -48,7 +48,7 @@ public class Bishop extends Piece{
     */
     public Bishop(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
 
-        super(a_color, PieceType.BISHOP, Utilities.BISHOP_ICON, AssignPieceBoardIcon(PieceType.BISHOP, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.BISHOP, a_color));
+        super(a_color, PieceType.BISHOP, Utilities.WHITE_BISHOP_ICON, AssignPieceBoardIcon(PieceType.BISHOP, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.BISHOP, a_color));
         
         m_currentDownAndRightMoves = new ArrayList<>();
         m_currentUpAndRightMoves = new ArrayList<>();
@@ -119,6 +119,8 @@ public class Bishop extends Piece{
         this.m_currentUpAndRightMoves.clear();
         this.m_currentUpAndLeftMoves.clear();
         this.m_currentDownAndLeftMoves.clear();
+        
+        this.m_attackedTiles.clear();
         
         this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndRightMoves));
         this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndRightMoves));
