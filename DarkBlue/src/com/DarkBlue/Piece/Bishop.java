@@ -48,7 +48,7 @@ public class Bishop extends Piece{
     */
     public Bishop(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
 
-        super(a_color, PieceType.BISHOP, Utilities.WHITE_BISHOP_ICON, AssignPieceBoardIcon(PieceType.BISHOP, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.BISHOP, a_color));
+        super(a_color, Utilities.WHITE_BISHOP_ICON, AssignPieceBoardIcon(PieceType.BISHOP, a_color), a_currentRow, a_currentColumn);
         
         m_currentDownAndRightMoves = new ArrayList<>();
         m_currentUpAndRightMoves = new ArrayList<>();
@@ -84,10 +84,10 @@ public class Bishop extends Piece{
         this.m_currentUpAndLeftMoves = new ArrayList<>();
         this.m_currentDownAndLeftMoves = new ArrayList<>();
         
-        this.m_currentDownAndRightMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentDownAndRightMoves()));
-        this.m_currentUpAndRightMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentUpAndRightMoves()));
-        this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentUpAndLeftMoves()));
-        this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentDownAndLeftMoves()));
+        this.m_currentDownAndRightMoves.addAll(candidate.GetCurrentDownAndRightMoves());
+        this.m_currentUpAndRightMoves.addAll(candidate.GetCurrentUpAndRightMoves());
+        this.m_currentUpAndLeftMoves.addAll(candidate.GetCurrentUpAndLeftMoves());
+        this.m_currentDownAndLeftMoves.addAll(candidate.GetCurrentDownAndLeftMoves());
     }
     
     /*
@@ -120,8 +120,6 @@ public class Bishop extends Piece{
         this.m_currentUpAndLeftMoves.clear();
         this.m_currentDownAndLeftMoves.clear();
         
-        this.m_attackedTiles.clear();
-        
         this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndRightMoves));
         this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndRightMoves));
         this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndLeftMoves));
@@ -131,6 +129,30 @@ public class Bishop extends Piece{
         this.m_currentLegalMoves.addAll(m_currentUpAndRightMoves);
         this.m_currentLegalMoves.addAll(m_currentUpAndLeftMoves);
         this.m_currentLegalMoves.addAll(m_currentDownAndLeftMoves);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final PieceType GetPieceType();
+    
+    SYNOPSIS
+        public final PieceType GetPieceType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's type.
+    
+    RETURNS
+        PieceType.BISHOP.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final PieceType GetPieceType(){
+        return PieceType.BISHOP;
     }
     
     /**/

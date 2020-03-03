@@ -49,7 +49,7 @@ public final class Rook extends Piece{
     */
     public Rook(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
         
-        super(a_color, PieceType.ROOK, Utilities.WHITE_ROOK_ICON, AssignPieceBoardIcon(PieceType.ROOK, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.ROOK, a_color));
+        super(a_color, Utilities.WHITE_ROOK_ICON, AssignPieceBoardIcon(PieceType.ROOK, a_color), a_currentRow, a_currentColumn);
         
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
@@ -86,10 +86,10 @@ public final class Rook extends Piece{
         this.m_currentRightMoves = new ArrayList<>();
         this.m_currentLeftMoves = new ArrayList<>();
         
-        this.m_currentDownMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentDownMoves()));
-        this.m_currentUpMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentUpMoves()));
-        this.m_currentRightMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentRightMoves()));
-        this.m_currentLeftMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentLeftMoves()));
+        this.m_currentDownMoves.addAll(candidate.GetCurrentDownMoves());
+        this.m_currentUpMoves.addAll(candidate.GetCurrentUpMoves());
+        this.m_currentRightMoves.addAll(candidate.GetCurrentRightMoves());
+        this.m_currentLeftMoves.addAll(candidate.GetCurrentLeftMoves());
     }
     
     /**/
@@ -122,8 +122,6 @@ public final class Rook extends Piece{
         this.m_currentUpMoves.clear();
         this.m_currentRightMoves.clear();
         this.m_currentLeftMoves.clear();
-        
-        this.m_attackedTiles.clear();
 
         this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
         this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));
@@ -134,6 +132,30 @@ public final class Rook extends Piece{
         this.m_currentLegalMoves.addAll(this.m_currentUpMoves);
         this.m_currentLegalMoves.addAll(this.m_currentRightMoves);
         this.m_currentLegalMoves.addAll(this.m_currentLeftMoves);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final PieceType GetPieceType();
+    
+    SYNOPSIS
+        public final PieceType GetPieceType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's type.
+    
+    RETURNS
+        PieceType.ROOK.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final PieceType GetPieceType(){
+        return PieceType.ROOK;
     }
     
     /**/

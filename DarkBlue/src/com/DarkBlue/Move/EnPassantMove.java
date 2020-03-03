@@ -1,6 +1,7 @@
 package com.DarkBlue.Move;
 
 import com.DarkBlue.Piece.*;
+import com.DarkBlue.Board.*;
 import com.DarkBlue.Utilities.*;
 
 public final class EnPassantMove extends Move{
@@ -10,18 +11,20 @@ public final class EnPassantMove extends Move{
 
     /*
     NAME
-        public EnPassantMove(final Pawn a_pawn, final int a_kingNewRow, final int a_kingNewColumn, final Pawn a_victim);
+        public EnPassantMove(final Pawn a_pawn, final int a_kingNewRow, final int a_kingNewColumn, final Pawn a_victim, final Board a_board);
     
     SYNOPSIS
-        public EnPassantMove(final Pawn a_pawn, final int a_kingNewRow, final int a_kingNewColumn, final Pawn a_victim);
+        public EnPassantMove(final Pawn a_pawn, final int a_kingNewRow, final int a_kingNewColumn, final Pawn a_victim, final Board a_board);
     
         Pawn a_pawn --------------> The pawn to be moved.
         
-        int a_kingNewRow ---------> The new row (1 different from the old one).
+        int a_newRow -------------> The new row (1 different from the old one).
         
-        int a_kingNewColumn ------> The new column (1 different from the old one).
+        int a_newColumn ----------> The new column (1 different from the old one).
         
         Pawn a_victim ------------> The pawn to be captured.
+        
+        Board a_board ------------> The board on which this move is made.
     
     DESCRIPTION
         This constructor instantiates a new EnPassantMove object.
@@ -37,8 +40,8 @@ public final class EnPassantMove extends Move{
     AUTHOR
         Ryan King
     */
-    public EnPassantMove(final Pawn a_pawn, final int a_newRow, final int a_newColumn, final Pawn a_victim){
-        super(a_pawn, a_newRow, a_newColumn, a_victim, MoveType.EN_PASSANT);
+    public EnPassantMove(final Pawn a_pawn, final int a_newRow, final int a_newColumn, final Pawn a_victim, final Board a_board){
+        super(a_pawn, a_newRow, a_newColumn, a_victim, a_board);
         this.m_capturedPawnRow = a_victim.GetCurrentRow();
         this.m_capturedPawnColumn = a_victim.GetCurrentColumn();
     }
@@ -73,8 +76,7 @@ public final class EnPassantMove extends Move{
     */
     @Override
     public final String toString(){    
-        String moveString = BoardUtilities.ToAlgebraicColumn(this.m_oldColumn) + "x" + BoardUtilities.ToAlgebraic(m_newRow, m_newColumn) + " e.p.";
-        return moveString;
+        return BoardUtilities.ToAlgebraicColumn(this.m_oldColumn) + "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn) + " e.p.";
     }
     
     /*
@@ -99,6 +101,53 @@ public final class EnPassantMove extends Move{
     @Override
     public final Piece GetVictim(){
         return m_victim;
+    }
+    
+    /*
+    NAME
+        public final MoveType GetMoveType();
+    
+    SYNOPSIS
+        public final MoveType GetMoveType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the type of this move.
+    
+    RETURNS
+        MoveType.EN_PASSANT.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final MoveType GetMoveType(){
+        return MoveType.EN_PASSANT;
+    }
+    
+    /*
+    NAME
+        public final boolean HasVictim();
+    
+    SYNOPSIS
+        public final boolean HasVictim();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move has a victim,
+        i.e. if the victim field is not set equal to null.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean HasVictim(){
+        return true;
     }
     
     /*
@@ -143,5 +192,97 @@ public final class EnPassantMove extends Move{
     */
     public final int GetCapturedPawnColumn(){
         return m_capturedPawnColumn;
+    }
+    
+    /*
+    NAME
+        public final boolean IsRegular();
+    
+    SYNOPSIS
+        public final boolean IsRegular();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is Regular.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsRegular(){
+        return false;
+    }
+    
+    /*
+    NAME
+        public final boolean IsAttacking();
+    
+    SYNOPSIS
+        public final boolean IsAttacking();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is Attacking.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsAttacking(){
+        return false;
+    }
+    
+    /*
+    NAME
+        public final boolean IsCastling();
+    
+    SYNOPSIS
+        public final boolean IsCastling();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is Castling.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsCastling(){
+        return false;
+    }
+    
+    /*
+    NAME
+        public final boolean IsEnPassant();
+    
+    SYNOPSIS
+        public final boolean IsEnPassant();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is En Passant.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsEnPassant(){
+        return true;
     }
 }

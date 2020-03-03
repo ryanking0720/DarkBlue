@@ -27,8 +27,6 @@ public abstract class Player{
     
     // All the legal moves the player can make on the current turn
     protected final ArrayList<Move> m_allCurrentLegalMoves;
-    
-    protected final HashSet<String> m_attackedTiles;
 
     /**/
     /*
@@ -60,7 +58,6 @@ public abstract class Player{
         this.m_activePieces = new ArrayList<>();
         this.m_capturedPieces = new ArrayList<>();
         this.m_allCurrentLegalMoves = new ArrayList<>();
-        this.m_attackedTiles = new HashSet<>();
     }
     /**/
     /*
@@ -99,10 +96,7 @@ public abstract class Player{
         for(int index = Utilities.ZERO; index < a_player.GetCapturedPieces().size(); index++){
             this.m_capturedPieces.add(a_player.GetCapturedPieces().get(index));
         }
-        
-        this.m_attackedTiles = new HashSet<>();
-        this.m_attackedTiles.addAll(a_player.m_attackedTiles);
-        
+
         // Initialize the Pieces and Moves according to the Board argument
         this.Refresh(a_board);
     }
@@ -131,10 +125,16 @@ public abstract class Player{
     */
     public final void Refresh(final Board a_board){
         // Find the player's pieces on the board
-        this.InitializePieces(a_board);
+    	try{
+    		this.InitializePieces(a_board);
         
-        // Initialize the legal moves of every piece
-        this.InitializeCurrentLegalMoves(a_board);
+    		// Initialize the legal moves of every piece
+    		if(!this.m_activePieces.isEmpty()){
+    			this.InitializeCurrentLegalMoves(a_board);
+    		}
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
     }
     
     /**/
@@ -171,10 +171,6 @@ public abstract class Player{
         return total;
     }
     
-    public final boolean HasLost(final Board a_board){
-    	return this.IsInCheckmate(a_board) || this.IsInStalemate(a_board);
-    }
-    
     /**/
     /*
     NAME
@@ -208,8 +204,8 @@ public abstract class Player{
                 continue;
             }else if(a_board.GetTile(row, column).GetPiece().IsKing() && a_board.GetTile(row, column).GetPiece().GetColor() == this.GetColor()){
                 // Assign the player's one and only king
-                this.m_king = (King) a_board.GetTile(row, column).GetPiece();
-                this.AddActivePiece(this.m_king);
+            	this.m_king = (King) a_board.GetTile(row, column).GetPiece();
+            	this.AddActivePiece(this.m_king);
             }else if(a_board.GetTile(row, column).GetPiece().IsQueen() && a_board.GetTile(row, column).GetPiece().GetColor() == this.GetColor()){
                 // Add a new queen
                 Queen next = (Queen) a_board.GetTile(row, column).GetPiece();
@@ -258,14 +254,6 @@ public abstract class Player{
         this.m_activePieces.add(a_piece);
     }
     
-    public final void AddAttackedTile(final Tile a_tile){
-    	final String tile = BoardUtilities.ToAlgebraic(a_tile.GetRow(), a_tile.GetColumn());
-    	
-    	if(!this.m_attackedTiles.contains(tile)){
-    		this.m_attackedTiles.add(tile);
-    	}
-    }
-    
     /**/
     /*
     NAME
@@ -312,13 +300,11 @@ public abstract class Player{
         Ryan King
     */
     public final void InitializeCurrentLegalMoves(final Board a_board){
-    	this.m_attackedTiles.clear();
         this.m_allCurrentLegalMoves.clear();
         for(int index = Utilities.ZERO; index < m_activePieces.size(); index++){
             Piece piece = this.m_activePieces.get(index);
             piece.AddCurrentLegalMoves(a_board);
             this.m_allCurrentLegalMoves.addAll(piece.GetCurrentLegalMoves());
-            this.m_attackedTiles.addAll(piece.GetAttackedTiles());
         }
     }
     
@@ -786,95 +772,62 @@ public abstract class Player{
     public final boolean IsInStalemate(final Board a_board){
         return MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() == Utilities.ZERO;
     }
-    
-    /**/
-    /*
-    NAME
-        public final int PieceValue();
-    
-    SYNOPSIS
-        public final int PieceValue();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method calculates the value of each piece this player has.
-        Each piece is assigned a tile value based on its position.
-    
-    RETURNS
-        int total: The total value of the player's pieces.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int PieceValue(){
-    	int total = Utilities.ZERO;
-    	
-    	for(Piece piece : this.m_activePieces){
-    		total += (piece.GetValue() + MoveEvaluation.AssignPositionMultiplier(piece.GetPieceType(), piece.GetColor(), piece.GetCurrentRow(), piece.GetCurrentColumn()));
-    	}
-    	
-    	return total;
-    }
-    
-    public final int AttackScore(){
-    	int total = Utilities.ZERO;
 
-    	for(final Move move : this.UglyMoves()){
-    		if(move.IsAttacking() || move.IsEnPassant()){
-    			final Piece mover = move.GetPiece();
-    			final Piece victim = move.GetVictim();
-    			
-    			if(mover.GetValue() <= victim.GetValue()){
-    				total++;
-    			}
-    		}
-    	}
-    	
-    	return total;// Multiply this by a multiplier in Minimax
-    }
-    
-    public final int PieceEvaluations(){
-        int score = Utilities.ZERO;
-        int bishops = Utilities.ZERO;
-        
-        for (final Piece piece : this.GetActivePieces()){
-            score += piece.GetValue() + MoveEvaluation.AssignPositionMultiplier(piece.GetPieceType(), piece.GetColor(), piece.GetCurrentRow(), piece.GetCurrentColumn());
-            if(piece.IsBishop()){
-                bishops++;
-            }
-        }
-        return score + (bishops >= Utilities.TWO ? Utilities.FIFTY : Utilities.ZERO);
-    }
-    
     /**/
     /*
     NAME
-        public final boolean HasCastled(final String a_moveHistory);
+        public final Pawn GetPromotedPawn(final Board a_board);
     
     SYNOPSIS
-        public final boolean HasCastled(final String a_moveHistory);
+        public final Pawn GetPromotedPawn(final Board a_board);
     
-        String a_moveHistory ------> The player's move history.
+        Board a_board ----------> The board to examine.
     
     DESCRIPTION
-        This method determines if a player has castled by looking at
-        his/her move history string from the GUI and checking to see
-        if it contains a string representing a castling move.
-    
+        This method searches for a pawn on its last rank (0 for white, 7 for black) and returns it.
+        If it does not find such a pawn, it returns null.
+        
     RETURNS
-        boolean: True if the player's history contains 0-0 or 0-0-0 and false otherwise.
+        Pawn: A pawn on its last rank or null otherwise.
         One of these two options will always occur.
     
     AUTHOR
         Ryan King
     */
-    public final boolean HasCastled(final String a_moveHistory){
-    	if(a_moveHistory.contains(Utilities.KINGSIDE_CASTLE) || a_moveHistory.contains(Utilities.QUEENSIDE_CASTLE)){
-    		return true;
-    	}else{
-    		return false;
+    public final Pawn GetPromotedPawn(final Board a_board){
+    	final int row = (this.IsWhite() ? Utilities.ZERO : Utilities.SEVEN);
+    	
+    	for(int column = Utilities.ZERO; column < Utilities.EIGHT; column++){
+    		if(a_board.GetTile(row, column).IsOccupied() && a_board.GetTile(row, column).GetPiece().IsPawn() && a_board.GetTile(row, column).GetPiece().GetColor() == this.GetColor()){
+    			return (Pawn) a_board.GetTile(row, column).GetPiece();
+    		}
     	}
+    	
+    	return null;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean HasCastled();
+    
+    SYNOPSIS
+        public final boolean HasCastled();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if a player has castled by looking at the fields of its king.
+    
+    RETURNS
+        boolean: True if the player has castled and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean HasCastled(){
+    	return !this.GetKing().CanKingsideCastle() && !this.GetKing().CanQueensideCastle();
     }
     
     /**/
@@ -978,5 +931,208 @@ public abstract class Player{
             uglyMoves.addAll(piece.GetCurrentLegalMoves());
         }
         return uglyMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> AttackingMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> AttackingMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns all attacking moves
+        the player can make with his/her/its pieces.
+        This is primarily used to evaluate the optimal move for the AI.
+    
+    RETURNS
+        ArrayList<Move> attackingMoves: All attacking moves for this player on the current turn.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> AttackingMoves(){
+        final ArrayList<Move> attackingMoves = new ArrayList<>();
+        for(final Piece piece : this.m_activePieces){
+           for(final Move move : piece.GetCurrentLegalMoves()){
+        	   if(move.IsAttacking()){
+        		   attackingMoves.add(move);
+        	   }
+           }
+        }
+        return attackingMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> CastlingMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> CastlingMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns all castling moves
+        the player can make with his/her/its pieces.
+        This is primarily used to evaluate the optimal move for the AI.
+    
+    RETURNS
+        ArrayList<Move> castlingMoves: All castling moves for this player on the current turn.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> CastlingMoves(){
+        final ArrayList<Move> castlingMoves = new ArrayList<>();
+        for(final Piece piece : this.m_activePieces){
+        	if(!piece.IsKing()){
+        		continue;
+        	}
+           for(final Move move : piece.GetCurrentLegalMoves()){
+        	   if(move.IsCastling()){
+        		   castlingMoves.add(move);
+        	   }
+           }
+        }
+        return castlingMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> RegularMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> RegularMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns all regular moves
+        the player can make with his/her/its pieces.
+        This is primarily used to evaluate the optimal move for the AI.
+    
+    RETURNS
+        ArrayList<Move> castlingMoves: All castling moves for this player on the current turn.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> RegularMoves(){
+        final ArrayList<Move> regularMoves = new ArrayList<>();
+        for(final Piece piece : this.m_activePieces){
+           for(final Move move : piece.GetCurrentLegalMoves()){
+        	   if(move.IsRegular()){
+        		   regularMoves.add(move);
+        	   }
+           }
+        }
+        return regularMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> CheckMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> CheckMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns all moves
+        that threaten the opponent's king with check.
+        This is primarily used to evaluate the optimal move for the AI.
+    
+    RETURNS
+        ArrayList<Move> checkMoves: All moves that put the opponent's king into check.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> CheckMoves(){
+        final ArrayList<Move> checkMoves = new ArrayList<>();
+        for(final Piece piece : this.m_activePieces){
+           for(final Move move : piece.GetCurrentLegalMoves()){
+        	   if(move.PlacesOpponentIntoCheck()){
+        		   checkMoves.add(move);
+        	   }
+           }
+        }
+        return checkMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> CheckmateMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> CheckmateMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns all moves
+        that place the opponent's king into checkmate.
+        This is primarily used to evaluate the optimal move for the AI.
+    
+    RETURNS
+        ArrayList<Move> checkmateMoves: All moves that place the opponent's king into checkmate.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> CheckmateMoves(){
+        final ArrayList<Move> checkmateMoves = new ArrayList<>();
+        for(final Piece piece : this.m_activePieces){
+           for(final Move move : piece.GetCurrentLegalMoves()){
+        	   if(move.PlacesOpponentIntoCheckmate()){
+        		   checkmateMoves.add(move);
+        	   }
+           }
+        }
+        return checkmateMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> EnPassantMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> EnPassantMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns all en passant moves.
+        This is primarily used to evaluate the optimal move for the AI.
+    
+    RETURNS
+        ArrayList<Move> enPassantMoves: All en passant moves.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> EnPassantMoves(){
+        final ArrayList<Move> enPassantMoves = new ArrayList<>();
+        for(final Piece piece : this.m_activePieces){
+        	if(!piece.IsPawn()){
+        		continue;
+        	}
+        	for(final Move move : piece.GetCurrentLegalMoves()){
+        		if(move.IsEnPassant()){
+        			enPassantMoves.add(move);
+        		}
+        	}
+        }
+        return enPassantMoves;
     }
 }

@@ -62,7 +62,7 @@ public final class Queen extends Piece{
         Ryan King
     */
     public Queen(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-        super(a_color, PieceType.QUEEN, Utilities.WHITE_QUEEN_ICON, AssignPieceBoardIcon(PieceType.QUEEN, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.QUEEN, a_color));
+        super(a_color, Utilities.WHITE_QUEEN_ICON, AssignPieceBoardIcon(PieceType.QUEEN, a_color), a_currentRow, a_currentColumn);
         
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
@@ -109,15 +109,15 @@ public final class Queen extends Piece{
         this.m_currentUpAndLeftMoves = new ArrayList<>();
         this.m_currentDownAndLeftMoves = new ArrayList<>();
         
-        this.m_currentDownMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentDownMoves()));
-        this.m_currentUpMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentUpMoves()));
-        this.m_currentRightMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentRightMoves()));
-        this.m_currentLeftMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentLeftMoves()));
+        this.m_currentDownMoves.addAll(candidate.GetCurrentDownMoves());
+        this.m_currentUpMoves.addAll(candidate.GetCurrentUpMoves());
+        this.m_currentRightMoves.addAll(candidate.GetCurrentRightMoves());
+        this.m_currentLeftMoves.addAll(candidate.GetCurrentLeftMoves());
         
-        this.m_currentDownAndRightMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentDownAndRightMoves()));
-        this.m_currentUpAndRightMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentUpAndRightMoves()));
-        this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentUpAndLeftMoves()));
-        this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentDownAndLeftMoves()));
+        this.m_currentDownAndRightMoves.addAll(candidate.GetCurrentDownAndRightMoves());
+        this.m_currentUpAndRightMoves.addAll(candidate.GetCurrentUpAndRightMoves());
+        this.m_currentUpAndLeftMoves.addAll(candidate.GetCurrentUpAndLeftMoves());
+        this.m_currentDownAndLeftMoves.addAll(candidate.GetCurrentDownAndLeftMoves());
     }
     
     /**/
@@ -156,9 +156,7 @@ public final class Queen extends Piece{
         m_currentUpAndRightMoves.clear();
         m_currentUpAndLeftMoves.clear();
         m_currentDownAndLeftMoves.clear();
-        
-        this.m_attackedTiles.clear();
-        
+
         // Add the new legal moves for this turn
         this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
         this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));
@@ -180,6 +178,30 @@ public final class Queen extends Piece{
         this.m_currentLegalMoves.addAll(m_currentUpAndRightMoves);
         this.m_currentLegalMoves.addAll(m_currentUpAndLeftMoves);
         this.m_currentLegalMoves.addAll(m_currentDownAndLeftMoves);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final PieceType GetPieceType();
+    
+    SYNOPSIS
+        public final PieceType GetPieceType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's type.
+    
+    RETURNS
+        PieceType.QUEEN.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final PieceType GetPieceType(){
+        return PieceType.QUEEN;
     }
     
     /**/

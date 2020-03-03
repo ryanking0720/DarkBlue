@@ -11,17 +11,14 @@ import com.DarkBlue.Board.Tile;
 
 public abstract class Piece{
     protected final ChessColor m_color;//White or black
-    protected final PieceType m_pieceType;//The type of piece, e.g. pawn, rook, bishop, knight, queen, king
     protected final char m_icon;//The algebraic letter of the piece. Set to 'P' but not used for pawns.
     protected final char m_boardIcon;//The actual piece in Unicode. Much like how a piece looks on a newspaper.
-    protected final int m_value;//How important the piece is to the computer
-    
+
     protected final int m_currentRow;//The piece's current row
     protected final int m_currentColumn;//The piece's current column
     protected final int m_moves;//How many times has the piece moved?
     //Current legal moves are stored as Moves because they can only occur on the piece's current spot and on the current turn.
     protected final ArrayList<Move> m_currentLegalMoves;//All the legal moves usable for the current turn only.
-    protected final HashSet<String> m_attackedTiles;
     
     /* All abstract methods. */
     
@@ -80,18 +77,14 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public Piece(final ChessColor a_color, final PieceType a_type, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn, final int a_value){
+    public Piece(final ChessColor a_color, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn){
         this.m_color = a_color;
-        this.m_pieceType = a_type;
         this.m_icon = (m_color.IsWhite() ? Character.toUpperCase(a_icon) : Character.toLowerCase(a_icon));
         this.m_boardIcon = a_boardIcon;
-        this.m_value = a_value;
         this.m_currentRow = a_currentRow;
         this.m_currentColumn = a_currentColumn;
         this.m_moves = Utilities.ZERO;
         this.m_currentLegalMoves = new ArrayList<>();
-        this.m_attackedTiles = new HashSet<>();
-        //The icons and value will be properly set later on
     }
     
     // The copy constructor.
@@ -118,17 +111,13 @@ public abstract class Piece{
     */
     public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         this.m_color = a_piece.GetColor();
-        this.m_pieceType = a_piece.GetPieceType();
         this.m_currentRow = a_newRow;
         this.m_currentColumn = a_newColumn;
         this.m_moves = a_moves;
         this.m_icon = a_piece.GetIcon();
         this.m_boardIcon = a_piece.GetBoardIcon();
-        this.m_value = a_piece.GetValue();
         this.m_currentLegalMoves = new ArrayList<>();
-        this.m_attackedTiles = new HashSet<>();
-        this.m_currentLegalMoves.addAll(MoveEvaluation.CopyCurrentMoves(a_piece.GetCurrentLegalMoves()));
-        this.m_attackedTiles.addAll(a_piece.m_attackedTiles);
+        this.m_currentLegalMoves.addAll(a_piece.GetCurrentLegalMoves());
     }
     
     /* Protected assignment methods for final fields */
@@ -406,186 +395,6 @@ public abstract class Piece{
             default: return Utilities.NULL;
         }
     }
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignPieceValue(final PieceType a_type, final ChessColor a_color);    
-    
-    SYNOPSIS
-        protected static final int AssignPieceValue(final PieceType a_type, final ChessColor a_color);
-    
-        PieceType a_type ------------> The type of the piece.
-        
-        ChessColor a_color ----------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns either a positive or negative value depending on the type and color of the piece.
-        A switch statement passes control to the proper sub-method based on piece type.
-        The sub-method will evaluate the icon to be returned based on color.
-        Notice how the knight case cascades into the bishop case because they both have the same values.
-        All white pieces will received positive values, and all black pieces will receive negative values.
-        Returns 0 on error.
-    
-    RETURNS
-        An integer representing the value of the piece based on its type and color, or 0 on error.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignPieceValue(final PieceType a_type, final ChessColor a_color){
-
-        switch(a_type){
-            case PAWN: return AssignPawnValue(a_color);
-            case ROOK: return AssignRookValue(a_color);
-            case KNIGHT: 
-            case BISHOP: return AssignBishopOrKnightValue(a_color);
-            case QUEEN: return AssignQueenValue(a_color);
-            case KING: return AssignKingValue(a_color);
-            default: return Utilities.ZERO;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignPawnValue(final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final int AssignPawnValue(final ChessColor a_color);
-    
-        ChessColor a_color ----------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns 1 if the color specified is white,
-        or -1 if the color specified is black.
-        The AssignMultiplier() method will handle if the value returns positive or negative.
-    
-    RETURNS
-        1 if the color specified is white, or -1 if the color specified is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignPawnValue(final ChessColor a_color){
-        return Utilities.ONE * AssignMultiplier(a_color);
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignQueenValue(final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final int AssignQueenValue(final ChessColor a_color);
-    
-        ChessColor a_color ----------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns 9 if the color specified is white,
-        or -9 if the color specified is black.
-        The AssignMultiplier() method will handle if the value returns positive or negative.
-    
-    RETURNS
-        9 if the color specified is white, or -9 if the color specified is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignQueenValue(final ChessColor a_color){
-        return Utilities.NINE * AssignMultiplier(a_color);
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignRookValue(final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final int AssignRookValue(final ChessColor a_color);
-    
-        ChessColor a_color ----------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns 7 if the color specified is white,
-        or -7 if the color specified is black.
-        The AssignMultiplier() method will handle if the value returns positive or negative.
-    
-    RETURNS
-        7 if the color specified is white, or -7 if the color specified is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignRookValue(final ChessColor a_color){
-        return Utilities.SEVEN * AssignMultiplier(a_color);
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignBishopOrKnightValue(final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final int AssignBishopOrKnightValue(final ChessColor a_color);
-    
-        ChessColor a_color ----------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns 3 if the color specified is white,
-        or -3 if the color specified is black.
-        The AssignMultiplier() method will handle if the value returns positive or negative.
-    
-    RETURNS
-        3 if the color specified is white, or -3 if the color specified is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignBishopOrKnightValue(final ChessColor a_color){
-        return Utilities.THREE * AssignMultiplier(a_color);
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignKingValue(final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final int AssignKingValue(final ChessColor a_color);
-    
-        ChessColor a_color ----------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns 999 if the color specified is white,
-        or -999 if the color specified is black.
-        The AssignMultiplier() method will handle if the value returns positive or negative.
-    
-    RETURNS
-        999 if the color specified is white, or -999 if the color specified is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignKingValue(final ChessColor a_color){
-        return Utilities.NINE_HUNDRED_NINETY_NINE * AssignMultiplier(a_color);
-    }
-    
-    // Mutators
-    
-    public final void AddAttackedTile(final Tile a_tile){
-    	final String tile = BoardUtilities.ToAlgebraic(a_tile.GetRow(), a_tile.GetColumn());
-    	
-    	if(!this.m_attackedTiles.contains(tile)){
-    		this.m_attackedTiles.add(tile);
-    	}
-    }
 
     // Accessors for every field.
     
@@ -631,32 +440,7 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final PieceType GetPieceType(){
-        return this.m_pieceType;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final int GetValue();
-    
-    SYNOPSIS
-        public final int GetValue();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's value.
-    
-    RETURNS
-        int m_value: This piece's value.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int GetValue(){
-        return this.m_value;
-    }
+    public abstract PieceType GetPieceType();
     
     /**/
     /*
@@ -776,10 +560,6 @@ public abstract class Piece{
     */
     public final ArrayList<Move> GetCurrentLegalMoves(){
         return this.m_currentLegalMoves;
-    }
-    
-    public final HashSet<String> GetAttackedTiles(){
-    	return this.m_attackedTiles;
     }
     
     /**/
@@ -1255,6 +1035,6 @@ public abstract class Piece{
     
     @Override
     public final String toString(){
-    	return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.m_pieceType.toString().toLowerCase();
+    	return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.GetPieceType().toString().toLowerCase();
     }
 }

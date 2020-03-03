@@ -140,6 +140,25 @@ public interface Factory{
         }
     }
     
+    public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt){
+    	final Piece newPiece;
+    	// Instantiate the chosen piece
+    	switch(a_buttonInt){
+        	case Utilities.ZERO: newPiece = new Queen(a_color, a_row, a_column);
+        	break;
+        	case Utilities.ONE: newPiece = new Rook(a_color, a_row, a_column);
+        	break;
+        	case Utilities.TWO: newPiece = new Bishop(a_color, a_row, a_column);
+        	break;
+        	case Utilities.THREE: newPiece = new Knight(a_color, a_row, a_column);
+        	break;
+        	default: newPiece = null;
+        	break;
+    	}
+    	
+    	return newPiece;
+    }
+    
     /**/
     /*
     NAME
@@ -198,27 +217,20 @@ public interface Factory{
     	
         if(!a_candidate.IsKing() && !a_candidate.IsPawn()){// This is definitely not a castling or en passant move
             if(a_victim != null){
-                return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim);
+                return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
             }else{
-                return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn);
+                return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
             }
         }else{
             if(a_candidate.IsKing()){// This could be a castling move
                 if(MoveEvaluation.IsCastlingMove(a_candidate, sourceRow, sourceColumn, a_destinationRow, a_destinationColumn)){
                     // This is a castling move
-                    return new CastlingMove((King)a_candidate, a_destinationRow, a_destinationColumn);
-                    
-                    /*
-                    final Rook rook = (Rook) a_board.GetTile(((CastlingMove)move).GetRookCurrentRow(), ((CastlingMove)move).GetRookCurrentColumn()).GetPiece();
-                    
-                    final Tile rookTile = a_board.GetTile(rook.GetCurrentRow(), rook.GetCurrentColumn());
-                    */
-                    //a_board.GetBoard()[rook.GetCurrentRow()][rook.GetCurrentColumn()] = new Tile(rookTile.GetColor(), rookTile.GetRow(), rookTile.GetColumn(), Factory.PieceFactory(rook));                
+                    return new CastlingMove((King)a_candidate, a_destinationRow, a_destinationColumn, a_board);               
                 }else{// This is a regular or attacking move
                     if(a_victim != null){
-                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim);
+                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
                     }else{
-                        return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn);
+                        return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
                     }
                 }
             }else{// This could be a regular move, an attacking move, or an en passant move
@@ -233,19 +245,16 @@ public interface Factory{
                         victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn - Utilities.ONE).GetPiece();
                     }
                     
-                    return new EnPassantMove((Pawn)a_candidate, a_destinationRow, a_destinationColumn, victim);
+                    return new EnPassantMove((Pawn)a_candidate, a_destinationRow, a_destinationColumn, victim, a_board);
                 }else{// This isn't an en passant move
                     // This is a regular or attacking move
                     if(a_victim != null){
-                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim);
+                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
                     }else{
-                        return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn);
+                        return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
                     }
                 }
             }
         }
-
-        // Return the complete move if the method has not done so already
-        //return move;
     }
 }

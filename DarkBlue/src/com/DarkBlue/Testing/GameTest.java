@@ -560,6 +560,7 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final Move EvaluateMove(){
         Move move;
         // Instantiate the desired move
@@ -612,7 +613,7 @@ public class GameTest{
         // Return the complete move
         return move;
     }
-    
+    */
     /*
     NAME
         public final void EvaluatePreviouslyMoved();
@@ -789,6 +790,7 @@ public class GameTest{
         RefreshPlayers();
     }
     
+    /*
     public static final void HumanPlay(){
         CheckSourceTile();
         
@@ -820,7 +822,7 @@ public class GameTest{
         // Refresh pieces and legal moves for both sides
         RefreshPlayers();
     }
-    
+    */
     /*
     NAME
         private final void ChooseColor();
@@ -869,6 +871,8 @@ public class GameTest{
     }
 
     public static final void main(String a_args){
+    	
+    	/*
         m_keyboard = new Scanner(System.in);
         
         ChooseColor();
@@ -920,5 +924,7 @@ public class GameTest{
             }
                     
         }// End of while true game loop
+        */
+        
     }
 }

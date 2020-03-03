@@ -192,7 +192,7 @@ public interface MoveEvaluation{
         {-3, -4, -4, -5, -5, -4, -4, -3}
     };
     
-    public static final double[][] m_whiteQueenPositions = {
+    public static final double[][] m_queenPositions = {
     	{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
     	{-1, 0, 0, 0, 0, 0, 0, -1},
     	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
@@ -202,18 +202,7 @@ public interface MoveEvaluation{
     	{-1, 0, 0, 0, 0, 0, 0, -1},
     	{-2, -1, -1, -0.5, -0.5, -1, -1, -2}
     };
-    
-    public static final double[][] m_blackQueenPositions = {
-    	{-2, -1, -1, -0.5, -0.5, -1, -1, -2},
-    	{-1, 0, 0, 0, 0, 0, 0, -1},
-    	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
-    	{-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
-    	{-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
-    	{-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
-    	{-1, 0, 0, 0, 0, 0, 0, -1},
-    	{-2, -1, -1, -0.5, -0.5, -1, -1, -2} 		
-    };
-    
+ 
     public static final double[][] m_whiteRookPositions = {
     	{0, 0, 0, 0, 0, 0, 0, 0},
     	{-0.5, 1, 1, 1, 1, 1, 1, -0.5},
@@ -259,7 +248,7 @@ public interface MoveEvaluation{
     	{-2, -1, -1, -1, -1, -1, -1, -2}
     };
     
-    public static final double[][] m_whiteKnightPositions = {
+    public static final double[][] m_knightPositions = {
     	{-5, -4, -3, -3, -3, -3, -4, -5},
     	{-4, -2, 0, 0, 0, 0, -2, -4},
     	{-3, 0, 1, 1.5, 1.5, 1, 0, -3},
@@ -267,17 +256,6 @@ public interface MoveEvaluation{
     	{-3, 0, 1.5, 2, 2, 1.5, 0, -3},
     	{-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3},
     	{-4, -2, 0, 0.5, 0.5, 0, -2, -4},
-    	{-5, -4, -3, -3, -3, -3, -4, -5}
-    };
-    
-    public static final double[][] m_blackKnightPositions = {
-    	{-5, -4, -3, -3, -3, -3, -4, -5},
-    	{-4, -2, 0, 0.5, 0.5, 0, -2, -4},
-    	{-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3},
-    	{-3, 0, 1.5, 2, 2, 1.5, 0, -3},
-    	{-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3},
-    	{-3, 0, 1, 1.5, 1.5, 1, 0, -3},
-    	{-4, -2, 0, 0, 0, 0, -2, -4},
     	{-5, -4, -3, -3, -3, -3, -4, -5}
     };
     
@@ -329,9 +307,9 @@ public interface MoveEvaluation{
     
     public static double AssignQueenMultiplier(final ChessColor a_color, final int a_row, final int a_column){
     	if(a_color.IsWhite()){
-    		return m_whiteQueenPositions[a_row][a_column];
+    		return m_queenPositions[a_row][a_column];
     	}else{
-    		return m_blackQueenPositions[a_row][a_column];
+    		return m_queenPositions[a_row][a_column];
     	}
     }
     
@@ -345,9 +323,9 @@ public interface MoveEvaluation{
     
     public static double AssignKnightMultiplier(final ChessColor a_color, final int a_row, final int a_column){
     	if(a_color.IsWhite()){
-    		return m_whiteKnightPositions[a_row][a_column];
+    		return m_knightPositions[a_row][a_column];
     	}else{
-    		return m_blackKnightPositions[a_row][a_column];
+    		return m_knightPositions[a_row][a_column];
     	}
     }
     
@@ -401,14 +379,20 @@ public interface MoveEvaluation{
         ArrayList<Move> currentDirectionalMoves = new ArrayList<>();
         while(index < a_allDirectionalMoves.length){
             
-            Board clone = Board.GetDeepCopy(a_board);
-            Human tempWhite = new Human(ChessColor.WHITE, clone);
-            Human tempBlack = new Human(ChessColor.BLACK, clone);
-            tempWhite.InitializePieces(clone);
-            tempBlack.InitializePieces(clone);
+            Board clone = null;
+            Human tempWhite = new Human(ChessColor.WHITE, a_board);
+            Human tempBlack = new Human(ChessColor.BLACK, a_board);
+            
+            try{
+            	tempWhite.InitializePieces(a_board);
+            	tempBlack.InitializePieces(a_board);
+            }catch(Exception e){
+            	e.printStackTrace();
+            }
+            
             Player mover;
             
-            if(clone.WhoseTurnIsIt().IsWhite()){
+            if(a_board.WhoseTurnIsIt().IsWhite()){
                 mover = tempWhite;
             }else{
                 mover = tempBlack;
@@ -417,16 +401,18 @@ public interface MoveEvaluation{
             int newRow = a_piece.GetCurrentRow() + a_allDirectionalMoves[index].GetRowDelta();
             int newColumn = a_piece.GetCurrentColumn() + a_allDirectionalMoves[index].GetColumnDelta();
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
-            	
-            	a_piece.AddAttackedTile(a_board.GetTile(newRow, newColumn));
-            	
+
                 Move candidate;
                 if(a_board.GetTile(newRow, newColumn).IsEmpty()){
-                    candidate = new RegularMove(a_piece, newRow, newColumn);
+                    candidate = new RegularMove(a_piece, newRow, newColumn, a_board);
 
-                    clone = clone.Move((RegularMove)candidate);
-                    tempWhite.InitializePieces(clone);
-                    tempBlack.InitializePieces(clone);
+                    clone = candidate.GetTransitionalBoard();
+                    try{
+                    	tempWhite.InitializePieces(clone);
+                    	tempBlack.InitializePieces(clone);
+                    }catch(Exception e){
+                    	e.printStackTrace();
+                    }
 
                     if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
                         currentDirectionalMoves.add(candidate);
@@ -440,11 +426,15 @@ public interface MoveEvaluation{
                     final Piece victim = a_board.GetTile(newRow, newColumn).GetPiece();
                     if(a_board.GetTile(newRow, newColumn).IsOccupied() && victim.IsEnemy(a_piece) && !victim.IsKing()){
                         // Only add this last move and no more; this is as far as the piece can go in this direction
-                        candidate = new AttackingMove(a_piece, newRow, newColumn, victim);
+                        candidate = new AttackingMove(a_piece, newRow, newColumn, victim, a_board);
                         
-                        clone = clone.Attack((AttackingMove)candidate, tempWhite, tempBlack);
-                        tempWhite.InitializePieces(clone);
-                        tempBlack.InitializePieces(clone);
+                        clone = candidate.GetTransitionalBoard();
+                        try {
+                        	tempWhite.InitializePieces(clone);
+                        	tempBlack.InitializePieces(clone);
+                        }catch(Exception e){
+                        	e.printStackTrace();
+                        }
 
                         if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
                             currentDirectionalMoves.add(candidate);
@@ -503,14 +493,20 @@ public interface MoveEvaluation{
         for(int index = Utilities.ZERO; index < a_allSpectrumMoves.length; index++){
             
             // Make a deep copy of the current board
-            Board clone = Board.GetDeepCopy(a_board);
-            Human tempWhite = new Human(ChessColor.WHITE, clone);
-            Human tempBlack = new Human(ChessColor.BLACK, clone);
-            tempWhite.InitializePieces(clone);
-            tempBlack.InitializePieces(clone);
+            Board clone = null;
+            Human tempWhite = new Human(ChessColor.WHITE, a_board);
+            Human tempBlack = new Human(ChessColor.BLACK, a_board);
+            
+            try{
+            	tempWhite.InitializePieces(a_board);
+            	tempBlack.InitializePieces(a_board);
+            }catch(Exception e){
+            	e.printStackTrace();
+            }
+            
             Player mover;
             
-            if(clone.WhoseTurnIsIt().IsWhite()){
+            if(a_board.WhoseTurnIsIt().IsWhite()){
                 mover = tempWhite;
             }else{
                 mover = tempBlack;
@@ -522,8 +518,7 @@ public interface MoveEvaluation{
             
             // Do not continue evaluating this move if the destination tile is invalid
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
-            	
-            	a_piece.AddAttackedTile(a_board.GetTile(newRow, newColumn));
+
                 // Instantiate a candidate move (This could be turned into a regular or attacking move)
                 Move candidate;
                 
@@ -531,12 +526,17 @@ public interface MoveEvaluation{
                 if(a_board.GetTile(newRow, newColumn).IsEmpty()){
                     
                     // Instantiate the candidate move as a member of the RegularMove subclass
-                    candidate = new RegularMove(a_piece, newRow, newColumn);
+                    candidate = new RegularMove(a_piece, newRow, newColumn, a_board);
                     
                     // Make the move on the deep copy of the board (This may not be a legal move)
-                    clone = clone.Move((RegularMove)candidate);
-                    tempWhite.InitializePieces(clone);
-                    tempBlack.InitializePieces(clone);
+                    clone = candidate.GetTransitionalBoard();
+                    
+                    try{
+                    	tempWhite.InitializePieces(clone);
+                    	tempBlack.InitializePieces(clone);
+                    }catch(Exception e){
+                    	e.printStackTrace();
+                    }
                     
                     // Do not add the move if this side's king is not safe
                     if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
@@ -554,12 +554,17 @@ public interface MoveEvaluation{
                     
                     // Only allow further evaluation if the victim is an enemy piece that is not the king
                     if(a_board.GetTile(newRow, newColumn).IsOccupied() && victim.IsEnemy(a_piece) && !victim.IsKing()){
-                        candidate = new AttackingMove(a_piece, newRow, newColumn, victim);
+                        candidate = new AttackingMove(a_piece, newRow, newColumn, victim, a_board);
                         
                         // Make the move
-                        clone = clone.Attack((AttackingMove)candidate, tempWhite, tempBlack);
-                        tempWhite.InitializePieces(clone);
-                        tempBlack.InitializePieces(clone);
+                        clone = candidate.GetTransitionalBoard();
+                        
+                        try{
+                        	tempWhite.InitializePieces(clone);
+                        	tempBlack.InitializePieces(clone);
+                        }catch(Exception e){
+                        	e.printStackTrace();
+                        }
                         
                         // Determine if this move is safe. If so, add it.
                         if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
@@ -627,14 +632,19 @@ public interface MoveEvaluation{
         }        
             
         for(int index = Utilities.ZERO; index < limit; index++){
-            Board clone = Board.GetDeepCopy(a_board);
-            Human tempWhite = new Human(ChessColor.WHITE, clone);
-            Human tempBlack = new Human(ChessColor.BLACK, clone);
-            tempWhite.InitializePieces(clone);
-            tempBlack.InitializePieces(clone);
+            Board clone = null;
+            Human tempWhite = new Human(ChessColor.WHITE, a_board);
+            Human tempBlack = new Human(ChessColor.BLACK, a_board);
+            
+            try{
+            	tempWhite.InitializePieces(a_board);
+            	tempBlack.InitializePieces(a_board);
+            }catch(Exception e){
+            	e.printStackTrace();
+            }
             Player mover;
             
-            if(clone.WhoseTurnIsIt().IsWhite()){
+            if(a_board.WhoseTurnIsIt().IsWhite()){
                 mover = tempWhite;
             }else{
                 mover = tempBlack;
@@ -646,14 +656,19 @@ public interface MoveEvaluation{
             
             // Do not allow this move if it is not to a valid tile
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
-                RegularMove candidate = new RegularMove(a_piece, newRow, newColumn);
+                RegularMove candidate = new RegularMove(a_piece, newRow, newColumn, a_board);
                                 
                 // If the player's king is safe with this move made, add it.
                 if(a_board.GetTile(candidate.GetNewRow(), candidate.GetNewColumn()).IsEmpty()){
                     
-                    clone = clone.Move(candidate);
-                    tempWhite.InitializePieces(clone);
-                    tempBlack.InitializePieces(clone);
+                    clone = candidate.GetTransitionalBoard();
+                    
+                    try{
+                    	tempWhite.InitializePieces(clone);
+                    	tempBlack.InitializePieces(clone);
+                    }catch(Exception e){
+                    	e.printStackTrace();
+                    }
                     
                     // Only add this move if it keeps the player's king safe
                     if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), mover.GetColor())){
@@ -702,14 +717,20 @@ public interface MoveEvaluation{
         
         // Check both diagonals
         for(int index = Utilities.ZERO; index < a_allAttackingMoves.length; index++){
-            Board clone = Board.GetDeepCopy(a_board);
-            Human tempWhite = new Human(ChessColor.WHITE, clone);
-            Human tempBlack = new Human(ChessColor.BLACK, clone);
-            tempWhite.InitializePieces(clone);
-            tempBlack.InitializePieces(clone);
+            Board clone = null;
+            Human tempWhite = new Human(ChessColor.WHITE, a_board);
+            Human tempBlack = new Human(ChessColor.BLACK, a_board);
+            
+            try{
+            	tempWhite.InitializePieces(a_board);
+            	tempBlack.InitializePieces(a_board);
+            }catch(Exception e){
+            	e.printStackTrace();
+            }
+            
             Player mover;
             
-            if(clone.WhoseTurnIsIt().IsWhite()){
+            if(a_board.WhoseTurnIsIt().IsWhite()){
                 mover = tempWhite;
             }else{
                 mover = tempBlack;
@@ -721,16 +742,19 @@ public interface MoveEvaluation{
             
             // Do not add this move if the coordinates go off the board at either side
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
-            	
-            	a_piece.AddAttackedTile(a_board.GetTile(newRow, newColumn));
-            	
+
                 Piece victim = a_board.GetTile(newRow, newColumn).GetPiece();
                 if(victim != null && a_piece.IsEnemy(victim) && !victim.IsKing()){
-                    AttackingMove move = new AttackingMove(a_piece, newRow, newColumn, victim);
+                    AttackingMove move = new AttackingMove(a_piece, newRow, newColumn, victim, a_board);
                     
-                    clone = clone.Attack(move, tempWhite, tempBlack);
-                    tempWhite.InitializePieces(clone);
-                    tempBlack.InitializePieces(clone);
+                    clone = move.GetTransitionalBoard();
+                    
+                    try{
+                    	tempWhite.InitializePieces(clone);
+                    	tempBlack.InitializePieces(clone);
+                    }catch(Exception e){
+                    	e.printStackTrace();
+                    }
                     
                     // If this move keeps the player's king safe, add it.
                     if(MoveEvaluation.IsKingSafe(clone, mover.GetKing().GetCurrentRow(), mover.GetKing().GetCurrentColumn(), a_piece.GetColor())){
@@ -783,14 +807,19 @@ public interface MoveEvaluation{
 
             for(int index = Utilities.ZERO; index < MoveEvaluation.m_allEnPassantMoves.length; index++){
             
-                Board clone = Board.GetDeepCopy(a_board);
-                Human tempWhite = new Human(ChessColor.WHITE, clone);
-                Human tempBlack = new Human(ChessColor.BLACK, clone);
-                tempWhite.InitializePieces(clone);
-                tempBlack.InitializePieces(clone);
+                Board clone = null;
+                Human tempWhite = new Human(ChessColor.WHITE, a_board);
+                Human tempBlack = new Human(ChessColor.BLACK, a_board);
+                
+                try{
+                	tempWhite.InitializePieces(a_board);
+                	tempBlack.InitializePieces(a_board);
+                }catch(Exception e){
+                	e.printStackTrace();
+                }
                 final Player mover;
                 
-                if(clone.WhoseTurnIsIt().IsWhite()){
+                if(a_board.WhoseTurnIsIt().IsWhite()){
                     mover = tempWhite;
                 }else{
                     mover = tempBlack;
@@ -821,10 +850,10 @@ public interface MoveEvaluation{
                                 && ((victim.IsBlack() && victimRow == DarkBlue.GetOriginalRow() + Utilities.TWO && DarkBlue.GetOriginalColumn() == victimColumn)
                                         || (victim.IsWhite() && victimRow == DarkBlue.GetOriginalRow() - Utilities.TWO && DarkBlue.GetOriginalColumn() == victimColumn))){
                         
-                            EnPassantMove move = new EnPassantMove((Pawn)a_piece, destinationRow, destinationColumn, (Pawn)victim);
+                            EnPassantMove move = new EnPassantMove((Pawn)a_piece, destinationRow, destinationColumn, (Pawn)victim, a_board);
                             
                             // Make the move and reinitialize the pieces
-                            clone = clone.EnPassant(move, tempWhite, tempBlack);
+                            clone = move.GetTransitionalBoard();
                             tempWhite.InitializePieces(clone);
                             tempBlack.InitializePieces(clone);
                             
@@ -1319,14 +1348,14 @@ public interface MoveEvaluation{
             Move next = a_movesToCopy.get(index);
             
             if(next.IsEnPassant()){
-                copiedMoves.add(new EnPassantMove((Pawn)next.GetPiece(), next.GetNewRow(), next.GetNewColumn(), (Pawn)next.GetVictim()));
+                copiedMoves.add(new EnPassantMove((Pawn)next.GetPiece(), next.GetNewRow(), next.GetNewColumn(), (Pawn)next.GetVictim(), next.GetInitialBoard()));
             }else if(next.IsCastling()){
                 CastlingMove castle = (CastlingMove) next;
-                copiedMoves.add(new CastlingMove(((King)castle.GetPiece()), castle.GetNewRow(), castle.GetNewColumn()));
+                copiedMoves.add(new CastlingMove(((King)castle.GetPiece()), castle.GetNewRow(), castle.GetNewColumn(), next.GetInitialBoard()));
             }else if(next.IsAttacking()){
-                copiedMoves.add(new AttackingMove(next.GetPiece(), next.GetNewRow(), next.GetNewColumn(), next.GetVictim()));
+                copiedMoves.add(new AttackingMove(next.GetPiece(), next.GetNewRow(), next.GetNewColumn(), next.GetVictim(), next.GetInitialBoard()));
             }else{
-                copiedMoves.add(new RegularMove(next.GetPiece(), next.GetNewRow(), next.GetNewColumn()));
+                copiedMoves.add(new RegularMove(next.GetPiece(), next.GetNewRow(), next.GetNewColumn(), next.GetInitialBoard()));
             }
         }
         

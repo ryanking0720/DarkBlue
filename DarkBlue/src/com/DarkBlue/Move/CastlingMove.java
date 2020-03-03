@@ -1,6 +1,7 @@
 package com.DarkBlue.Move;
 
 import com.DarkBlue.Piece.*;
+import com.DarkBlue.Board.*;
 import com.DarkBlue.Utilities.*;
 
 /*
@@ -56,19 +57,21 @@ public final class CastlingMove extends Move{
         public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn);
     
     SYNOPSIS
-        public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn);
+        public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn, final Board a_board);
     
         King a_king --------------> The king to be castled.
         
         int a_kingNewRow ---------> The new row (same as the old one).
         
         int a_kingNewColumn ------> The new column (2 different from the old one).
+        
+        Board a_board ------------> The board on which this move is made.
     
     DESCRIPTION
         This constructor instantiates a new CastlingMove object.
-        It receives the king and his desired coordinates.
+        It receives the king and his desired coordinates, as well as the board.
         It calculates the source and destination
-         positions of the rook based on the coordinates where the king is to move.
+        positions of the rook based on the coordinates where the king is to move.
         The victim is set to null since castling does not capture any pieces.
         This is the only type of move where two pieces move on the same turn.
     
@@ -78,9 +81,9 @@ public final class CastlingMove extends Move{
     AUTHOR
         Ryan King
     */
-    public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn){
+    public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn, final Board a_board){
         
-        super(a_king, a_kingNewRow, a_kingNewColumn, null, MoveType.CASTLING);
+        super(a_king, a_kingNewRow, a_kingNewColumn, null, a_board);
         
         this.m_rookCurrentRow = a_king.GetCurrentRow();
         this.m_rookDestinationRow = a_king.GetCurrentRow();
@@ -201,6 +204,53 @@ public final class CastlingMove extends Move{
     
     /*
     NAME
+        public final MoveType GetMoveType();
+    
+    SYNOPSIS
+        public final MoveType GetMoveType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the type of this move.
+    
+    RETURNS
+        MoveType.CASTLING.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final MoveType GetMoveType(){
+        return MoveType.CASTLING;
+    }
+    
+    /*
+    NAME
+        public final boolean HasVictim();
+    
+    SYNOPSIS
+        public final boolean HasVictim();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move has a victim,
+        i.e. if the victim field is not set equal to null.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean HasVictim(){
+        return false;
+    }
+    
+    /*
+    NAME
         public int GetRookCurrentRow();
     
     SYNOPSIS
@@ -285,5 +335,97 @@ public final class CastlingMove extends Move{
     */
     public final int GetRookDestinationColumn(){
         return this.m_rookDestinationColumn;
+    }
+    
+    /*
+    NAME
+        public final boolean IsRegular();
+    
+    SYNOPSIS
+        public final boolean IsRegular();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is Regular.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsRegular(){
+        return false;
+    }
+    
+    /*
+    NAME
+        public final boolean IsAttacking();
+    
+    SYNOPSIS
+        public final boolean IsAttacking();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is Attacking.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsAttacking(){
+        return false;
+    }
+    
+    /*
+    NAME
+        public final boolean IsCastling();
+    
+    SYNOPSIS
+        public final boolean IsCastling();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is Castling.
+    
+    RETURNS
+        boolean: Always returns true.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsCastling(){
+        return true;
+    }
+    
+    /*
+    NAME
+        public final boolean IsEnPassant();
+    
+    SYNOPSIS
+        public final boolean IsEnPassant();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move type is En Passant.
+    
+    RETURNS
+        boolean: Always returns false.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final boolean IsEnPassant(){
+        return false;
     }
 }

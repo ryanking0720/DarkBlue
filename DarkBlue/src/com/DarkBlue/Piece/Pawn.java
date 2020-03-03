@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 import com.DarkBlue.Move.*;
+import com.DarkBlue.Player.Minimax;
 import com.DarkBlue.Board.*;
 import com.DarkBlue.GUI.DarkBlue;
 import com.DarkBlue.Utilities.*;
@@ -46,7 +47,7 @@ public final class Pawn extends Piece{
     */
     public Pawn(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
 
-        super(a_color, PieceType.PAWN, Utilities.WHITE_PAWN_ICON, AssignPieceBoardIcon(PieceType.PAWN, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.PAWN, a_color));
+        super(a_color, Utilities.WHITE_PAWN_ICON, AssignPieceBoardIcon(PieceType.PAWN, a_color), a_currentRow, a_currentColumn);
         
         m_currentRegularMoves = new ArrayList<>();
         m_currentAttackingMoves = new ArrayList<>();
@@ -81,9 +82,9 @@ public final class Pawn extends Piece{
         this.m_currentAttackingMoves = new ArrayList<>();
         this.m_currentEnPassantMoves = new ArrayList<>();
         
-        this.m_currentRegularMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentRegularMoves()));
-        this.m_currentAttackingMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentAttackingMoves()));
-        this.m_currentEnPassantMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentEnPassantMoves()));
+        this.m_currentRegularMoves.addAll(candidate.GetCurrentRegularMoves());
+        this.m_currentAttackingMoves.addAll(candidate.GetCurrentAttackingMoves());
+        this.m_currentEnPassantMoves.addAll(candidate.GetCurrentEnPassantMoves());
     }
     
     /**/
@@ -116,9 +117,7 @@ public final class Pawn extends Piece{
         this.m_currentRegularMoves.clear();
         this.m_currentAttackingMoves.clear();
         this.m_currentEnPassantMoves.clear();
-        
-        this.m_attackedTiles.clear();
-        
+
         // Instantiate aliases for Delta arrays for regular and attacking move checking
         final Delta[] regularMoves, attackingMoves;
         
@@ -148,6 +147,30 @@ public final class Pawn extends Piece{
         this.m_currentLegalMoves.addAll(m_currentAttackingMoves);
 
         this.m_currentLegalMoves.addAll(m_currentEnPassantMoves);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final PieceType GetPieceType();
+    
+    SYNOPSIS
+        public final PieceType GetPieceType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's type.
+    
+    RETURNS
+        PieceType.PAWN.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final PieceType GetPieceType(){
+        return PieceType.PAWN;
     }
     
     /**/
@@ -403,6 +426,11 @@ public final class Pawn extends Piece{
         // If s/he closes out, start up again.
         int buttonInt;
         
+        final ArrayList<Double> values = new ArrayList<>();
+    	final ChessColor color = this.GetColor();
+    	final int row = this.GetCurrentRow();
+    	final int column = this.GetCurrentColumn();
+        
         if(a_isHuman){
         
         	while(true){
@@ -416,28 +444,49 @@ public final class Pawn extends Piece{
         		}
         	}
         
-        }else{
+        }else{       	
         	
-        	// Again, make another stupid AI for now
-        	Random random = new Random();
-        	buttonInt = random.nextInt(Utilities.FOUR);
+        	for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
+        		Board clone = Board.GetDeepCopy(a_board);
+        		clone = clone.Promote(Factory.PromotedPieceFactory(color, row, column, i));
+        		values.add((color.IsWhite() ? Minimax.Evaluate(clone) : -Minimax.Evaluate(clone)));
+        	}
+        	
+        	buttonInt = (color.IsWhite() ? GetSmallestIndex(values) : GetLargestIndex(values));
         }
         
-        // Instantiate the chosen piece
-    	switch(buttonInt){
-        	case Utilities.ZERO: newPiece = new Queen(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-        	break;
-        	case Utilities.ONE: newPiece = new Rook(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-        	break;
-        	case Utilities.TWO: newPiece = new Bishop(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-        	break;
-        	case Utilities.THREE: newPiece = new Knight(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn());
-        	break;
-        	default: newPiece = null;
-        	break;
-    	}
+        newPiece = Factory.PromotedPieceFactory(color, row, column, buttonInt);
         
         // Return the board with the newly-promoted piece
         return a_board.Promote(newPiece);
+    }
+    
+    private final int GetLargestIndex(final ArrayList<Double> a_values){
+    	int largest = Utilities.ZERO;
+    	
+    	for(int i = Utilities.ONE; i < a_values.size(); i++){
+    		if(a_values.get(i) > a_values.get(largest)){
+    			largest = i;
+    		}
+    	}
+    	
+    	return largest;
+    }
+    
+    public final Board Promote(final Board a_board, final int a_type){
+    	Board clone = Board.GetDeepCopy(a_board);
+		return clone.Promote(Factory.PromotedPieceFactory(this.m_color, this.m_currentRow, this.m_currentColumn, a_type));
+    }
+    
+    private final int GetSmallestIndex(final ArrayList<Double> a_values){
+    	int smallest = Utilities.ZERO;
+    	
+    	for(int i = Utilities.ONE; i < a_values.size(); i++){
+    		if(a_values.get(i) < a_values.get(smallest)){
+    			smallest = i;
+    		}
+    	}
+    	
+    	return smallest;
     }
 }

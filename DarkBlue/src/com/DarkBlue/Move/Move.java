@@ -1,6 +1,11 @@
 package com.DarkBlue.Move;
 
+import com.DarkBlue.Board.Board;
 import com.DarkBlue.Piece.*;
+import com.DarkBlue.Player.Human;
+import com.DarkBlue.Player.Minimax;
+import com.DarkBlue.Player.Player;
+import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Utilities;
 /*
  * This class represents a move, which can take on several different forms.
@@ -27,7 +32,7 @@ import com.DarkBlue.Utilities.Utilities;
  * 4. The en passant move. This is a special pawn capture that can only occur after an enemy pawn's first move
  * of two squares. I will include more details on its own source file.
  * 
- * The GetStringMove() method is abstract, since the string representation of each move is slightly different
+ * The toString() method is abstract, since the string representation of each move is slightly different
  * depending on the rules of algebraic notation, the type of move, as well as the moving piece.
  * 
  */
@@ -39,20 +44,17 @@ public abstract class Move{
     protected final int m_newRow;// The new row the piece wants to move to
     protected final int m_newColumn;// The new column the piece wants to move to
     protected final Piece m_victim;// The piece on the new tile. Set to null if empty.
-    protected final MoveType m_moveType;
+    protected final Board m_initialBoard;// The initial configuration of the board before this move is made
     
+    /**/
     /*
     NAME
-        public Move(final Piece a_piece, final int a_oldRow, final int a_oldColumn, final int a_newRow, final int a_newColumn, final Piece a_victim, final MoveType a_type);
+        public Move(final Piece a_piece, final int a_oldRow, final int a_oldColumn, final int a_newRow, final int a_newColumn, final Piece a_victim);
     
     SYNOPSIS
-        public Move(final Piece a_piece, final int a_oldRow, final int a_oldColumn, final int a_newRow, final int a_newColumn, final Piece a_victim, final MoveType a_type);
+        public Move(final Piece a_piece, final int a_oldRow, final int a_oldColumn, final int a_newRow, final int a_newColumn, final Piece a_victim);
         
         Piece a_piece --------> The piece to be moved.
-        
-        int a_oldRow ---------> The piece's current row.
-        
-        int a_oldColumn ------> The piece's current column.
         
         int a_newRow ---------> The piece's desired row.
         
@@ -60,12 +62,12 @@ public abstract class Move{
         
         Piece a_victim -------> The piece on the desired tile; set to null if regular or castling.
         
-        MoveType a_type ------> The type of move this is.
-        
+        Board a_board --------> The initial board on which this move is made.
+
     DESCRIPTION
         This constructor initializes a Move object using the piece,
         its current row and column, the new tile's row and column 
-        and the victim on the tile, if any.
+        the victim on the tile (if any), and the board this move is being made on.
     
     RETURNS
         Nothing
@@ -73,16 +75,17 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Piece a_victim, final MoveType a_type){
+    public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Piece a_victim, final Board a_board){
         this.m_piece = a_piece;
         this.m_oldRow = a_piece.GetCurrentRow();
         this.m_oldColumn = a_piece.GetCurrentColumn();
         this.m_newRow = a_newRow;
         this.m_newColumn = a_newColumn;
         this.m_victim = a_victim;
-        this.m_moveType = a_type;
+        this.m_initialBoard = a_board;
     }
     
+    /**/
     /*
     NAME
         public final Piece GetPiece();
@@ -105,6 +108,7 @@ public abstract class Move{
         return this.m_piece;
     }
     
+    /**/
     /*
     NAME
         public final int GetOldRow();
@@ -127,6 +131,7 @@ public abstract class Move{
         return this.m_oldRow;
     }
     
+    /**/
     /*
     NAME
         public final int GetOldColumn();
@@ -149,6 +154,7 @@ public abstract class Move{
         return this.m_oldColumn;
     }
     
+    /**/
     /*
     NAME
         public final int GetNewRow();
@@ -171,6 +177,7 @@ public abstract class Move{
         return this.m_newRow;
     }
     
+    /**/
     /*
     NAME
         public final int GetNewColumn();
@@ -193,6 +200,7 @@ public abstract class Move{
         return this.m_newColumn;
     }
     
+    /**/
     /*
     NAME
         public abstract Piece GetVictim();
@@ -215,13 +223,37 @@ public abstract class Move{
         Ryan King
     */
     public abstract Piece GetVictim();
-        
+    
+    /**/
     /*
     NAME
-        public final boolean HasVictim();
+        public final Board GetInitialBoard();
     
     SYNOPSIS
-        public final boolean HasVictim();
+        public final Board GetInitialBoard();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the initial board field.
+    
+    RETURNS
+        Board m_initialBoard: The initial board field.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final Board GetInitialBoard(){
+    	return this.m_initialBoard;
+    }
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean HasVictim();
+    
+    SYNOPSIS
+        public abstract boolean HasVictim();
     
         No parameters.
     
@@ -235,16 +267,15 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public final boolean HasVictim(){
-        return this.m_victim != null;
-    }
+    public abstract boolean HasVictim();
     
+    /**/
     /*
     NAME
-        public final MoveType GetMoveType();
+        public abstract MoveType GetMoveType();
     
     SYNOPSIS
-        public final MoveType GetMoveType();
+        public abstract MoveType GetMoveType();
     
         No parameters.
     
@@ -258,16 +289,15 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public final MoveType GetMoveType(){
-        return this.m_moveType;
-    }
+    public abstract MoveType GetMoveType();
     
+    /**/
     /*
     NAME
-        public final boolean IsRegular();
+        public abstract boolean IsRegular();
     
     SYNOPSIS
-        public final boolean IsRegular();
+        public abstract boolean IsRegular();
     
         No parameters.
     
@@ -281,16 +311,15 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public final boolean IsRegular(){
-        return this.m_moveType == MoveType.REGULAR;
-    }
+    public abstract boolean IsRegular();
     
+    /**/
     /*
     NAME
-        public final boolean IsAttacking();
+        public abstract boolean IsAttacking();
     
     SYNOPSIS
-        public final boolean IsAttacking();
+        public abstract boolean IsAttacking();
     
         No parameters.
     
@@ -304,16 +333,15 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public final boolean IsAttacking(){
-        return this.m_moveType == MoveType.ATTACKING;
-    }
+    public abstract boolean IsAttacking();
     
+    /**/
     /*
     NAME
-        public final boolean IsCastling();
+        public abstract boolean IsCastling();
     
     SYNOPSIS
-        public final boolean IsCastling();
+        public abstract boolean IsCastling();
     
         No parameters.
     
@@ -327,16 +355,15 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public final boolean IsCastling(){
-        return this.m_moveType == MoveType.CASTLING;
-    }
+    public abstract boolean IsCastling();
     
+    /**/
     /*
     NAME
-        public final boolean IsEnPassant();
+        public abstract boolean IsEnPassant();
     
     SYNOPSIS
-        public final boolean IsEnPassant();
+        public abstract boolean IsEnPassant();
     
         No parameters.
     
@@ -350,37 +377,119 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public final boolean IsEnPassant(){
-        return this.m_moveType == MoveType.EN_PASSANT;
-    }
+    public abstract boolean IsEnPassant();
     
+    /**/
     /*
     NAME
-        public final int GetValue();
+        public final Board GetTransitionalBoard();
     
     SYNOPSIS
-        public final int GetValue();
+        public final Board GetTransitionalBoard();
     
         No parameters.
     
     DESCRIPTION
-        This method returns the value of this move
-        to the AI by returning the value of its victim.
-        If this move has no victim, e.g. it is a regular
-        or castling move, it returns zero.
+        This method returns the resulting board that will
+        be built once this move has been made.
     
     RETURNS
-        The value of the victim of this move if it has one, or zero otherwise.
+        Board: The initial board field with this move made on it.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final Board GetTransitionalBoard(){
+    	final Board clone = Board.GetDeepCopy(this.m_initialBoard);
+    	
+    	final Player white = new Human(ChessColor.WHITE, clone);
+    	final Player black = new Human(ChessColor.BLACK, clone);
+    	
+    	try{
+    		white.InitializePieces(clone);
+    		black.InitializePieces(clone);
+    	}catch(Exception e){
+        	e.printStackTrace();
+        }
+
+    	return Minimax.MakeMove(clone, this, white, black);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean PlacesOpponentIntoCheck();
+    
+    SYNOPSIS
+        public final boolean PlacesOpponentIntoCheck();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move ends up producing a state of the board
+        where the opponent ends up in check.
+    
+    RETURNS
+        True if the opponent ends up in check after the move, and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
         Ryan King
     */
-    public final int GetValue(){
-        try{
-            return this.m_victim.GetValue();
-        }catch(Exception e){
-            return Utilities.ZERO;
+    public final boolean PlacesOpponentIntoCheck(){
+    	final Board clone = this.GetTransitionalBoard();
+    	
+    	final Player white = new Human(ChessColor.WHITE, clone);
+    	final Player black = new Human(ChessColor.BLACK, clone);
+    	
+    	try{
+    		white.InitializePieces(clone);
+    		black.InitializePieces(clone);
+    	}catch(Exception e){
+        	e.printStackTrace();
         }
+
+    	final Player opponent = (this.m_piece.IsWhite() ? black : white);
+    	
+    	return opponent.IsInCheck(clone);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean PlacesOpponentIntoCheckmate();
+    
+    SYNOPSIS
+        public final boolean PlacesOpponentIntoCheckmate();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move ends up producing a state of the board
+        where the opponent ends up in checkmate.
+    
+    RETURNS
+        True if the opponent ends up in checkmate after the move, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean PlacesOpponentIntoCheckmate(){
+    	final Board clone = this.GetTransitionalBoard();
+    	
+    	final Player white = new Human(ChessColor.WHITE, clone);
+    	final Player black = new Human(ChessColor.BLACK, clone);
+    	
+    	try{
+    		white.InitializePieces(clone);
+    		black.InitializePieces(clone);
+    	}catch(Exception e){
+        	e.printStackTrace();
+        }
+
+    	final Player opponent = (this.m_piece.IsWhite() ? black : white);
+    	
+    	return opponent.IsInCheckmate(clone);
     }
 }

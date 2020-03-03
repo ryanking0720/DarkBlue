@@ -97,7 +97,7 @@ public final class King extends Piece{
     */
     public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn, final boolean a_canKingsideCastle, final boolean a_canQueensideCastle){
         
-        super(a_color, PieceType.KING, Utilities.WHITE_KING_ICON, AssignPieceBoardIcon(PieceType.KING, a_color), a_currentRow, a_currentColumn, AssignPieceValue(PieceType.KING, a_color));
+        super(a_color, Utilities.WHITE_KING_ICON, AssignPieceBoardIcon(PieceType.KING, a_color), a_currentRow, a_currentColumn);
         
         this.m_currentCastlingMoves = new ArrayList<>();
         this.m_canKingsideCastle = a_canKingsideCastle;
@@ -135,7 +135,7 @@ public final class King extends Piece{
         
         this.m_currentCastlingMoves = new ArrayList<>();
         
-        this.m_currentCastlingMoves.addAll(MoveEvaluation.CopyCurrentMoves(candidate.GetCurrentCastlingMoves()));
+        this.m_currentCastlingMoves.addAll(candidate.GetCurrentCastlingMoves());
         
         this.m_canKingsideCastle = (!candidate.HasMoved() && candidate.CanKingsideCastle());
         this.m_canQueensideCastle = (!candidate.HasMoved() && candidate.CanQueensideCastle());
@@ -169,8 +169,6 @@ public final class King extends Piece{
         // Clear out the legal moves to prepare for new evaluation
         m_currentLegalMoves.clear();
         m_currentCastlingMoves.clear();
-        
-        this.m_attackedTiles.clear();
 
         // Add the current moves in the king's spectrum
         this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKingMoves));      
@@ -186,6 +184,30 @@ public final class King extends Piece{
         if(!this.m_currentCastlingMoves.isEmpty()){
             this.m_currentLegalMoves.addAll(this.m_currentCastlingMoves);
         }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final PieceType GetPieceType();
+    
+    SYNOPSIS
+        public final PieceType GetPieceType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's type.
+    
+    RETURNS
+        PieceType.KING.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final PieceType GetPieceType(){
+        return PieceType.KING;
     }
     
     /**/
@@ -373,7 +395,7 @@ public final class King extends Piece{
             	kingDestinationColumn = Utilities.SIX;
             	
                 // Instantiate the move
-                CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn);    
+                CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn, a_board);    
                 
                 // Add the move to the list
                 m_currentCastlingMoves.add(castle);
@@ -383,7 +405,7 @@ public final class King extends Piece{
             	kingDestinationColumn = Utilities.TWO;
             	
                 // Instantiate the move
-                CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn);    
+                CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn, a_board);    
                 
                 // Add the move to the list
                 m_currentCastlingMoves.add(castle);
