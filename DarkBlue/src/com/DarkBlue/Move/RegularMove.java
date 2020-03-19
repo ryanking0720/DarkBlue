@@ -1,12 +1,20 @@
 package com.DarkBlue.Move;
 
 import com.DarkBlue.Piece.Piece;
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Utilities.*;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
+import com.DarkBlue.Board.Board;
 
+/*
+ * This represents any piece moving between two tiles
+ * that does not involve any capture of any kind.
+ * 
+ * Castling moves performed by kings are different,
+ * and are handled in a class of their own.
+ */
 public final class RegularMove extends Move{
 
-	/**/
+    /**/
     /*
     NAME
         public RegularMove(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board);
@@ -37,6 +45,7 @@ public final class RegularMove extends Move{
         super(a_piece, a_newRow, a_newColumn, null, a_board);
     }
 
+    /**/
     /*
     NAME
         public final String toString();
@@ -79,6 +88,7 @@ public final class RegularMove extends Move{
         return moveString;
     }
     
+    /**/
     /*
     NAME
         public final Piece GetVictim();
@@ -93,7 +103,7 @@ public final class RegularMove extends Move{
         It returns the victim of this move, which will always be null.
     
     RETURNS
-        Piece m_victim: The captured piece (none in this subclass).
+        Piece m_victim: Always returns null.
     
     AUTHOR
         Ryan King
@@ -103,6 +113,7 @@ public final class RegularMove extends Move{
         return null;
     }
  
+    /**/
     /*
     NAME
         public final MoveType GetMoveType();
@@ -126,6 +137,7 @@ public final class RegularMove extends Move{
         return MoveType.REGULAR;
     }
     
+    /**/
     /*
     NAME
         public final boolean HasVictim();
@@ -150,6 +162,7 @@ public final class RegularMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsRegular();
@@ -173,6 +186,7 @@ public final class RegularMove extends Move{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsAttacking();
@@ -196,6 +210,7 @@ public final class RegularMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsCastling();
@@ -219,6 +234,7 @@ public final class RegularMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsEnPassant();

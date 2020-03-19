@@ -8,6 +8,8 @@ public interface BoardUtilities{
     public static final Color BLACK = new Color(Utilities.TWO_HUNDRED_FOUR, Utilities.ONE_HUNDRED_TWO, Utilities.ZERO, Utilities.TWO_HUNDRED_FIFTY_FIVE);
     public static final Color WHITE = new Color(Utilities.TWO_HUNDRED_FIFTY_FIVE, Utilities.ONE_HUNDRED_SEVENTY_EIGHT, Utilities.ONE_HUNDRED_TWO, Utilities.TWO_HUNDRED_FIFTY_FIVE);
     public static final Color SELECTED_GREEN = new Color(Utilities.FIFTY_ONE, Utilities.TWO_HUNDRED_FIFTY_FIVE, Utilities.FIFTY_ONE, Utilities.TWO_HUNDRED_FIFTY_FIVE);
+    public static final Color BORDER_BLACK = new Color(154, 152, 0, 1);
+    public static final Color BORDER_WHITE = new Color(155, 228, 252, 1);
 	
     /**/
     /*
@@ -73,36 +75,66 @@ public interface BoardUtilities{
         }
     }
     
+    /**/
+    /*
+    NAME
+        public static String ToAlgebraicColumn(final int a_column);
+    
+    SYNOPSIS
+        public static String ToAlgebraicColumn(final int a_column);
+        
+        int a_column --------> The column of the array to be converted.
+    
+    DESCRIPTION
+        This method converts the given array index to a column in algebraic notation.
+        For example, 0 converts to h, 1 to g, 2 to f, and so on.
+        Invalid values return the null character.
+    
+    RETURNS
+        String algebraic: The array spot in algebraic notation, or null if the coordinates are invalid.
+    
+    AUTHOR
+        Ryan King
+    */
     public static String ToAlgebraicColumn(final int a_column){
-        String algebraic = "";
         try{
             switch(a_column){
-                case Utilities.ZERO: algebraic = Character.toString(Utilities.A);
-                break;
-                case Utilities.ONE: algebraic = Character.toString(Utilities.B);
-                break;
-                case Utilities.TWO: algebraic = Character.toString(Utilities.C);
-                break;
-                case Utilities.THREE: algebraic = Character.toString(Utilities.D);
-                break;
-                case Utilities.FOUR: algebraic = Character.toString(Utilities.E);
-                break;
-                case Utilities.FIVE: algebraic = Character.toString(Utilities.F);
-                break;
-                case Utilities.SIX: algebraic = Character.toString(Utilities.G);
-                break;
-                case Utilities.SEVEN: algebraic = Character.toString(Utilities.H);
-                break;
-                default: algebraic = Character.toString(Utilities.NULL);
-                break;
+                case Utilities.ZERO: return Character.toString(Utilities.A);
+                case Utilities.ONE: return Character.toString(Utilities.B);
+                case Utilities.TWO: return Character.toString(Utilities.C);
+                case Utilities.THREE: return Character.toString(Utilities.D);
+                case Utilities.FOUR: return Character.toString(Utilities.E);
+                case Utilities.FIVE: return Character.toString(Utilities.F);
+                case Utilities.SIX: return Character.toString(Utilities.G);
+                case Utilities.SEVEN: return Character.toString(Utilities.H);
+                default: return Character.toString(Utilities.NULL);
             }
         }catch(Exception e){
             return null;
         }
-        
-        return algebraic;
     }
     
+    /**/
+    /*
+    NAME
+        public static String ToAlgebraicRow(final int a_row);
+    
+    SYNOPSIS
+        public static String ToAlgebraicRow(final int a_row);
+    
+        int a_row -----------> The row of the array to be converted.
+
+    DESCRIPTION
+        This method converts the array index to a row in algebraic notation. 
+        For example, row 0 would be converted to 8, 1 to 7, 2 to 6, etc.
+        Any invalid number will return -1.
+    
+    RETURNS
+        String algebraic: The row in algebraic notation, or null if the coordinates are invalid.
+    
+    AUTHOR
+        Ryan King
+    */
     public static String ToAlgebraicRow(final int a_row){
         String algebraic = null;
         try{
@@ -141,37 +173,11 @@ public interface BoardUtilities{
         Ryan King
     */
     public static String ToAlgebraic(final int a_row, final int a_column){
-        
         if(!HasValidCoordinates(a_row, a_column)){
             return null;
         }
         
-        String algebraic = "";
-        
-        switch(a_column){
-            case Utilities.ZERO: algebraic = Character.toString(Utilities.A);
-            break;
-            case Utilities.ONE: algebraic = Character.toString(Utilities.B);
-            break;
-            case Utilities.TWO: algebraic = Character.toString(Utilities.C);
-            break;
-            case Utilities.THREE: algebraic = Character.toString(Utilities.D);
-            break;
-            case Utilities.FOUR: algebraic = Character.toString(Utilities.E);
-            break;
-            case Utilities.FIVE: algebraic = Character.toString(Utilities.F);
-            break;
-            case Utilities.SIX: algebraic = Character.toString(Utilities.G);
-            break;
-            case Utilities.SEVEN: algebraic = Character.toString(Utilities.H);
-            break;
-            default: algebraic = Character.toString(Utilities.NULL);
-            break;
-        }
-        
-        algebraic += Integer.toString(Utilities.EIGHT - a_row);
-        
-        return algebraic;
+        return ToAlgebraicColumn(a_column) + ToAlgebraicRow(a_row);
     }
     
     /**/

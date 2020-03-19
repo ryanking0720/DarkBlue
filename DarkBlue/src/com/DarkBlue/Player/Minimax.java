@@ -109,7 +109,7 @@ public class Minimax{
         Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer){
+	public static final Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer, final ChessColor a_callerColor){
 		// bestMove will hold the best move found by the board evaluation
 		Move bestMove = null;
 		
@@ -135,12 +135,16 @@ public class Minimax{
 			tempBlack.Refresh(result);
 			
 			// Recursively search for the best value
-			currentValue = Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, !a_isMaximizer);
+			currentValue = Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, !a_isMaximizer, a_callerColor);
 			
 			// Update the value if the next one found is better; update the move accordingly
 			if(currentValue >= bestValue){
 				bestValue = currentValue;
 				bestMove = move;
+				
+				if(bestMove.PlacesOpponentIntoCheckmate()){
+					return bestMove;
+				}
 			}
 		}
 				
@@ -182,10 +186,11 @@ public class Minimax{
     	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer){
+	public static final double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer, final ChessColor a_callerColor){
 		// Base case: The search depth is as deep as it can go
 		if(a_depth == Utilities.ZERO){
-			return (DarkBlue.GetComputerColor().IsBlack() ? -Evaluate(a_board) : Evaluate(a_board));
+			//return (a_callerColor.IsBlack() ? -Evaluate(a_board, a_callerColor) : Evaluate(a_board, a_callerColor));
+		    return -Evaluate(a_board, a_callerColor);
 		}
 
 		// moves will hold the current player's moves
@@ -196,7 +201,7 @@ public class Minimax{
 		
 		if(a_isMaximizer){
 			// All values found will be higher than this
-			bestValue = Integer.MIN_VALUE;
+			bestValue = a_alpha;
 			
 			for(Move move : moves){
 				// Make a deep copy of the board with the move made on it
@@ -218,7 +223,7 @@ public class Minimax{
 				// Evaluate the move as normal if no promotion can be made
 				if(promotedPawn == null){
 					// Find the highest value recursively
-					bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer));
+					bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 				
 					// Keep track of the boundaries
 					a_alpha = Math.max(a_alpha, bestValue);
@@ -231,7 +236,7 @@ public class Minimax{
 						tempBlack.Refresh(promotion);
 						
 						// Find the highest value recursively
-						bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer));
+						bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 					
 						// Keep track of the boundaries
 						a_alpha = Math.max(a_alpha, bestValue);
@@ -250,7 +255,7 @@ public class Minimax{
 			return bestValue;
 		}else{
 			// All values found will be lower than this
-			bestValue = Integer.MAX_VALUE;
+			bestValue = a_beta;
 			
 			for(Move move : moves){
 				// Make a deep copy of the board with the move made on it
@@ -272,7 +277,7 @@ public class Minimax{
 				// Evaluate the move as normal if no promotion can be made
 				if(promotedPawn == null){
 					// Find the lowest value recursively
-					bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer));
+					bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 				
 					// Keep track of the boundaries
 					a_beta = Math.min(a_beta, bestValue);
@@ -284,8 +289,8 @@ public class Minimax{
 						tempWhite.Refresh(promotion);
 						tempBlack.Refresh(promotion);
 						
-						// Find the highest value recursively
-						bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer));
+						// Find the lowest value recursively
+						bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 					
 						// Keep track of the boundaries
 						a_beta = Math.min(a_beta, bestValue);
@@ -326,7 +331,7 @@ public class Minimax{
     	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double Evaluate(final Board a_board){
+	public static final double Evaluate(final Board a_board, final ChessColor a_callerColor){
 		double evaluation = Utilities.ZERO;
 		
 		// Evaluate every tile of the board
@@ -342,7 +347,7 @@ public class Minimax{
 			// Get the value of the piece
 			final Piece piece = a_board.GetTile(row, column).GetPiece();
 			
-			evaluation += GetPieceValue(piece, row, column);
+			evaluation += GetPieceValue(piece, row, column, a_callerColor);
 		}
 		
 		return evaluation;
@@ -373,7 +378,7 @@ public class Minimax{
     	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double GetPieceValue(final Piece a_piece, final int a_x, final int a_y){
+	public static final double GetPieceValue(final Piece a_piece, final int a_x, final int a_y, final ChessColor a_callerColor){
 		// Null arguments do not return any value of significance
 	    if (a_piece == null){
 	        return Utilities.ZERO;
@@ -383,7 +388,7 @@ public class Minimax{
 	    final double absoluteValue = GetAbsoluteValue(a_piece, a_x ,a_y);
 	    
 	    // Negate the value if the piece is black or keep it positive if it's white
-	    return (a_piece.IsWhite() ? absoluteValue : -absoluteValue);
+	    return (a_piece.GetColor().IsEnemy(a_callerColor) ? absoluteValue : -absoluteValue);
 	}
 
 	/**/
@@ -420,15 +425,15 @@ public class Minimax{
 		
 	    if(a_piece.IsPawn()){
 	        return PAWN_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whitePawnPositions[a_y][a_x] : MoveEvaluation.m_blackPawnPositions[a_y][a_x]);
-	    }else if (a_piece.IsRook()){
+	    }else if(a_piece.IsRook()){
 	        return ROOK_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whiteRookPositions[a_y][a_x] : MoveEvaluation.m_blackRookPositions[a_y][a_x]);
-	    }else if (a_piece.IsKnight()){
+	    }else if(a_piece.IsKnight()){
 	        return BISHOP_OR_KNIGHT_VALUE + MoveEvaluation.m_knightPositions[a_y][a_x];
-	    }else if (a_piece.IsBishop()){
+	    }else if(a_piece.IsBishop()){
 	        return BISHOP_OR_KNIGHT_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whiteBishopPositions[a_y][a_x] : MoveEvaluation.m_blackBishopPositions[a_y][a_x]);
-	    }else if (a_piece.IsQueen()){
+	    }else if(a_piece.IsQueen()){
 	        return QUEEN_VALUE + MoveEvaluation.m_queenPositions[a_y][a_x];
-	    }else if (a_piece.IsKing()){
+	    }else if(a_piece.IsKing()){
 	        return KING_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whiteKingPositions[a_y][a_x] : MoveEvaluation.m_blackKingPositions[a_y][a_x]);
 	    }
 	        

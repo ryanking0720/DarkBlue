@@ -1,12 +1,12 @@
 package com.DarkBlue.Move;
 
 import com.DarkBlue.Board.Board;
-import com.DarkBlue.Piece.*;
+import com.DarkBlue.Piece.Piece;
 import com.DarkBlue.Player.Human;
 import com.DarkBlue.Player.Minimax;
 import com.DarkBlue.Player.Player;
 import com.DarkBlue.Utilities.ChessColor;
-import com.DarkBlue.Utilities.Utilities;
+
 /*
  * This class represents a move, which can take on several different forms.
  * 
@@ -34,6 +34,8 @@ import com.DarkBlue.Utilities.Utilities;
  * 
  * The toString() method is abstract, since the string representation of each move is slightly different
  * depending on the rules of algebraic notation, the type of move, as well as the moving piece.
+ * 
+ * Inspired by the Move class by Amir Afghani in Black Widow Chess,
  * 
  */
 public abstract class Move{
@@ -244,7 +246,7 @@ public abstract class Move{
         Ryan King
     */
     public final Board GetInitialBoard(){
-    	return this.m_initialBoard;
+        return this.m_initialBoard;
     }
     
     /**/
@@ -262,7 +264,8 @@ public abstract class Move{
         i.e. if the tile's piece is not set equal to null.
     
     RETURNS
-        true if the tile's piece is non-null, and false otherwise.
+        boolean: true if the tile's piece is non-null, and false otherwise.
+        One of these two options will always occur.
     
     AUTHOR
         Ryan King
@@ -400,19 +403,23 @@ public abstract class Move{
         Ryan King
     */
     public final Board GetTransitionalBoard(){
-    	final Board clone = Board.GetDeepCopy(this.m_initialBoard);
-    	
-    	final Player white = new Human(ChessColor.WHITE, clone);
-    	final Player black = new Human(ChessColor.BLACK, clone);
-    	
-    	try{
-    		white.InitializePieces(clone);
-    		black.InitializePieces(clone);
-    	}catch(Exception e){
-        	e.printStackTrace();
+        // Make a copy of the initial board
+        final Board clone = Board.GetDeepCopy(this.m_initialBoard);
+        
+        // Initialize players to hold the pieces
+        final Player white = new Human(ChessColor.WHITE, clone);
+        final Player black = new Human(ChessColor.BLACK, clone);
+        
+        // Determine what pieces each side has
+        try{
+            white.InitializePieces(clone);
+            black.InitializePieces(clone);
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
-    	return Minimax.MakeMove(clone, this, white, black);
+        // Make the move on the copied board
+        return Minimax.MakeMove(clone, this, white, black);
     }
     
     /**/
@@ -437,21 +444,26 @@ public abstract class Move{
         Ryan King
     */
     public final boolean PlacesOpponentIntoCheck(){
-    	final Board clone = this.GetTransitionalBoard();
-    	
-    	final Player white = new Human(ChessColor.WHITE, clone);
-    	final Player black = new Human(ChessColor.BLACK, clone);
-    	
-    	try{
-    		white.InitializePieces(clone);
-    		black.InitializePieces(clone);
-    	}catch(Exception e){
-        	e.printStackTrace();
+        // Make a copy of the transitional board
+        final Board clone = this.GetTransitionalBoard();
+        
+        // Initialize players to hold the pieces
+        final Player white = new Human(ChessColor.WHITE, clone);
+        final Player black = new Human(ChessColor.BLACK, clone);
+        
+        // Determine what pieces each side has
+        try{
+            white.InitializePieces(clone);
+            black.InitializePieces(clone);
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
-    	final Player opponent = (this.m_piece.IsWhite() ? black : white);
-    	
-    	return opponent.IsInCheck(clone);
+        // Determine who the opponent is
+        final Player opponent = (this.m_piece.IsWhite() ? black : white);
+        
+        // Return if the opponent is in check
+        return opponent.IsInCheck(clone);
     }
     
     /**/
@@ -476,20 +488,25 @@ public abstract class Move{
         Ryan King
     */
     public final boolean PlacesOpponentIntoCheckmate(){
-    	final Board clone = this.GetTransitionalBoard();
-    	
-    	final Player white = new Human(ChessColor.WHITE, clone);
-    	final Player black = new Human(ChessColor.BLACK, clone);
-    	
-    	try{
-    		white.InitializePieces(clone);
-    		black.InitializePieces(clone);
-    	}catch(Exception e){
-        	e.printStackTrace();
+        // Make a copy of the transitional board
+        final Board clone = this.GetTransitionalBoard();
+        
+        // Initialize players to hold the pieces
+        final Player white = new Human(ChessColor.WHITE, clone);
+        final Player black = new Human(ChessColor.BLACK, clone);
+        
+        // Determine what pieces each side has
+        try{
+            white.InitializePieces(clone);
+            black.InitializePieces(clone);
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
-    	final Player opponent = (this.m_piece.IsWhite() ? black : white);
-    	
-    	return opponent.IsInCheckmate(clone);
+        // Determine who the opponent is
+        final Player opponent = (this.m_piece.IsWhite() ? black : white);
+        
+        // Return if the opponent is in checkmate
+        return opponent.IsInCheckmate(clone);
     }
 }

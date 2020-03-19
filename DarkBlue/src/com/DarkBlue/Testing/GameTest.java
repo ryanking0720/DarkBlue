@@ -145,6 +145,7 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
+    /*
     public static final void CheckSourceTile(){
         do{
             System.out.print(DarkBlue.SOURCE + ": ");
@@ -171,7 +172,7 @@ public class GameTest{
         }
         }while(!BoardUtilities.HasValidCoordinates(m_sourceRow, m_sourceColumn));
     }
-    
+    */
     /*
     NAME
         public final boolean CheckDestinationTile(final Delta a_destination);
@@ -194,6 +195,7 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
+    /*
     public static final void CheckDestinationTile(){
         do{
             System.out.print(DarkBlue.DESTINATION + ": ");
@@ -221,7 +223,7 @@ public class GameTest{
         }
         }while(!BoardUtilities.HasValidCoordinates(m_destinationRow, m_destinationColumn));
     }
-    
+    */
     /*
     NAME
         private final void EvaluateGameState();

@@ -1,15 +1,38 @@
 package com.DarkBlue.Piece;
 
 import java.util.ArrayList;
-import java.util.Random;
 import javax.swing.JOptionPane;
 
-import com.DarkBlue.Move.*;
 import com.DarkBlue.Player.Minimax;
-import com.DarkBlue.Board.*;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Move.Delta;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Utilities.Factory;
+import com.DarkBlue.Board.Board;
 import com.DarkBlue.GUI.DarkBlue;
-import com.DarkBlue.Utilities.*;
 
+/*
+ * This represents a chess piece that can move one tile in front if it is not blocked, 
+ * or two tiles in front on its first move (given that second tile is not blocked either). 
+ * It can only move one tile on its first move if the second tile ahead of it is blocked.
+ * If the pawn did not move and the second tile becomes unblocked on a later turn, it regains the privilege of moving two tiles.
+ * 
+ * If a pawn moves two tiles on its fist move, this makes the board record the tile before it as the new en passant tile, which is used
+ * in the FEN file format for determining all useful information before resuming a game.
+ * Any other move by a pawn or any other piece will render this field null.
+ * 
+ * The pawn captures by moving diagonally forward in either direction, and can only do so if a non-king enemy piece is present on such a tile.
+ * 
+ * The pawn can also be promoted to a queen, rook, bishop, or knight if it reaches the opponent's innermost rank.
+ * There is no limit on what pieces are on the board or were previously captured when determining promotions.
+ * For example, a player could have up to nine queens or ten rooks, knights, or bishops if all of his/her pawns get promoted.
+ * The effect of whichever promoted piece is chosen is immediate; a promotion could very well lead to check or checkmate.
+ * 
+ * The pawn can capture an enemy pawn that just moved two tiles on its first move the previous turn in a special move known as "en passant".
+ * The pawn loses this right if no action is taken on that turn.
+ */
 public final class Pawn extends Piece{
     
     private final ArrayList<Move> m_currentRegularMoves;
@@ -57,16 +80,23 @@ public final class Pawn extends Piece{
     /**/
     /*
     NAME
-        public Pawn(final Piece a_piece);
+        public Pawn(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
     
     SYNOPSIS
-        public Pawn(final Piece a_piece);
+        public Pawn(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece --------> The Piece to be copied.
+        
+        int a_newRow ---------> The Piece's new row.
+        
+        int a_newColumn ------> The Piece's new column.
+        
+        int a_moves ----------> The Piece's new move count.
     
     DESCRIPTION
         This copy constructor constructs a new Pawn object by passing in
         a Piece object and cloning its fields.
+        Row, column, and move count are passed in separately.
         
     RETURNS
         Nothing
@@ -99,9 +129,9 @@ public final class Pawn extends Piece{
     
     DESCRIPTION
         This method populates the current legal move array, taking into account which
-        tiles the piece can actually visit on this turn. For example, no tile occurring after an
-        opposing piece or on and after a friendly piece can be visited. Also, this piece
-        may not have any legal moves if the king is in check and the piece can't help him.
+        tiles the piece can actually visit on this turn. For example, no movement would be
+        allowed to a tile if a piece is blocking it or diagonally if no non-king enemy piece exists. 
+        Also, this piece may not have any legal moves if the king is in check and the piece can't help him.
     
     RETURNS
         Nothing
@@ -194,7 +224,7 @@ public final class Pawn extends Piece{
     */
     @Override
     public final boolean IsPawn(){
-    	return true;
+        return true;
     }
     
     /**/
@@ -218,7 +248,7 @@ public final class Pawn extends Piece{
     */
     @Override
     public final boolean IsKing(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -242,7 +272,7 @@ public final class Pawn extends Piece{
     */
     @Override
     public final boolean IsRook(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -266,7 +296,7 @@ public final class Pawn extends Piece{
     */
     @Override
     public final boolean IsBishop(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -290,7 +320,7 @@ public final class Pawn extends Piece{
     */
     @Override
     public final boolean IsQueen(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -314,16 +344,16 @@ public final class Pawn extends Piece{
     */
     @Override
     public final boolean IsKnight(){
-    	return false;
+        return false;
     }
     
     /**/
     /*
     NAME
-        public ArrayList<Move> GetCurrentRegularMoves();
+        public final ArrayList<Move> GetCurrentRegularMoves();
     
     SYNOPSIS
-        public ArrayList<Move> GetCurrentRegularMoves();
+        public final ArrayList<Move> GetCurrentRegularMoves();
     
         No parameters.
     
@@ -331,23 +361,23 @@ public final class Pawn extends Piece{
         This method returns the ArrayList of regular moves.
     
     RETURNS
-        m_currentEnPassantMoves: An ArrayList containing this pawn's regular moves
+        m_currentRegularMoves: An ArrayList containing this pawn's regular moves
         for the current turn.
     
     AUTHOR
         Ryan King
     */
-    public ArrayList<Move> GetCurrentRegularMoves(){
+    public final ArrayList<Move> GetCurrentRegularMoves(){
         return this.m_currentRegularMoves;
     }
     
     /**/
     /*
     NAME
-        public ArrayList<Move> GetCurrentAttackingMoves();
+        public final ArrayList<Move> GetCurrentAttackingMoves();
     
     SYNOPSIS
-        public ArrayList<Move> GetCurrentAttackingMoves();
+        public final ArrayList<Move> GetCurrentAttackingMoves();
     
         No parameters.
     
@@ -361,17 +391,17 @@ public final class Pawn extends Piece{
     AUTHOR
         Ryan King
     */
-    public ArrayList<Move> GetCurrentAttackingMoves(){
+    public final ArrayList<Move> GetCurrentAttackingMoves(){
         return this.m_currentAttackingMoves;
     }
     
     /**/
     /*
     NAME
-        public ArrayList<Move> GetCurrentEnPassantMoves();
+        public final ArrayList<Move> GetCurrentEnPassantMoves();
     
     SYNOPSIS
-        public ArrayList<Move> GetCurrentEnPassantMoves();
+        public final ArrayList<Move> GetCurrentEnPassantMoves();
     
         No parameters.
     
@@ -385,17 +415,17 @@ public final class Pawn extends Piece{
     AUTHOR
         Ryan King
     */
-    public ArrayList<Move> GetCurrentEnPassantMoves(){
+    public final ArrayList<Move> GetCurrentEnPassantMoves(){
         return this.m_currentEnPassantMoves;
     }
 
     /**/
     /*
     NAME
-        public Board Promote(final Board a_board, final boolean a_isHuman);
+        public final Board Promote(final Board a_board, final boolean a_isHuman);
     
     SYNOPSIS
-        public Board Promote(final Board a_board, final boolean a_isHuman);
+        public final Board Promote(final Board a_board, final boolean a_isHuman);
     
         Board a_board ------------> The board where a pawn is going to be promoted.
         
@@ -415,9 +445,9 @@ public final class Pawn extends Piece{
     AUTHOR
         Ryan King
     */
-    public Board Promote(final Board a_board, final boolean a_isHuman){
+    public final Board Promote(final Board a_board, final boolean a_isHuman){
         // Initialize options we'll need for buttons
-        Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
+        final Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
         
         // Data we'll need to instantiate the piece
         final Piece newPiece;
@@ -427,32 +457,32 @@ public final class Pawn extends Piece{
         int buttonInt;
         
         final ArrayList<Double> values = new ArrayList<>();
-    	final ChessColor color = this.GetColor();
-    	final int row = this.GetCurrentRow();
-    	final int column = this.GetCurrentColumn();
+        final ChessColor color = this.GetColor();
+        final int row = this.GetCurrentRow();
+        final int column = this.GetCurrentColumn();
         
         if(a_isHuman){
         
-        	while(true){
+            while(true){
             
-        		// Determine which piece the user wants to promote this pawn to
-        		buttonInt = JOptionPane.showOptionDialog(null, PROMOTION, DarkBlue.TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
+                // Determine which piece the user wants to promote this pawn to
+                buttonInt = JOptionPane.showOptionDialog(null, PROMOTION, DarkBlue.TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
 
-        		// Only break out if the user chose a piece
-        		if(buttonInt != JOptionPane.CLOSED_OPTION){
-        			break;
-        		}
-        	}
+                // Only break out if the user chose a piece
+                if(buttonInt != JOptionPane.CLOSED_OPTION){
+                    break;
+                }
+            }
         
-        }else{       	
-        	
-        	for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
-        		Board clone = Board.GetDeepCopy(a_board);
-        		clone = clone.Promote(Factory.PromotedPieceFactory(color, row, column, i));
-        		values.add((color.IsWhite() ? Minimax.Evaluate(clone) : -Minimax.Evaluate(clone)));
-        	}
-        	
-        	buttonInt = (color.IsWhite() ? GetSmallestIndex(values) : GetLargestIndex(values));
+        }else{           
+            
+            for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
+                Board clone = Board.GetDeepCopy(a_board);
+                clone = clone.Promote(Factory.PromotedPieceFactory(color, row, column, i));
+                values.add((color.IsWhite() ? Minimax.Evaluate(clone, color) : -Minimax.Evaluate(clone, color)));
+            }
+            
+            buttonInt = (color.IsWhite() ? GetSmallestIndex(values) : GetLargestIndex(values));
         }
         
         newPiece = Factory.PromotedPieceFactory(color, row, column, buttonInt);
@@ -462,31 +492,31 @@ public final class Pawn extends Piece{
     }
     
     private final int GetLargestIndex(final ArrayList<Double> a_values){
-    	int largest = Utilities.ZERO;
-    	
-    	for(int i = Utilities.ONE; i < a_values.size(); i++){
-    		if(a_values.get(i) > a_values.get(largest)){
-    			largest = i;
-    		}
-    	}
-    	
-    	return largest;
+        int largest = Utilities.ZERO;
+        
+        for(int i = Utilities.ONE; i < a_values.size(); i++){
+            if(a_values.get(i) > a_values.get(largest)){
+                largest = i;
+            }
+        }
+        
+        return largest;
     }
     
     public final Board Promote(final Board a_board, final int a_type){
-    	Board clone = Board.GetDeepCopy(a_board);
-		return clone.Promote(Factory.PromotedPieceFactory(this.m_color, this.m_currentRow, this.m_currentColumn, a_type));
+        Board clone = Board.GetDeepCopy(a_board);
+        return clone.Promote(Factory.PromotedPieceFactory(this.m_color, this.m_currentRow, this.m_currentColumn, a_type));
     }
     
     private final int GetSmallestIndex(final ArrayList<Double> a_values){
-    	int smallest = Utilities.ZERO;
-    	
-    	for(int i = Utilities.ONE; i < a_values.size(); i++){
-    		if(a_values.get(i) < a_values.get(smallest)){
-    			smallest = i;
-    		}
-    	}
-    	
-    	return smallest;
+        int smallest = Utilities.ZERO;
+        
+        for(int i = Utilities.ONE; i < a_values.size(); i++){
+            if(a_values.get(i) < a_values.get(smallest)){
+                smallest = i;
+            }
+        }
+        
+        return smallest;
     }
 }

@@ -1,10 +1,17 @@
 package com.DarkBlue.Utilities;
 
-import java.awt.Color;
-
 import com.DarkBlue.Move.Move;
-import com.DarkBlue.Piece.*;
+import com.DarkBlue.Piece.Piece;
 
+/*
+ * This interface contains symbolic constants for
+ * commonly used numbers such as 0, 1, 2, etc.
+ * as well as algebraic and Unicode icons for all chess pieces.
+ * Fields and methods here are determined to be common enough
+ * to be used anywhere regardless of the type of class.
+ * 
+ * It also contains move comparison and legality checking.
+ */
 public interface Utilities{
     // Icons for pieces to be used in algebraic notation
     public static final char WHITE_PAWN_ICON = 'P';
@@ -94,9 +101,7 @@ public interface Utilities{
     public static final int TWO_HUNDRED_FOUR = 204;
     public static final int TWO_HUNDRED_FIFTY_FIVE = 255;
     public static final int THREE_HUNDRED_SIXTY = 360;
-    public static final int FOUR_HUNDRED_TWENTY = 420;
-    public static final int NINE_HUNDRED_NINETY_NINE = 999;
-    
+
     public static final long ONE_LONG = 1;
     
     /**/

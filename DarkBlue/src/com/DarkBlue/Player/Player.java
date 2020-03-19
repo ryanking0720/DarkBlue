@@ -1,21 +1,29 @@
 package com.DarkBlue.Player;
 
-import com.DarkBlue.Piece.*;
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Utilities.*;
-import com.DarkBlue.Board.*;
+import com.DarkBlue.Piece.Piece;
+import com.DarkBlue.Piece.King;
+import com.DarkBlue.Piece.Knight;
+import com.DarkBlue.Piece.Rook;
+import com.DarkBlue.Piece.Queen;
+import com.DarkBlue.Piece.Bishop;
+import com.DarkBlue.Piece.Pawn;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
+/*
+ * This class represents a player. It contains a color, a type (human or computer),
+ * a king, a list of active pieces, a list of captured pieces, and a list of all current legal moves.
+ */
 public abstract class Player{
     
     // The player's side, i.e. white or black, which does not change at all after initialized.
     protected final ChessColor m_color;
-    
-    // The type of player, i.e. human or computer
-    protected final PlayerType m_type;
-    
+
     // The one and only king that is placed on the central spot opposite the queen
     protected King m_king;
     
@@ -52,9 +60,8 @@ public abstract class Player{
     AUTHOR
         Ryan King
     */
-    public Player(final ChessColor a_color, final Board a_board, final PlayerType a_type){
+    public Player(final ChessColor a_color, final Board a_board){
         this.m_color = a_color;
-        this.m_type = a_type;
         this.m_activePieces = new ArrayList<>();
         this.m_capturedPieces = new ArrayList<>();
         this.m_allCurrentLegalMoves = new ArrayList<>();
@@ -85,8 +92,7 @@ public abstract class Player{
     public Player(final Player a_player, final Board a_board){
         // Copy over basic fields
         this.m_color = a_player.GetColor();
-        this.m_type = a_player.GetType();
-        
+
         // Initialize ArrayLists
         this.m_allCurrentLegalMoves = new ArrayList<>();
         this.m_activePieces = new ArrayList<>();        
@@ -359,30 +365,6 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public PlayerType GetType();
-    
-    SYNOPSIS
-        public PlayerType GetType();
-    
-        No parameters
-    
-    DESCRIPTION
-        This method returns which type the player is,
-        i.e. human or computer.
-    
-    RETURNS
-        PlayerType.HUMAN or PlayerType.COMPUTER.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final PlayerType GetType(){
-        return this.m_type;
-    }
-    
-    /**/
-    /*
-    NAME
         public abstract boolean IsHuman();
     
     SYNOPSIS
@@ -604,6 +586,7 @@ public abstract class Player{
     public final boolean IsInCheck(final Board a_board){
         return !MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() > Utilities.ZERO;
     }
+    
     /**/
     /*
     NAME

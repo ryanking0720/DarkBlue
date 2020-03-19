@@ -1,12 +1,16 @@
 package com.DarkBlue.Piece;
 
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Utilities.*;
-import com.DarkBlue.Board.*;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Move.CastlingMove;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
 /*
  *  This class represents the king, which is the most important piece in the game of chess.
+ *  Each player has one and only one king at all times.
  * 
  *  He is the second-weakest piece in the game, only moving one square in any direction,
  *  as long as said square is not threatened by an enemy piece.
@@ -17,47 +21,56 @@ import java.util.ArrayList;
  *  
  *  (full moves)        (limited moves)
  *  
- *  * * *               R - -
+ *  * * *               r - -
  *  * K *               - K *
  *  * * *               - * *
  *  
- *  8 moves             4 moves (The rook is assumed to be a lone enemy rook, so the king can capture it)
+ *  8 moves             4 moves (This rook is assumed to be a lone enemy rook, so the king can capture it)
  *  
  *  The king cannot be captured at any time by the modern rules of chess, but threatening
  *  him with inescapable capture is the key to winning the game.
  *  He also cannot give check on his own, but he can help other pieces 
  *  to deliver checkmate in certain circumstances.
  *  
- *  If the king is threatened by the opponent but can escape, capture the opposing piece,
- *  use another piece to capture the threat, or use another piece to block the threat,
+ *  If both sides are left with singular kings (called "bare kings"), the game ends in a draw.
+ *  If one side has a bare king and the other has a king and a knight, the game ends in a draw.
+ *  If one side has a bare king and the other has a king and a bishop, the game ends in a draw.
+ *  If both sides have a king and a bishop and both bishops move on the same tile color, the game ends in a draw.
+ *  The program will notify the user of any of these conditions as "insufficient material" and the game will end.
+ *  
+ *  The repetition of any board configuration at least three times (this does not need to be consecutive)
+ *  is grounds for a draw by threefold repetition, which the program will tell the user.
+ *  
+ *  If the king is threatened by the opponent but can escape, capture the opposing piece himself,
+ *  use another friendly piece to capture the threatening piece, or use a friendly piece to block the threat,
  *  he is said to be in check, and must resolve the threat in one of these four ways.
+ *  The player must get his/her king out of check. Any other thing s/he may want to do will be put on hold.
  *  No other piece can move unless it can help the king.
- *  Any move that does not get the king out of check will not be added as per the rules
- *  of this engine. A human player placed in check will be shown a warning message.
+ *  Any move that does not get the king out of check is illegal as per the rules
+ *  of chess. A human player placed in check will be shown a warning pop-up.
+ *  This does not occur if the human places the computer into check.
  *  
  *  The opponent is the only one allowed to place the other player's king into check.
  * 
- *  No move the player makes is allowed to place their king into check, whether by accident
+ *  No move either player makes is allowed to place their own king into check, whether by accident
  *  or intentionally. This engine gets rid of such moves by making them on a cloned board and
- *  testing for king safety.
+ *  testing for king safety. The king cannot move into check himself, and friendly pieces that may be blocking a threat
+ *  directed at the king will not be allowed to move out of the way for any reason until the threat no longer exists.
  *  
  *  The state of stalemate occurs if the player's king is not in check, but is threatened with
  *  any other move he makes and no other friendly piece remaining on the board, if any, has any legal moves.
  *  This condition draws the game by the modern rules of chess and the game is over.
- *  The program will warn of this condition and terminate.
+ *  The program will warn of this condition and stop playing.
  *  
- *  The main objective of the game is to bring the opponent's king into the state of
- *  checkmate, which means that their king is in check where he is now and is also
- *  threatened in every possible move he has and cannot escape the threat, 
- *  capture the threatening piece himself, use a friendly
- *  piece to capture the threat, or use a friendly piece to block the threat if that piece
- *  moves in a sequential manner. The side declaring the checkmate wins and the game is over.
- *  Again, the program will warn either type of player once a checkmate is declared.
- *  
- *  If both players only have their kings, which cannot give check to each other, the game 
- *  ends in a draw. This can also happen with insufficient material, which I will explain
- *  in a different section.
- * 
+ *  The main objective of chess is to bring the opponent's king into the state of checkmate,
+ *  which means that their king is in check where he is resting and is also
+ *  in check despite using every possible move he has. 
+ *  He must also be unable to escape the threat, 
+ *  capture the threatening piece himself, 
+ *  use a friendly piece to capture the threatening piece, 
+ *  or use a friendly piece to block the threat if the threatening piece moves in a linear manner. 
+ *  The side delivering checkmate wins and the game is over.
+ *  Just like with check, stalemate, or draw conditions, the program will warn either type of player if and when checkmate is found.
  */
 public final class King extends Piece{
     
@@ -65,6 +78,7 @@ public final class King extends Piece{
     private final boolean m_canKingsideCastle;
     private final boolean m_canQueensideCastle;
     
+    /**/
     /*
     NAME
         public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn, final boolean a_canKingsideCastle, final boolean a_canQueensideCastle);
@@ -104,6 +118,7 @@ public final class King extends Piece{
         this.m_canQueensideCastle = a_canQueensideCastle;
     }
     
+    /**/
     /*
     NAME
         public King(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
@@ -141,6 +156,7 @@ public final class King extends Piece{
         this.m_canQueensideCastle = (!candidate.HasMoved() && candidate.CanQueensideCastle());
     }
     
+    /**/
     /*
     NAME
         public void AddCurrentLegalMoves(final Board a_board);
@@ -175,8 +191,8 @@ public final class King extends Piece{
         
         // Evaluate castling moves if the king has not moved and is not in check
         if(!this.HasMoved() && this.GetCurrentColumn() == Utilities.FOUR
-        		&& (this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO)
-        		&& (this.m_canKingsideCastle || this.m_canQueensideCastle) && MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
+                && (this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO)
+                && (this.m_canKingsideCastle || this.m_canQueensideCastle) && MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
             this.AddCurrentCastlingMoves(a_board);
         }
         
@@ -231,7 +247,7 @@ public final class King extends Piece{
     */
     @Override
     public final boolean IsPawn(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -255,7 +271,7 @@ public final class King extends Piece{
     */
     @Override
     public final boolean IsKing(){
-    	return true;
+        return true;
     }
     
     /**/
@@ -279,7 +295,7 @@ public final class King extends Piece{
     */
     @Override
     public final boolean IsRook(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -303,7 +319,7 @@ public final class King extends Piece{
     */
     @Override
     public final boolean IsBishop(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -327,7 +343,7 @@ public final class King extends Piece{
     */
     @Override
     public final boolean IsQueen(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -351,9 +367,10 @@ public final class King extends Piece{
     */
     @Override
     public final boolean IsKnight(){
-    	return false;
+        return false;
     }
     
+    /**/
     /*
     NAME
         public final void AddCurrentCastlingMoves(final Board a_board);
@@ -392,8 +409,8 @@ public final class King extends Piece{
 
             // Do not instantiate the move if the king cannot castle for any reason
             if(this.CanKingsideCastleOnThisTurn(a_board)){                
-            	kingDestinationColumn = Utilities.SIX;
-            	
+                kingDestinationColumn = Utilities.SIX;
+                
                 // Instantiate the move
                 CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn, a_board);    
                 
@@ -402,8 +419,8 @@ public final class King extends Piece{
             }  
             
             if(this.CanQueensideCastleOnThisTurn(a_board)){                
-            	kingDestinationColumn = Utilities.TWO;
-            	
+                kingDestinationColumn = Utilities.TWO;
+                
                 // Instantiate the move
                 CastlingMove castle = new CastlingMove(this, kingDestinationRow, kingDestinationColumn, a_board);    
                 
@@ -415,6 +432,7 @@ public final class King extends Piece{
         }
     }
     
+    /**/
     /*
     NAME
         public final void RemoveCastlingMoves();
@@ -435,15 +453,16 @@ public final class King extends Piece{
         Ryan King
     */
     public final void RemoveCastlingMoves(){
-    	this.m_currentCastlingMoves.clear();
-    	
-    	for(Move move : this.GetCurrentLegalMoves()){
-    		if(move.IsCastling()){
-    			this.m_currentLegalMoves.remove(move);
-    		}
-    	}
+        this.m_currentCastlingMoves.clear();
+        
+        for(Move move : this.GetCurrentLegalMoves()){
+            if(move.IsCastling()){
+                this.m_currentLegalMoves.remove(move);
+            }
+        }
     }
     
+    /**/
     /*
     NAME
         public final boolean CanKingsideCastleOnThisTurn(final Board a_board);
@@ -470,12 +489,12 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean CanKingsideCastleOnThisTurn(final Board a_board){
-    	if(!this.CanKingsideCastle()){
-    		return false;
-    	}
-    	
+        if(!this.CanKingsideCastle()){
+            return false;
+        }
+        
         int row = this.GetCurrentRow(), column = this.GetCurrentColumn() + Utilities.ONE, 
-                // The king's rook always starts at column 7 of my board.
+        // The king's rook always starts at column 7 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.SEVEN;
         
         // See if there's a friendly rook that has not moved
@@ -494,6 +513,7 @@ public final class King extends Piece{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final boolean HasKingsideCastlingRook(final Board a_board);
@@ -515,7 +535,7 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean HasKingsideCastlingRook(final Board a_board){
-    	final int row = this.GetCurrentRow(), column = this.GetCurrentColumn() + Utilities.ONE, 
+        final int row = this.GetCurrentRow(), column = this.GetCurrentColumn() + Utilities.ONE, 
                 // The king's rook always starts at column 7 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.SEVEN;
         
@@ -530,6 +550,7 @@ public final class King extends Piece{
         return false;
     }
     
+    /**/
     /*
     NAME
         public boolean CanQueensideCastleOnThisTurn(final Board a_board);
@@ -556,12 +577,12 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean CanQueensideCastleOnThisTurn(final Board a_board){
-    	if(!this.CanQueensideCastle()){
-    		return false;
-    	}
-    	
+        if(!this.CanQueensideCastle()){
+            return false;
+        }
+        
         int row = this.GetCurrentRow(), column = this.GetCurrentColumn() - Utilities.ONE,
-                // The queen's rook always starts at column 0 of my board.
+        // The queen's rook always starts at column 0 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
         
         // See if there's a friendly rook that has not moved
@@ -585,6 +606,7 @@ public final class King extends Piece{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final boolean HasQueensideCastlingRook(final Board a_board);
@@ -606,8 +628,8 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean HasQueensideCastlingRook(final Board a_board){
-    	final int row = this.GetCurrentRow(), column = this.GetCurrentColumn() - Utilities.ONE,
-                // The queen's rook always starts at column 0 of my board.
+        final int row = this.GetCurrentRow(), column = this.GetCurrentColumn() - Utilities.ONE,
+        // The queen's rook always starts at column 0 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
         
         // See if there's a friendly rook that has not moved
@@ -621,6 +643,7 @@ public final class King extends Piece{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean CanKingsideCastle();
@@ -641,9 +664,10 @@ public final class King extends Piece{
         https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/pieces/King.java
     */
     public final boolean CanKingsideCastle(){
-    	return this.m_canKingsideCastle;
+        return this.m_canKingsideCastle;
     }
     
+    /**/
     /*
     NAME
         public final boolean CanQueensideCastle();
@@ -664,9 +688,10 @@ public final class King extends Piece{
         https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/pieces/King.java
     */
     public final boolean CanQueensideCastle(){
-    	return this.m_canQueensideCastle;
+        return this.m_canQueensideCastle;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsInOriginalSpot();
@@ -687,9 +712,10 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean IsInOriginalSpot(){
-    	return this.GetCurrentColumn() == Utilities.FOUR && ((this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO));
+        return this.GetCurrentColumn() == Utilities.FOUR && ((this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO));
     }
     
+    /**/
     /*
     NAME
         public ArrayList<CastlingMove> GetCurrentCastlingMoves();

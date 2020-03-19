@@ -1,0 +1,982 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.2.4" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true" router="FAN">  
+  <class id="1" language="java" name="com.DarkBlue.Board.Board.BoardBuilder" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Board/Board.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="259" width="227" x="2935" y="3392"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="2" language="java" name="com.DarkBlue.Board.Board" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Board/Board.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="619" width="259" x="2935" y="2733"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="3" language="java" name="com.DarkBlue.Board.Tile" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Board/Tile.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="277" width="163" x="3183" y="3889"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="4" language="java" name="com.DarkBlue.Game.GameState" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Game/GameState.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="187" width="153" x="2069" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </enumeration>  
+  <class id="5" language="java" name="com.DarkBlue.GUI.DarkBlue.DarkBlueMenuBar" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/DarkBlue.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="673" width="191" x="1523" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="com.DarkBlue.GUI.DarkBlue.MoveTextArea" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/DarkBlue.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="97" width="131" x="2437" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="com.DarkBlue.GUI.DarkBlue" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/DarkBlue.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="1879" width="282" x="2648" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="com.DarkBlue.GUI.InstructionFrame" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/InstructionFrame.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="241" width="213" x="590" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="com.DarkBlue.GUI.DarkBlue.GameWatcher" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/DarkBlue.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="115" width="135" x="2262" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="com.DarkBlue.GUI.CapturedPiecePanel" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/CapturedPiecePanel.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="277" width="157" x="1305" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="com.DarkBlue.GUI.DarkBlue.GUIBoard" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/DarkBlue.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="241" width="163" x="2935" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="com.DarkBlue.GUI.DarkBlue.GUITile" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/GUI/DarkBlue.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="439" width="192" x="3234" y="2733"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="13" language="java" name="com.DarkBlue.Move.RegularMove" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/RegularMove.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="223" width="184" x="1207" y="4368"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="14" language="java" name="com.DarkBlue.Move.CastlingMove" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/CastlingMove.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="403" width="205" x="1431" y="4368"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="com.DarkBlue.Move.Delta" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/Delta.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="169" width="127" x="1868" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="com.DarkBlue.Move.AttackingMove" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/AttackingMove.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="223" width="218" x="1944" y="4368"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="com.DarkBlue.Move.EnPassantMove" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/EnPassantMove.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="295" width="228" x="1676" y="4368"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="18" language="java" name="com.DarkBlue.Move.MoveType" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/MoveType.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="151" width="150" x="1031" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </enumeration>  
+  <class id="19" language="java" name="com.DarkBlue.Move.Move" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Move/Move.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="439" width="225" x="1565" y="3889"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="20" language="java" name="com.DarkBlue.Piece.PieceType" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/PieceType.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="313" width="148" x="843" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </enumeration>  
+  <class id="21" language="java" name="com.DarkBlue.Piece.Piece" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/Piece.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="781" width="272" x="2486" y="4368"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="22" language="java" name="com.DarkBlue.Piece.Queen" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/Queen.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="385" width="274" x="1565" y="3392"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="23" language="java" name="com.DarkBlue.Piece.Bishop" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/Bishop.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="313" width="274" x="1879" y="3392"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="24" language="java" name="com.DarkBlue.Piece.Knight" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/Knight.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="241" width="198" x="2486" y="5189"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="25" language="java" name="com.DarkBlue.Piece.King" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/King.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="457" width="262" x="2486" y="3392"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="26" language="java" name="com.DarkBlue.Piece.Pawn" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/Pawn.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="385" width="253" x="2193" y="3392"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="27" language="java" name="com.DarkBlue.Piece.Rook" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Piece/Rook.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="313" width="230" x="1232" y="3392"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="28" language="java" name="com.DarkBlue.Player.Minimax" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Player/Minimax.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="295" width="386" x="2222" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="29" language="java" name="com.DarkBlue.Player.Player" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Player/Player.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="727" width="224" x="2608" y="1966"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <class id="30" language="java" name="com.DarkBlue.Player.Human" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Player/Human.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="151" width="160" x="1544" y="2733"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="31" language="java" name="com.DarkBlue.Player.PlayerType" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Player/PlayerType.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="115" width="147" x="2035" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </enumeration>  
+  <class id="32" language="java" name="com.DarkBlue.Player.Computer" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Player/Computer.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="151" width="169" x="1744" y="2733"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
+  <enumeration id="33" language="java" name="com.DarkBlue.Utilities.ChessColor" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Utilities/ChessColor.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="241" width="172" x="3183" y="5189"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </enumeration>  
+  <interface id="34" language="java" name="com.DarkBlue.Utilities.Factory" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Utilities/Factory.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="169" width="269" x="42" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="35" language="java" name="com.DarkBlue.Utilities.BoardUtilities" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Utilities/BoardUtilities.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="349" width="199" x="351" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="36" language="java" name="com.DarkBlue.Utilities.MoveEvaluation" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Utilities/MoveEvaluation.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="817" width="346" x="1482" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <interface id="37" language="java" name="com.DarkBlue.Utilities.Utilities" project="DarkBlue" 
+    file="/DarkBlue/src/com/DarkBlue/Utilities/Utilities.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="1411" width="221" x="1221" y="37"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </interface>  
+  <association id="38">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="39" name="m_currentUpAndLeftMoves"/>      
+      <multiplicity id="40" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="41">    
+    <bendpoint x="2862" y="1966"/>    
+    <bendpoint x="2841" y="2733"/>    
+    <bendpoint x="2841" y="3392"/>    
+    <bendpoint x="2841" y="3889"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="42" name="m_candidate"/>      
+      <multiplicity id="43" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="44">    
+    <bendpoint x="3128" y="1966"/>    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="12"/>  
+  </nesting>  
+  <association id="45">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="46" name="m_blackMoves"/>      
+      <multiplicity id="47" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="48">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="49" name="m_color"/>      
+      <multiplicity id="50" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="51">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="52" name="m_piece"/>      
+      <multiplicity id="53" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="54">    
+    <bendpoint x="3213" y="3392"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="55" name="m_boardObject"/>      
+      <multiplicity id="56" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="57">    
+    <bendpoint x="3498" y="1966"/>    
+    <bendpoint x="3498" y="2733"/>    
+    <bendpoint x="3498" y="3392"/>    
+    <bendpoint x="3498" y="3889"/>    
+    <bendpoint x="3498" y="4368"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="58" name="m_computerColor"/>      
+      <multiplicity id="59" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="60">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="61" name="m_currentAttackingMoves"/>      
+      <multiplicity id="62" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="63">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="64" name="m_currentDownAndRightMoves"/>      
+      <multiplicity id="65" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="66">    
+    <bendpoint x="2904" y="1966"/>    
+    <bendpoint x="2904" y="2733"/>    
+    <bendpoint x="2904" y="3392"/>    
+    <bendpoint x="2883" y="3889"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="67" name="m_previouslyMoved"/>      
+      <multiplicity id="68" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="69">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="70" name="m_currentUpMoves"/>      
+      <multiplicity id="71" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="72">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="73" name="m_whiteMoves"/>      
+      <multiplicity id="74" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="6" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="75">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="76" name="m_computerPlayer"/>      
+      <multiplicity id="77" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="78">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="79" name="m_currentEnPassantMoves"/>      
+      <multiplicity id="80" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="81">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="82" name="m_currentUpAndRightMoves"/>      
+      <multiplicity id="83" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="84">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="85" name="m_currentRightMoves"/>      
+      <multiplicity id="86" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="87">    
+    <bendpoint x="2862" y="2733"/>    
+    <bendpoint x="2883" y="3392"/>    
+    <bendpoint x="2904" y="3889"/>    
+    <bendpoint x="2904" y="4368"/>    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="88" name="m_color"/>      
+      <multiplicity id="89" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="90">    
+    <bendpoint x="2778" y="2733"/>    
+    <bendpoint x="2778" y="3392"/>    
+    <bendpoint x="2778" y="3889"/>    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="91" name="m_activePieces"/>      
+      <multiplicity id="92" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="93">    
+    <bendpoint x="2349" y="3889"/>    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <nesting id="94">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="6"/>  
+  </nesting>  
+  <association id="95">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="96" name="m_gameState"/>      
+      <multiplicity id="97" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="4" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="98">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="99" name="m_blackPieces"/>      
+      <multiplicity id="100" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="101">    
+    <bendpoint x="1744" y="1966"/>    
+    <bendpoint x="1513" y="2733"/>    
+    <bendpoint x="1513" y="3392"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="102" name="m_nextMove"/>      
+      <multiplicity id="103" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="104">    
+    <bendpoint x="1492" y="1966"/>    
+    <bendpoint x="1492" y="2733"/>    
+    <bendpoint x="1492" y="3392"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="105" name="m_worker"/>      
+      <multiplicity id="106" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="107">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="108" name="m_instance"/>      
+      <multiplicity id="109" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="7" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="110">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <association id="111">    
+    <end type="SOURCE" refId="26" navigable="false">      
+      <attribute id="112" name="m_currentRegularMoves"/>      
+      <multiplicity id="113" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="114">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="115" name="m_currentUpAndRightMoves"/>      
+      <multiplicity id="116" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="117">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="9"/>  
+  </nesting>  
+  <association id="118">    
+    <bendpoint x="2820" y="2733"/>    
+    <bendpoint x="2820" y="3392"/>    
+    <bendpoint x="2820" y="3889"/>    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="119" name="m_capturedPieces"/>      
+      <multiplicity id="120" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="121">    
+    <end type="SOURCE" refId="21" navigable="false">      
+      <attribute id="122" name="m_currentLegalMoves"/>      
+      <multiplicity id="123" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="124">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="125" name="m_currentDownAndLeftMoves"/>      
+      <multiplicity id="126" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="127">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="1"/>  
+  </nesting>  
+  <association id="128">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="129" name="m_black"/>      
+      <multiplicity id="130" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="131">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="132" name="m_humanPlayer"/>      
+      <multiplicity id="133" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="134">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <association id="135">    
+    <bendpoint x="2883" y="1966"/>    
+    <bendpoint x="2883" y="2733"/>    
+    <bendpoint x="2862" y="3392"/>    
+    <bendpoint x="2862" y="3889"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="136" name="m_victim"/>      
+      <multiplicity id="137" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="138">    
+    <bendpoint x="3397" y="3392"/>    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="139" name="m_tile"/>      
+      <multiplicity id="140" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="141">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="142" name="m_board"/>      
+      <multiplicity id="143" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="144">    
+    <bendpoint x="3192" y="4368"/>    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="145" name="m_color"/>      
+      <multiplicity id="146" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="147">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="148" name="m_board"/>      
+      <multiplicity id="149" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="150">    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="151" name="m_victim"/>      
+      <multiplicity id="152" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="153">    
+    <bendpoint x="1943" y="2733"/>    
+    <bendpoint x="1534" y="3392"/>    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="154" name="m_allCurrentLegalMoves"/>      
+      <multiplicity id="155" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="156">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="5"/>  
+  </nesting>  
+  <association id="157">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="158" name="m_currentDownAndRightMoves"/>      
+      <multiplicity id="159" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="160">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="161" name="m_currentDownMoves"/>      
+      <multiplicity id="162" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="163">    
+    <bendpoint x="1534" y="3889"/>    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <association id="164">    
+    <bendpoint x="3519" y="1966"/>    
+    <bendpoint x="3519" y="2733"/>    
+    <bendpoint x="3519" y="3392"/>    
+    <bendpoint x="3519" y="3889"/>    
+    <bendpoint x="3519" y="4368"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="165" name="m_humanColor"/>      
+      <multiplicity id="166" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="167">    
+    <end type="SOURCE" refId="13"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <association id="168">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="169" name="m_currentDownMoves"/>      
+      <multiplicity id="170" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="171">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="172" name="m_white"/>      
+      <multiplicity id="173" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="174">    
+    <end type="SOURCE" refId="30"/>    
+    <end type="TARGET" refId="29"/>  
+  </generalization>  
+  <association id="175">    
+    <bendpoint x="3376" y="3392"/>    
+    <bendpoint x="3376" y="3889"/>    
+    <bendpoint x="3376" y="4368"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="176" name="m_whoseTurn"/>      
+      <multiplicity id="177" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="178">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="179" name="m_watcher"/>      
+      <multiplicity id="180" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="9" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="181">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="182" name="m_currentLeftMoves"/>      
+      <multiplicity id="183" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="184">    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <association id="185">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="186" name="m_tiles"/>      
+      <multiplicity id="187" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="12" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="188">    
+    <end type="SOURCE" refId="32"/>    
+    <end type="TARGET" refId="29"/>  
+  </generalization>  
+  <association id="189">    
+    <bendpoint x="2799" y="3392"/>    
+    <end type="SOURCE" refId="19" navigable="false">      
+      <attribute id="190" name="m_initialBoard"/>      
+      <multiplicity id="191" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="2" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="192">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="193" name="m_currentLeftMoves"/>      
+      <multiplicity id="194" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="195">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="196" name="m_currentUpAndLeftMoves"/>      
+      <multiplicity id="197" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="198">    
+    <bendpoint x="2192" y="3889"/>    
+    <end type="SOURCE" refId="23"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <association id="199">    
+    <end type="SOURCE" refId="22" navigable="false">      
+      <attribute id="200" name="m_currentRightMoves"/>      
+      <multiplicity id="201" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="202">    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="203" name="m_builderBoard"/>      
+      <multiplicity id="204" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="205">    
+    <bendpoint x="2556" y="2733"/>    
+    <end type="SOURCE" refId="29" navigable="false">      
+      <attribute id="206" name="m_king"/>      
+      <multiplicity id="207" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="208">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="209" name="m_whitePieces"/>      
+      <multiplicity id="210" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="211">    
+    <bendpoint x="3477" y="1966"/>    
+    <bendpoint x="3477" y="2733"/>    
+    <bendpoint x="3477" y="3392"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="212" name="m_sourceTile"/>      
+      <multiplicity id="213" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="214">    
+    <end type="SOURCE" refId="25" navigable="false">      
+      <attribute id="215" name="m_currentCastlingMoves"/>      
+      <multiplicity id="216" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="217">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="19"/>  
+  </generalization>  
+  <association id="218">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="219" name="m_currentDownAndLeftMoves"/>      
+      <multiplicity id="220" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <nesting id="221">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="11"/>  
+  </nesting>  
+  <association id="222">    
+    <bendpoint x="3192" y="3392"/>    
+    <end type="SOURCE" refId="2" navigable="false">      
+      <attribute id="223" name="m_enPassantTile"/>      
+      <multiplicity id="224" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="225">    
+    <bendpoint x="2034" y="3889"/>    
+    <end type="SOURCE" refId="22"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <association id="226">    
+    <end type="SOURCE" refId="27" navigable="false">      
+      <attribute id="227" name="m_currentUpMoves"/>      
+      <multiplicity id="228" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="19" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="229">    
+    <bendpoint x="3068" y="3889"/>    
+    <bendpoint x="3068" y="4368"/>    
+    <end type="SOURCE" refId="1" navigable="false">      
+      <attribute id="230" name="m_whoseTurn"/>      
+      <multiplicity id="231" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="33" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="232">    
+    <end type="SOURCE" refId="3" navigable="false">      
+      <attribute id="233" name="m_piece"/>      
+      <multiplicity id="234" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="21" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="235">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="236" name="m_currentPlayer"/>      
+      <multiplicity id="237" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="29" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="238">    
+    <bendpoint x="3456" y="1966"/>    
+    <bendpoint x="3456" y="2733"/>    
+    <bendpoint x="3456" y="3392"/>    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="239" name="m_destinationTile"/>      
+      <multiplicity id="240" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="3" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="241">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="242" name="m_menuBar"/>      
+      <multiplicity id="243" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="244">    
+    <bendpoint x="2495" y="3889"/>    
+    <end type="SOURCE" refId="25"/>    
+    <end type="TARGET" refId="21"/>  
+  </generalization>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    sort-features="false" accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

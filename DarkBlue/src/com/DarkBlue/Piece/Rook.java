@@ -1,11 +1,18 @@
 package com.DarkBlue.Piece;
 
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Utilities.*;
-import com.DarkBlue.Board.*;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
 
+/*
+ * This represents a chess piece that can move any number of tiles horizontally or vertically,
+ * stopping either on a tile of a non-king enemy piece or the tile
+ * before a friendly piece. The rook captures the same way it moves.
+ */
 public final class Rook extends Piece{
     
     // The down moves usable on this turn only
@@ -60,16 +67,23 @@ public final class Rook extends Piece{
     /**/
     /*
     NAME
-        public Rook(final Piece a_piece);
+        public Rook(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
     
     SYNOPSIS
-        public Rook(final Piece a_piece);
+        public Rook(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece --------> The Piece to be copied.
+        
+        int a_newRow ---------> The Piece's new row.
+        
+        int a_newColumn ------> The Piece's new column.
+        
+        int a_moves ----------> The Piece's new move count.
     
     DESCRIPTION
         This copy constructor constructs a new Rook object by passing in
         a Piece object and cloning its fields.
+        Row, column, and move count are passed in separately.
         
     RETURNS
         Nothing
@@ -81,11 +95,13 @@ public final class Rook extends Piece{
         super(a_piece, a_newRow, a_newColumn, a_moves);    
         Rook candidate = (Rook) a_piece;
         
+        // Initialize ArrayLists
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
         this.m_currentRightMoves = new ArrayList<>();
         this.m_currentLeftMoves = new ArrayList<>();
         
+        // Add the moves from the original piece
         this.m_currentDownMoves.addAll(candidate.GetCurrentDownMoves());
         this.m_currentUpMoves.addAll(candidate.GetCurrentUpMoves());
         this.m_currentRightMoves.addAll(candidate.GetCurrentRightMoves());
@@ -95,10 +111,10 @@ public final class Rook extends Piece{
     /**/
     /*
     NAME
-        public void AddCurrentLegalMoves(final Board a_board);
+        public final void AddCurrentLegalMoves(final Board a_board);
     
     SYNOPSIS
-        public void AddCurrentLegalMoves(final Board a_board);
+        public final void AddCurrentLegalMoves(final Board a_board);
     
         Board a_board ---> The chessboard which contains the current game.
     
@@ -115,7 +131,8 @@ public final class Rook extends Piece{
         Ryan King
     */
     @Override
-    public void AddCurrentLegalMoves(final Board a_board){
+    public final void AddCurrentLegalMoves(final Board a_board){
+        // Clear out all old moves
         this.m_currentLegalMoves.clear();
         
         this.m_currentDownMoves.clear();
@@ -123,11 +140,13 @@ public final class Rook extends Piece{
         this.m_currentRightMoves.clear();
         this.m_currentLeftMoves.clear();
 
+        // Calculate new moves and add them to their respective directions
         this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
         this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));
         this.m_currentRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allRightMoves));
         this.m_currentLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allLeftMoves));
         
+        // Add the contents of the directional ArrayLists to the main legal move ArrayList
         this.m_currentLegalMoves.addAll(this.m_currentDownMoves);
         this.m_currentLegalMoves.addAll(this.m_currentUpMoves);
         this.m_currentLegalMoves.addAll(this.m_currentRightMoves);
@@ -179,7 +198,7 @@ public final class Rook extends Piece{
     */
     @Override
     public final boolean IsPawn(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -203,7 +222,7 @@ public final class Rook extends Piece{
     */
     @Override
     public final boolean IsKing(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -227,7 +246,7 @@ public final class Rook extends Piece{
     */
     @Override
     public final boolean IsRook(){
-    	return true;
+        return true;
     }
     
     /**/
@@ -251,7 +270,7 @@ public final class Rook extends Piece{
     */
     @Override
     public final boolean IsBishop(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -275,7 +294,7 @@ public final class Rook extends Piece{
     */
     @Override
     public final boolean IsQueen(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -299,7 +318,7 @@ public final class Rook extends Piece{
     */
     @Override
     public final boolean IsKnight(){
-    	return false;
+        return false;
     }
     
     /**/

@@ -1,8 +1,15 @@
 package com.DarkBlue.Player;
 
-import com.DarkBlue.Utilities.*;
-import com.DarkBlue.Board.*;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
+/*
+ * This class represents a human player. The human player is allowed to click
+ * on the chessboard provided by the GUI in order to make a move. The computer
+ * will move automatically once the human has moved unless the human reaches
+ * a game-ending scenario. 
+ */
 public final class Human extends Player{
 
     /**/
@@ -28,7 +35,7 @@ public final class Human extends Player{
         Ryan King
     */
     public Human(final ChessColor a_color, final Board a_board){
-        super(a_color, a_board, PlayerType.HUMAN);
+        super(a_color, a_board);
     }
     
     /**/
@@ -106,6 +113,25 @@ public final class Human extends Player{
         return false;
     }
     
+    /**/
+    /*
+    NAME
+        public final PlayerType GetPlayerType();
+    
+    SYNOPSIS
+        public final PlayerType GetPlayerType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this player's type.
+    
+    RETURNS
+        Always returns PlayerType.HUMAN.
+    
+    AUTHOR
+        Ryan King
+    */
     @Override
     public final PlayerType GetPlayerType(){
     	return PlayerType.HUMAN;

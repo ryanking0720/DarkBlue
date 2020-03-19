@@ -16,6 +16,12 @@ import com.DarkBlue.Move.EnPassantMove;
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.Move.RegularMove;
 
+/*
+ * This interface contains factory methods that are used in multiple classes
+ * to instantiate objects in a controlled way. This is done in order to deny
+ * the user control on instantiating an overpowered or otherwise invalid piece
+ * or tile. 
+ */
 public interface Factory{
 	
 	/**/
@@ -123,12 +129,37 @@ public interface Factory{
         }
     }
     
+    /**/
+    /*
+    NAME
+        public static Piece MovedPieceFactory(final Piece a_candidate, final int a_newRow, final int a_newColumn);
+    
+    SYNOPSIS
+        public static Piece MovedPieceFactory(final Piece a_candidate, final int a_newRow, final int a_newColumn);
+        
+        Piece a_candidate ---------------> The piece to be duplicated.
+        
+        int a_newRow --------------------> The new row this piece will be moving to.
+        
+        int a_newColumn -----------------> The new column this piece will be moving to.
+    
+    DESCRIPTION
+        This method duplicates the given piece, places it onto a new tile, and adds 1 to its current number of moves.
+    
+    RETURNS
+        Piece: The new pawn, rook, knight, bishop, queen, or king with its move count increased by 1, or null on error.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
     public static Piece MovedPieceFactory(final Piece a_candidate, final int a_newRow, final int a_newColumn){
-        // Make a deep copy of the piece that just moved
+        // Idiot proofing for a null argument
     	if(a_candidate == null){
     		return null;
     	}
     	
+    	// Make a deep copy of the piece that just moved
         switch(a_candidate.GetPieceType()){
             case PAWN: return new Pawn(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
             case ROOK: return new Rook(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
@@ -140,6 +171,39 @@ public interface Factory{
         }
     }
     
+    /**/
+    /*
+    NAME
+        public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt);
+    
+    SYNOPSIS
+        public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt);
+        
+        ChessColor a_color --------------> The color of the piece to be instantiated.
+        
+        int a_newRow --------------------> The new row this piece will be moving to.
+        
+        int a_newColumn -----------------> The new column this piece will be moving to.
+        
+        int a_buttonInt -----------------> The button chosen by the human or the loop index chosen by the minimax algorithm.
+    
+    DESCRIPTION
+        This method instantiates a new queen, rook, bishop, or knight and places it onto the tile with the row and column specified.
+        The button int tells which piece will be instantiated:
+        0 returns a queen
+        1 returns a rook
+        2 returns a bishop
+        3 returns a knight
+        
+        Otherwise, it returns null on error.
+    
+    RETURNS
+        Piece: The new rook, knight, bishop, or queen with its move count set to 0, or null on error.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
     public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt){
     	final Piece newPiece;
     	// Instantiate the chosen piece
@@ -195,8 +259,8 @@ public interface Factory{
         
         An en passant move
         (A special attacking move which can only occur if a pawn is at its fifth rank
-        and the previous piece to move was an opposing pawn that advanced 2 squares on
-        its first move and could have been taken by the other pawn had it only moved 1 square.
+        and the previous piece to move was an opposing pawn that advanced 2 tiles on
+        its first move and could have been taken by the other pawn had it only moved 1 tile.
         This is the only legal move where the destination tile is not the same as the tile
         of the captured piece).
     
@@ -210,8 +274,7 @@ public interface Factory{
         Ryan King
     */
     public static Move MoveFactory(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Piece a_victim, final Board a_board){
-        // Instantiate the desired move
-    	final Move move;
+        // Get the coordinates of the piece
     	final int sourceRow = a_candidate.GetCurrentRow();
     	final int sourceColumn = a_candidate.GetCurrentColumn();
     	

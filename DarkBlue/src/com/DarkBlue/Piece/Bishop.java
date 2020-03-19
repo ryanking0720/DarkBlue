@@ -2,10 +2,17 @@ package com.DarkBlue.Piece;
 
 import java.util.ArrayList;
 
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Utilities.*;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
+/*
+ * This represents a chess piece that can move any number of tiles diagonally,
+ * stopping either on a tile of a non-king enemy piece or the tile
+ * before a friendly piece. The bishop captures the same way it moves.
+ */
 public class Bishop extends Piece{
     
     // The down and right moves usable on this turn only
@@ -20,6 +27,7 @@ public class Bishop extends Piece{
     // The down and left moves usable on this turn only
     private final ArrayList<Move> m_currentDownAndLeftMoves;
     
+    /**/
     /*
     NAME
         public Bishop(final ChessColor a_color, final char a_descriptor, final int a_currentRow, final int a_currentColumn);
@@ -56,25 +64,32 @@ public class Bishop extends Piece{
         m_currentDownAndLeftMoves = new ArrayList<>();
     }
     
+    /**/
     /*
     NAME
-        public Bishop(final Piece a_piece);
+        public Bishop(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
     
     SYNOPSIS
-        public Bishop(final Piece a_piece);
+        public Bishop(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece --------> The Piece to be copied.
+        
+        int a_newRow ---------> The Piece's new row.
+        
+        int a_newColumn ------> The Piece's new column.
+        
+        int a_moves ----------> The Piece's new move count.
     
     DESCRIPTION
         This copy constructor constructs a new Bishop object by passing in
-        a Piece object and cloning its fields.
+        a Piece object, row, column, and move count and cloning all other fields.
         
     RETURNS
         Nothing
     
     AUTHOR
         Ryan King
-    */    
+    */
     public Bishop(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         super(a_piece, a_newRow, a_newColumn, a_moves);
         Bishop candidate = (Bishop) a_piece;
@@ -113,6 +128,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final void AddCurrentLegalMoves(final Board a_board){
+        // Clear out all legal moves
         this.m_currentLegalMoves.clear();
         
         this.m_currentDownAndRightMoves.clear();
@@ -120,11 +136,13 @@ public class Bishop extends Piece{
         this.m_currentUpAndLeftMoves.clear();
         this.m_currentDownAndLeftMoves.clear();
         
+        // Add all new legal moves in each direction
         this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndRightMoves));
         this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndRightMoves));
         this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndLeftMoves));
         this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndLeftMoves));
         
+        // Compile these moves into the main ArrayList
         this.m_currentLegalMoves.addAll(m_currentDownAndRightMoves);
         this.m_currentLegalMoves.addAll(m_currentUpAndRightMoves);
         this.m_currentLegalMoves.addAll(m_currentUpAndLeftMoves);
@@ -176,7 +194,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final boolean IsPawn(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -200,7 +218,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final boolean IsKing(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -224,7 +242,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final boolean IsRook(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -248,7 +266,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final boolean IsBishop(){
-    	return true;
+        return true;
     }
     
     /**/
@@ -272,7 +290,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final boolean IsQueen(){
-    	return false;
+        return false;
     }
     
     /**/
@@ -296,7 +314,7 @@ public class Bishop extends Piece{
     */
     @Override
     public final boolean IsKnight(){
-    	return false;
+        return false;
     }
     
     /*

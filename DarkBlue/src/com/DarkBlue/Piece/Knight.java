@@ -1,10 +1,23 @@
 package com.DarkBlue.Piece;
 
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Utilities.*;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
+/*
+ * This class represents a knight.
+ * This type of piece resembles the head of a horse
+ * and can move in an L-shape. This can be two tiles
+ * up/down and one tile left/right, or one tile up/down
+ * and two tiles left/right. It can jump over any pieces
+ * and is completely unimpeded in movement unless a friendly
+ * piece is occupying all of its destination tiles or its
+ * destination tiles go off the board. 
+ */
 public final class Knight extends Piece{
 
+    /**/
     /*
     NAME
         public Knight(final ChessColor a_color, final int a_currentRow, final int a_currentColumn);
@@ -35,18 +48,26 @@ public final class Knight extends Piece{
         super(a_color, Utilities.WHITE_KNIGHT_ICON, AssignPieceBoardIcon(PieceType.KNIGHT, a_color), a_currentRow, a_currentColumn);
     }
     
+    /**/
     /*
     NAME
-        public Knight(final Piece a_piece);
+        public Knight(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
     
     SYNOPSIS
-        public Knight(final Piece a_piece);
+        public Knight(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece --------> The Piece to be copied.
+        
+        int a_newRow ---------> The Piece's new row.
+        
+        int a_newColumn ------> The Piece's new column.
+        
+        int a_moves ----------> The Piece's new move count.
     
     DESCRIPTION
         This copy constructor constructs a new Knight object by passing in
         a Piece object and cloning its fields.
+        Row, column, and move count are passed in separately.
         
     RETURNS
         Nothing
@@ -58,6 +79,7 @@ public final class Knight extends Piece{
         super(a_piece, a_newRow, a_newColumn, a_moves);
     }
     
+    /**/
     /*
     NAME
         public final void AddCurrentLegalMoves(final Board a_board);

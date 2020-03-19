@@ -1,13 +1,18 @@
 package com.DarkBlue.Player;
 
-import com.DarkBlue.Utilities.*;
-
 import java.util.ArrayList;
 
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Move.*;
-import com.DarkBlue.GUI.*;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.GUI.DarkBlue;
 
+/*
+ * This class represents a computer player. The computer player selects its move
+ * by using a Minimax algorithm with alpha-beta pruning, which are provided in their
+ * own interface.
+ */
 public final class Computer extends Player{
 
     /**/
@@ -33,7 +38,7 @@ public final class Computer extends Player{
         Ryan King
     */
     public Computer(final ChessColor a_color, final Board a_board){
-        super(a_color, a_board, PlayerType.COMPUTER);
+        super(a_color, a_board);
     }
     
     /**/
@@ -60,7 +65,7 @@ public final class Computer extends Player{
         Ryan King
     */
     public Computer(final Player a_player, final Board a_board){
-        super(a_player.GetColor(), a_board, a_player.GetType());
+        super(a_player.GetColor(), a_board);
     }
     
     /**/
@@ -111,39 +116,27 @@ public final class Computer extends Player{
         return true;
     }
     
-    @Override
-    public final PlayerType GetPlayerType(){
-    	return PlayerType.COMPUTER;
-    }
-    
     /**/
     /*
     NAME
-        public final ArrayList<Move> GetAttackingMoves();
+        public final PlayerType GetPlayerType();
     
     SYNOPSIS
-        public final ArrayList<Move> GetAttackingMoves();
+        public final PlayerType GetPlayerType();
     
         No parameters.
     
     DESCRIPTION
-        This method returns an ArrayList comprised only of 
-        attacking moves, e.g. normal attacking moves and
-        en passant moves, by checking the move type of each.
+        This method returns this player's type.
     
     RETURNS
-        ArrayList<Move> attackMoves: All of the attack moves this player can make.
+        Always returns PlayerType.COMPUTER.
     
     AUTHOR
         Ryan King
     */
-    public final ArrayList<Move> GetAttackingMoves(){
-        ArrayList<Move> attackMoves = new ArrayList<>();
-        for(int index = Utilities.ZERO; index < this.m_allCurrentLegalMoves.size(); index++){
-            if(this.m_allCurrentLegalMoves.get(index).IsAttacking() || this.m_allCurrentLegalMoves.get(index).IsEnPassant()){
-                attackMoves.add(this.m_allCurrentLegalMoves.get(index));
-            }
-        }
-        return attackMoves;
+    @Override
+    public final PlayerType GetPlayerType(){
+    	return PlayerType.COMPUTER;
     }
 }

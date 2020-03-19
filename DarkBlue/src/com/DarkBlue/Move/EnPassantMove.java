@@ -1,14 +1,28 @@
 package com.DarkBlue.Move;
 
-import com.DarkBlue.Piece.*;
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Utilities.*;
+import com.DarkBlue.Piece.Piece;
+import com.DarkBlue.Piece.Pawn;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
+/*
+ * This represents a move performed by a pawn on its fifth rank
+ * capturing a pawn that just moved two tiles on its first move
+ * the previous turn. The capturing pawn moves diagonally forward
+ * as it would with a normal pawn capture, but the victim is not
+ * on the same tile as the moving piece moves to.
+ * 
+ * Attempting this any turn after the victim pawn has initially moved is illegal.
+ */
 public final class EnPassantMove extends Move{
     
     private final int m_capturedPawnRow;
     private final int m_capturedPawnColumn;
 
+    /**/
     /*
     NAME
         public EnPassantMove(final Pawn a_pawn, final int a_kingNewRow, final int a_kingNewColumn, final Pawn a_victim, final Board a_board);
@@ -46,6 +60,7 @@ public final class EnPassantMove extends Move{
         this.m_capturedPawnColumn = a_victim.GetCurrentColumn();
     }
 
+    /**/
     /*
     NAME
         public final String toString();
@@ -79,6 +94,7 @@ public final class EnPassantMove extends Move{
         return BoardUtilities.ToAlgebraicColumn(this.m_oldColumn) + "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn) + " e.p.";
     }
     
+    /**/
     /*
     NAME
         public final Piece GetVictim();
@@ -103,6 +119,7 @@ public final class EnPassantMove extends Move{
         return m_victim;
     }
     
+    /**/
     /*
     NAME
         public final MoveType GetMoveType();
@@ -126,6 +143,7 @@ public final class EnPassantMove extends Move{
         return MoveType.EN_PASSANT;
     }
     
+    /**/
     /*
     NAME
         public final boolean HasVictim();
@@ -150,6 +168,7 @@ public final class EnPassantMove extends Move{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final int GetCapturedPawnRow();
@@ -172,6 +191,7 @@ public final class EnPassantMove extends Move{
         return m_capturedPawnRow;
     }
     
+    /**/
     /*
     NAME
         public final int GetCapturedPawnColumn();
@@ -194,6 +214,7 @@ public final class EnPassantMove extends Move{
         return m_capturedPawnColumn;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsRegular();
@@ -217,6 +238,7 @@ public final class EnPassantMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsAttacking();
@@ -240,6 +262,7 @@ public final class EnPassantMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsCastling();
@@ -263,6 +286,7 @@ public final class EnPassantMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsEnPassant();

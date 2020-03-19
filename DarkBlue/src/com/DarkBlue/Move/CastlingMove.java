@@ -1,8 +1,10 @@
 package com.DarkBlue.Move;
 
-import com.DarkBlue.Piece.*;
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Utilities.*;
+import com.DarkBlue.Piece.Piece;
+import com.DarkBlue.Piece.King;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
+import com.DarkBlue.Board.Board;
 
 /*
  * This class represents a castling move, which is a special type of move
@@ -52,6 +54,7 @@ public final class CastlingMove extends Move{
     private final int m_rookDestinationRow;
     private final int m_rookDestinationColumn;
     
+    /**/
     /*
     NAME
         public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn);
@@ -92,6 +95,7 @@ public final class CastlingMove extends Move{
         this.m_rookDestinationColumn = AssignRookDestinationColumn(this.m_newColumn);
     }
     
+    /**/
     /*
     NAME
         public final String toString();
@@ -126,6 +130,7 @@ public final class CastlingMove extends Move{
         }
     }
     
+    /**/
     /*
     NAME
         private static final int AssignRookDestinationColumn(final int a_kingDestinationColumn);
@@ -152,6 +157,7 @@ public final class CastlingMove extends Move{
         }
     }
     
+    /**/
     /*
     NAME
         private static final int AssignRookCurrentColumn(final int a_kingDestinationColumn);
@@ -178,6 +184,7 @@ public final class CastlingMove extends Move{
         }
     }
     
+    /**/
     /*
     NAME
         public Piece GetVictim();
@@ -202,6 +209,7 @@ public final class CastlingMove extends Move{
         return null;
     }
     
+    /**/
     /*
     NAME
         public final MoveType GetMoveType();
@@ -225,6 +233,7 @@ public final class CastlingMove extends Move{
         return MoveType.CASTLING;
     }
     
+    /**/
     /*
     NAME
         public final boolean HasVictim();
@@ -249,6 +258,7 @@ public final class CastlingMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public int GetRookCurrentRow();
@@ -271,6 +281,7 @@ public final class CastlingMove extends Move{
         return this.m_rookCurrentRow;
     }
     
+    /**/
     /*
     NAME
         public int GetRookCurrentColumn();
@@ -293,6 +304,7 @@ public final class CastlingMove extends Move{
         return this.m_rookCurrentColumn;
     }
     
+    /**/
     /*
     NAME
         public int GetRookDestinationRow();
@@ -315,6 +327,7 @@ public final class CastlingMove extends Move{
         return this.m_rookDestinationRow;
     }
     
+    /**/
     /*
     NAME
         public int GetRookDestinationColumn();
@@ -337,6 +350,7 @@ public final class CastlingMove extends Move{
         return this.m_rookDestinationColumn;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsRegular();
@@ -360,6 +374,7 @@ public final class CastlingMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsAttacking();
@@ -383,6 +398,7 @@ public final class CastlingMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsCastling();
@@ -406,6 +422,7 @@ public final class CastlingMove extends Move{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsEnPassant();

@@ -1,11 +1,20 @@
 package com.DarkBlue.Piece;
 
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Utilities.*;
-import com.DarkBlue.Board.*;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
 
+/*
+ * This represents a chess piece that can move any number of tiles horizontally, vertically, or diagonally,
+ * stopping either on a tile of a non-king enemy piece or the tile
+ * before a friendly piece. The queen captures the same way she moves.
+ * 
+ * She is chosen for ninety percent of pawn promotions.
+ */
 public final class Queen extends Piece{
     
     // The down moves usable on this turn only
@@ -78,16 +87,23 @@ public final class Queen extends Piece{
     /**/
     /*
     NAME
-        public Queen(final Piece a_piece);
+        public Queen(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
     
     SYNOPSIS
-        public Queen(final Piece a_piece);
+        public Queen(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece --------> The Piece to be copied.
+        
+        int a_newRow ---------> The Piece's new row.
+        
+        int a_newColumn ------> The Piece's new column.
+        
+        int a_moves ----------> The Piece's new move count.
     
     DESCRIPTION
         This copy constructor constructs a new Queen object by passing in
         a Piece object and cloning its fields.
+        Row, column, and move count are passed in separately.
         
     RETURNS
         Nothing
@@ -98,7 +114,8 @@ public final class Queen extends Piece{
     public Queen(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         super(a_piece, a_newRow, a_newColumn, a_moves);
         Queen candidate = (Queen) a_piece;
-        
+               
+        // Initialize the ArrayLists
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
         this.m_currentRightMoves = new ArrayList<>();
@@ -109,6 +126,7 @@ public final class Queen extends Piece{
         this.m_currentUpAndLeftMoves = new ArrayList<>();
         this.m_currentDownAndLeftMoves = new ArrayList<>();
         
+        // Add all moves from the original piece
         this.m_currentDownMoves.addAll(candidate.GetCurrentDownMoves());
         this.m_currentUpMoves.addAll(candidate.GetCurrentUpMoves());
         this.m_currentRightMoves.addAll(candidate.GetCurrentRightMoves());
@@ -157,7 +175,7 @@ public final class Queen extends Piece{
         m_currentUpAndLeftMoves.clear();
         m_currentDownAndLeftMoves.clear();
 
-        // Add the new legal moves for this turn
+        // Add the new legal moves for this turn in all eight directions
         this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
         this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));
         this.m_currentRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allRightMoves));

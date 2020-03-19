@@ -1,17 +1,19 @@
 package com.DarkBlue.Piece;
 
-import com.DarkBlue.Utilities.*;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import com.DarkBlue.Move.*;
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
+import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.Board.Tile;
 
 public abstract class Piece{
     protected final ChessColor m_color;//White or black
-    protected final char m_icon;//The algebraic letter of the piece. Set to 'P' but not used for pawns.
+    protected final char m_icon;//The algebraic letter of the piece. Set to 'P' or 'p' but not used for pawns.
     protected final char m_boardIcon;//The actual piece in Unicode. Much like how a piece looks on a newspaper.
 
     protected final int m_currentRow;//The piece's current row
@@ -55,12 +57,16 @@ public abstract class Piece{
     /**/
     /*
     NAME
-        public Piece(final ChessColor a_color, final PieceType a_descriptor, final int a_currentRow, final int a_currentColumn);
+        public Piece(final ChessColor a_color, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn);
     
     SYNOPSIS
-        public Piece(final ChessColor a_color, final PieceType a_descriptor, final int a_currentRow, final int a_currentColumn);
+        public Piece(final ChessColor a_color, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn);
     
         ChessColor a_color -----------> The piece's color, e.g. black or white.
+        
+        char a_icon ------------------> The piece's letter icon.
+        
+        char a_boardIcon -------------> The piece's Unicode chess piece icon.
         
         int a_currentRow -------------> The current row of the piece.
         
@@ -68,8 +74,8 @@ public abstract class Piece{
     
     DESCRIPTION
         This constructor initializes all of the universal fields for a piece of any type.
-        It also initializes the ArrayLists that will contain all legal moves and all current legal moves.
-        Value, icon, type, and board icon vary between pieces, so they are set in the proper subclass.
+        It also initializes the ArrayList that will contain ll current legal moves, as well as
+        the icon with some protected methods called in the subclass.
     
     RETURNS
         Nothing
@@ -91,12 +97,18 @@ public abstract class Piece{
     /**/
     /*
     NAME
-        public Piece(final Piece a_piece);
+        public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
     SYNOPSIS
-        public Piece(final Piece a_piece);
+        public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
         
         Piece a_piece -----------> The Piece to be copied.
+        
+        int a_newRow ------------> The Piece's new row.
+        
+        int a_newColumn ---------> The Piece's new column.
+        
+        int a_moves -------------> The number of times this piece has moved.
         
     DESCRIPTION
         This copy constructor initializes most of the universal fields for a Piece of any type.
@@ -424,10 +436,10 @@ public abstract class Piece{
     /**/
     /*
     NAME
-        public final PieceType GetPieceType();
+        public abstract PieceType GetPieceType();
     
     SYNOPSIS
-        public final PieceType GetPieceType();
+        public abstract PieceType GetPieceType();
     
         No parameters.
     
@@ -475,7 +487,7 @@ public abstract class Piece{
         public final char GetBoardIcon();
     
     SYNOPSIS
-        public final char GetIcon();
+        public final char GetBoardIcon();
     
         No parameters.
     
@@ -638,10 +650,10 @@ public abstract class Piece{
     /**/
     /*
     NAME
-        public final boolean IsPawn();
+        public abstract boolean IsPawn();
     
     SYNOPSIS
-        public final boolean IsPawn();
+        public abstract boolean IsPawn();
     
         No parameters.
     
@@ -908,93 +920,6 @@ public abstract class Piece{
     /**/
     /*
     NAME
-        public final boolean IsSameRow(final Piece a_piece);
-    
-    SYNOPSIS
-        public final boolean IsSameRow(final Piece a_piece);
-    
-        Piece a_piece ------> The piece to check.
-    
-    DESCRIPTION
-        This method returns if the given piece has the same row as this.
-        Null arguments always return false.
-    
-    RETURNS
-        boolean: True if the pieces have the same row and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsSameRow(final Piece a_piece){
-        try{
-            return this.GetCurrentRow() == a_piece.GetCurrentRow();
-        }catch(Exception e){
-            return false;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean IsSameColumn(final Piece a_piece);
-    
-    SYNOPSIS
-        public final boolean IsSameColumn(final Piece a_piece);
-    
-        Piece a_piece ------> The piece to check.
-    
-    DESCRIPTION
-        This method returns if the given piece has the same column as this.
-        Null arguments always return false.
-    
-    RETURNS
-        boolean: True if the pieces have the same column, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsSameColumn(final Piece a_piece){
-        try{
-            return this.GetCurrentColumn() == a_piece.GetCurrentColumn();
-        }catch(Exception e){
-            return false;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean IsSameMoves(final Piece a_piece);
-    
-    SYNOPSIS
-        public final boolean IsSameMoves(final Piece a_piece);
-    
-        Piece a_piece ------> The piece to check.
-    
-    DESCRIPTION
-        This method returns if the given piece has the same number of moves as this.
-        Null arguments always return false.
-    
-    RETURNS
-        boolean: True if the pieces have the same number of moves, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsSameMoves(final Piece a_piece){
-        try{
-            return this.HowManyMoves() == a_piece.HowManyMoves();
-        }catch(Exception e){
-            return false;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
         public final boolean Equals(final Piece a_piece);
     
     SYNOPSIS
@@ -1022,19 +947,35 @@ public abstract class Piece{
     */
     public final boolean Equals(final Piece a_piece){ 
         try{        
-            return this.IsAlly(a_piece)
-            			&& this.IsSameType(a_piece)
-                    /*
-                    && this.IsSameRow(a_piece)
-                    && this.IsSameColumn(a_piece)
-                    && this.IsSameMoves(a_piece)*/;
+            return this.IsAlly(a_piece) && this.IsSameType(a_piece);
         }catch(Exception e){
             return false;
         }
     }
     
+    /**/
+    /*
+    NAME
+        public final String toString();
+    
+    SYNOPSIS
+        public final String toString();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the piece's current tile in algebraic notation
+        as well as its color and type.
+        For example, a white pawn on e2 returns "e2 white pawn".
+    
+    RETURNS
+        String: A string description of the piece.
+    
+    AUTHOR
+        Ryan King
+    */
     @Override
     public final String toString(){
-    	return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.GetPieceType().toString().toLowerCase();
+        return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.GetPieceType().toString().toLowerCase();
     }
 }

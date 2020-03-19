@@ -1,11 +1,18 @@
 package com.DarkBlue.Move;
 
 import com.DarkBlue.Piece.Piece;
-import com.DarkBlue.Board.*;
-import com.DarkBlue.Utilities.*;
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
+import com.DarkBlue.Board.Board;
 
+/*
+ * This represents a move with any piece moving anywhere and capturing a victim.
+ * 
+ * This does not apply to pawns capturing others en passant, which has its own separate class.
+ */
 public final class AttackingMove extends Move{
 
+    /**/
     /*
     NAME
         public AttackingMove(final Piece a_piece, final int a_newRow, final int a_newColumn, final Piece a_victim, final Board a_board);
@@ -30,7 +37,7 @@ public final class AttackingMove extends Move{
         The victim is passed in the same manner.
     
     RETURNS
-    	Nothing
+        Nothing
     
     AUTHOR
         Ryan King
@@ -39,6 +46,7 @@ public final class AttackingMove extends Move{
         super(a_piece, a_newRow, a_newColumn, a_victim, a_board);
     }
     
+    /**/
     /*
     NAME
         public final String toString();
@@ -84,6 +92,7 @@ public final class AttackingMove extends Move{
         return moveString;
     }
     
+    /**/
     /*
     NAME
         public Piece GetVictim();
@@ -108,6 +117,7 @@ public final class AttackingMove extends Move{
         return this.m_victim;
     }
     
+    /**/
     /*
     NAME
         public final MoveType GetMoveType();
@@ -131,6 +141,7 @@ public final class AttackingMove extends Move{
         return MoveType.ATTACKING;
     }
     
+    /**/
     /*
     NAME
         public final boolean HasVictim();
@@ -155,6 +166,7 @@ public final class AttackingMove extends Move{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsRegular();
@@ -178,6 +190,7 @@ public final class AttackingMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsAttacking();
@@ -201,6 +214,7 @@ public final class AttackingMove extends Move{
         return true;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsCastling();
@@ -224,6 +238,7 @@ public final class AttackingMove extends Move{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsEnPassant();
