@@ -45,7 +45,7 @@ public final class Knight extends Piece{
         Ryan King
     */
     public Knight(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-        super(a_color, Utilities.WHITE_KNIGHT_ICON, AssignPieceBoardIcon(PieceType.KNIGHT, a_color), a_currentRow, a_currentColumn);
+        super(a_color, a_currentRow, a_currentColumn);
     }
     
     /**/
@@ -132,6 +132,62 @@ public final class Knight extends Piece{
     @Override
     public final PieceType GetPieceType(){
         return PieceType.KNIGHT;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetIcon();
+    
+    SYNOPSIS
+        public final char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_KNIGHT_ICON;
+        }else{
+            return Utilities.BLACK_KNIGHT_ICON;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetBoardIcon();
+    
+    SYNOPSIS
+        public final char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetBoardIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_KNIGHT_BOARD_ICON;
+        }else{
+            return Utilities.BLACK_KNIGHT_BOARD_ICON;
+        }
     }
     
     /**/

@@ -70,7 +70,7 @@ public final class Pawn extends Piece{
     */
     public Pawn(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
 
-        super(a_color, Utilities.WHITE_PAWN_ICON, AssignPieceBoardIcon(PieceType.PAWN, a_color), a_currentRow, a_currentColumn);
+        super(a_color, a_currentRow, a_currentColumn);
         
         m_currentRegularMoves = new ArrayList<>();
         m_currentAttackingMoves = new ArrayList<>();
@@ -201,6 +201,62 @@ public final class Pawn extends Piece{
     @Override
     public final PieceType GetPieceType(){
         return PieceType.PAWN;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetIcon();
+    
+    SYNOPSIS
+        public final char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_PAWN_ICON;
+        }else{
+            return Utilities.BLACK_PAWN_ICON;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetBoardIcon();
+    
+    SYNOPSIS
+        public final char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetBoardIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_PAWN_BOARD_ICON;
+        }else{
+            return Utilities.BLACK_PAWN_BOARD_ICON;
+        }
     }
     
     /**/

@@ -71,7 +71,7 @@ public final class Queen extends Piece{
         Ryan King
     */
     public Queen(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-        super(a_color, Utilities.WHITE_QUEEN_ICON, AssignPieceBoardIcon(PieceType.QUEEN, a_color), a_currentRow, a_currentColumn);
+        super(a_color, a_currentRow, a_currentColumn);
         
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
@@ -220,6 +220,62 @@ public final class Queen extends Piece{
     @Override
     public final PieceType GetPieceType(){
         return PieceType.QUEEN;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetIcon();
+    
+    SYNOPSIS
+        public final char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_QUEEN_ICON;
+        }else{
+            return Utilities.BLACK_QUEEN_ICON;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetBoardIcon();
+    
+    SYNOPSIS
+        public final char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetBoardIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_QUEEN_BOARD_ICON;
+        }else{
+            return Utilities.BLACK_QUEEN_BOARD_ICON;
+        }
     }
     
     /**/

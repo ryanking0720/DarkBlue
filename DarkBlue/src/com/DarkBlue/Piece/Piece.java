@@ -11,15 +11,22 @@ import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.Board.Tile;
 
+/*
+ * This class represents a generic chess piece.
+ * 
+ * No concrete assumptions are made about this piece.
+ * The only fields that every piece needs are a color,
+ * a row, a column, the number of moves it has made, and an
+ * ArrayList of legal moves for the current turn.
+ * 
+ * Piece type, identity as a certain type of piece, special
+ * types of moves, etc. are all handled in each subclass.
+ */
 public abstract class Piece{
     protected final ChessColor m_color;//White or black
-    protected final char m_icon;//The algebraic letter of the piece. Set to 'P' or 'p' but not used for pawns.
-    protected final char m_boardIcon;//The actual piece in Unicode. Much like how a piece looks on a newspaper.
-
     protected final int m_currentRow;//The piece's current row
     protected final int m_currentColumn;//The piece's current column
     protected final int m_moves;//How many times has the piece moved?
-    //Current legal moves are stored as Moves because they can only occur on the piece's current spot and on the current turn.
     protected final ArrayList<Move> m_currentLegalMoves;//All the legal moves usable for the current turn only.
     
     /* All abstract methods. */
@@ -50,389 +57,6 @@ public abstract class Piece{
     */
     public abstract void AddCurrentLegalMoves(final Board a_board);
     
-    /* Constructor and all non-abstract methods. */
-    
-    // The constructor.
-    
-    /**/
-    /*
-    NAME
-        public Piece(final ChessColor a_color, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn);
-    
-    SYNOPSIS
-        public Piece(final ChessColor a_color, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn);
-    
-        ChessColor a_color -----------> The piece's color, e.g. black or white.
-        
-        char a_icon ------------------> The piece's letter icon.
-        
-        char a_boardIcon -------------> The piece's Unicode chess piece icon.
-        
-        int a_currentRow -------------> The current row of the piece.
-        
-        int a_currentColumn ----------> The current column of the piece.
-    
-    DESCRIPTION
-        This constructor initializes all of the universal fields for a piece of any type.
-        It also initializes the ArrayList that will contain ll current legal moves, as well as
-        the icon with some protected methods called in the subclass.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    public Piece(final ChessColor a_color, final char a_icon, final char a_boardIcon, final int a_currentRow, final int a_currentColumn){
-        this.m_color = a_color;
-        this.m_icon = (m_color.IsWhite() ? Character.toUpperCase(a_icon) : Character.toLowerCase(a_icon));
-        this.m_boardIcon = a_boardIcon;
-        this.m_currentRow = a_currentRow;
-        this.m_currentColumn = a_currentColumn;
-        this.m_moves = Utilities.ZERO;
-        this.m_currentLegalMoves = new ArrayList<>();
-    }
-    
-    // The copy constructor.
-    /**/
-    /*
-    NAME
-        public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
-        
-    SYNOPSIS
-        public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
-        
-        Piece a_piece -----------> The Piece to be copied.
-        
-        int a_newRow ------------> The Piece's new row.
-        
-        int a_newColumn ---------> The Piece's new column.
-        
-        int a_moves -------------> The number of times this piece has moved.
-        
-    DESCRIPTION
-        This copy constructor initializes most of the universal fields for a Piece of any type.
-        It sets all of the specific fields not set in the regular constructor, as this assumes
-        the caller is passing in a fully fleshed-out Piece object.
-            
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
-        this.m_color = a_piece.GetColor();
-        this.m_currentRow = a_newRow;
-        this.m_currentColumn = a_newColumn;
-        this.m_moves = a_moves;
-        this.m_icon = a_piece.GetIcon();
-        this.m_boardIcon = a_piece.GetBoardIcon();
-        this.m_currentLegalMoves = new ArrayList<>();
-        this.m_currentLegalMoves.addAll(a_piece.GetCurrentLegalMoves());
-    }
-    
-    /* Protected assignment methods for final fields */
-    
-    /**/
-    /*
-    NAME
-        protected static final int AssignMultiplier(final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final int AssignMultiplier(final ChessColor a_color);
-    
-        ChessColor a_color ----------> The color to determine negativity.
-    
-    DESCRIPTION
-        This method assigns the multiplier that gets multiplied to the value of a piece.
-        If the piece in question is white, this multiplier is positive 1.
-        If the piece in question is black, this multiplier is negative 1.
-    
-    RETURNS
-        1 if the piece is white, or -1 if the piece is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final int AssignMultiplier(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.ONE;
-        }else{
-            return Utilities.NEGATIVE_ONE;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final PieceType AssignPieceType(final int a_buttonInt);
-    
-    SYNOPSIS
-        protected static final PieceType AssignPieceType(final int a_buttonInt);
-    
-        int a_buttonInt -----------> The button clicked by the user.
-    
-    DESCRIPTION
-        This method assigns the type of piece depending on the button the user clicked.
-        Button 3 returns Queen.
-        Button 2 returns Rook.
-        Button 1 returns Bishop.
-        Button 0 returns Knight.
-    
-    RETURNS
-        Queen, Rook, Bishop, or Knight, depending on what the player selected.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final PieceType AssignPieceType(final int a_buttonInt){
-        switch(a_buttonInt){
-            case Utilities.THREE: return PieceType.QUEEN;
-            case Utilities.TWO: return PieceType.ROOK;
-            case Utilities.ONE: return PieceType.BISHOP;
-            case Utilities.ZERO: return PieceType.KNIGHT;
-            default: return null;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        private static final char GetQueenBoardIcon(final ChessColor a_color);
-    
-    SYNOPSIS
-        private static final char GetQueenBoardIcon(final ChessColor a_color);
-    
-        ChessColor a_color ------------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns the board icon for a queen.
-        It returns a different character depending on if the color given is black or white.
-    
-    RETURNS
-        The white board icon if the color is white, or the black board icon if the color is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final char GetQueenBoardIcon(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.WHITE_QUEEN_BOARD_ICON;
-        }else{
-            return Utilities.BLACK_QUEEN_BOARD_ICON;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        private static final char GetRookBoardIcon(final ChessColor a_color);
-    
-    SYNOPSIS
-        private static final char GetRookBoardIcon(final ChessColor a_color);
-    
-        ChessColor a_color ------------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns the board icon for a rook.
-        It returns a different character depending on if the color given is black or white.
-    
-    RETURNS
-        The white board icon if the color is white, or the black board icon if the color is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final char GetRookBoardIcon(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.WHITE_ROOK_BOARD_ICON;
-        }else{
-            return Utilities.BLACK_ROOK_BOARD_ICON;
-        }
-        
-    }
-
-    /**/
-    /*
-    NAME
-        private static final char GetKnightBoardIcon(final ChessColor a_color);
-    
-    SYNOPSIS
-        private static final char GetKnightBoardIcon(final ChessColor a_color);
-    
-        ChessColor a_color ------------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns the board icon for a knight.
-        It returns a different character depending on if the color given is black or white.
-    
-    RETURNS
-        The white board icon if the color is white, or the black board icon if the color is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final char GetKnightBoardIcon(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.WHITE_KNIGHT_BOARD_ICON;
-        }else{
-            return Utilities.BLACK_KNIGHT_BOARD_ICON;
-        }
-    }
-
-    /**/
-    /*
-    NAME
-        private static final char GetBishopBoardIcon(final ChessColor a_color);
-    
-    SYNOPSIS
-        private static final char GetBishopBoardIcon(final ChessColor a_color);
-    
-        ChessColor a_color ------------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns the board icon for a bishop.
-        It returns a different character depending on if the color given is black or white.
-    
-    RETURNS
-        The white board icon if the color is white, or the black board icon if the color is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final char GetBishopBoardIcon(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.WHITE_BISHOP_BOARD_ICON;
-        }else{
-            return Utilities.BLACK_BISHOP_BOARD_ICON;
-        }        
-    }
-    
-    /**/
-    /*
-    NAME
-        private static final char GetKingBoardIcon(final ChessColor a_color);
-    
-    SYNOPSIS
-        private static final char GetKingBoardIcon(final ChessColor a_color);
-    
-        ChessColor a_color ------------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns the board icon for a king.
-        It returns a different character depending on if the color given is black or white.
-    
-    RETURNS
-        The white board icon if the color is white, or the black board icon if the color is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final char GetKingBoardIcon(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.WHITE_KING_BOARD_ICON;
-        }else{
-            return Utilities.BLACK_KING_BOARD_ICON;
-        }        
-    }
-    
-    /**/
-    /*
-    NAME
-        private static final char GetPawnBoardIcon(final ChessColor a_color);
-    
-    SYNOPSIS
-        private static final char GetPawnBoardIcon(final ChessColor a_color);
-    
-        ChessColor a_color ------------> The color of the piece.
-    
-    DESCRIPTION
-        This method returns the board icon for a pawn.
-        It returns a different character depending on if the color given is black or white.
-    
-    RETURNS
-        The white board icon if the color is white, or the black board icon if the color is black.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final char GetPawnBoardIcon(final ChessColor a_color){
-        if(a_color.IsWhite()){
-            return Utilities.WHITE_PAWN_BOARD_ICON;
-        }else{
-            return Utilities.BLACK_PAWN_BOARD_ICON;
-        }        
-    }
-    
-    /**/
-    /*
-    NAME
-        protected static final char AssignPieceBoardIcon(final PieceType a_type, final ChessColor a_color);
-    
-    SYNOPSIS
-        protected static final char AssignPieceBoardIcon(final PieceType a_type, final ChessColor a_color);
-    
-        PieceType a_type --------------> The type of the piece to be instantiated.
-        
-        ChessColor a_color ------------> The color of the piece to be instantiated.
-    
-    DESCRIPTION
-        This method assigns the proper board icon depending on the type and color given.
-        A switch statement evaulates the type and passes control to the proper sub-method which evaluates the color.
-        Returns the null character on error.
-    
-    RETURNS
-        A Unicode chess piece character for the piece's type and color, or null otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    protected static final char AssignPieceBoardIcon(final PieceType a_type, final ChessColor a_color){
-        switch(a_type){
-            case PAWN: return GetPawnBoardIcon(a_color);
-            case ROOK: return GetRookBoardIcon(a_color);
-            case KNIGHT: return GetKnightBoardIcon(a_color);
-            case BISHOP: return GetBishopBoardIcon(a_color);
-            case QUEEN: return GetQueenBoardIcon(a_color);
-            case KING: return GetKingBoardIcon(a_color);
-            default: return Utilities.NULL;
-        }
-    }
-
-    // Accessors for every field.
-    
-    /**/
-    /*
-    NAME
-        public final ChessColor GetColor();
-    
-    SYNOPSIS
-        public final ChessColor GetColor();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's color.
-    
-    RETURNS
-        ChessColor m_color: This piece's color.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final ChessColor GetColor(){
-        return this.m_color;
-    }
-    
     /**/
     /*
     NAME
@@ -457,10 +81,10 @@ public abstract class Piece{
     /**/
     /*
     NAME
-        public final char GetIcon();
+        public abstract char GetIcon();
     
     SYNOPSIS
-        public final char GetIcon();
+        public abstract char GetIcon();
     
         No parameters.
     
@@ -468,26 +92,20 @@ public abstract class Piece{
         This method returns this piece's algebraic notation icon.
     
     RETURNS
-        char m_icon: This piece's algebraic notation icon.
+        char: This piece's algebraic notation icon.
     
     AUTHOR
         Ryan King
     */
-    public final char GetIcon(){
-        if(this.IsWhite()){
-            return Character.toUpperCase(this.m_icon);
-        }else{
-            return Character.toLowerCase(this.m_icon);
-        }
-    }
+    public abstract char GetIcon();
     
     /**/
     /*
     NAME
-        public final char GetBoardIcon();
+        public abstract char GetBoardIcon();
     
     SYNOPSIS
-        public final char GetBoardIcon();
+        public abstract char GetBoardIcon();
     
         No parameters.
     
@@ -500,152 +118,7 @@ public abstract class Piece{
     AUTHOR
         Ryan King
     */
-    public final char GetBoardIcon(){
-        return this.m_boardIcon;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final int GetCurrentRow();
-    
-    SYNOPSIS
-        public final int GetCurrentRow();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's current row.
-    
-    RETURNS
-        int m_currentRow: This piece's current row.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int GetCurrentRow(){
-        return this.m_currentRow;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final int GetCurrentColumn();
-    
-    SYNOPSIS
-        public final int GetCurrentColumn();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's current column.
-    
-    RETURNS
-        int m_currentColumn: This piece's current column.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int GetCurrentColumn(){
-        return this.m_currentColumn;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final ArrayList<Move> GetCurrentLegalMoves();
-    
-    SYNOPSIS
-        public final ArrayList<Move> GetCurrentLegalMoves();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns the ArrayList of all this piece's
-        legal moves usable on the current turn.
-    
-    RETURNS
-        ArrayList<Move> m_currentLegalMoves: All of the piece's legal moves for the current turn.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final ArrayList<Move> GetCurrentLegalMoves(){
-        return this.m_currentLegalMoves;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean CanMove();
-    
-    SYNOPSIS
-        public final boolean CanMove();
-        
-        No parameters.
-    
-    DESCRIPTION
-        This method returns if this piece is able to move
-        by checking if its current legal moves ArrayList
-        has a size larger than zero.
-    
-    RETURNS
-        boolean: True if the size of the current legal moves ArrayList is nonzero, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final boolean CanMove(){
-        return this.m_currentLegalMoves.size() > Utilities.ZERO;    
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean HasMoved();
-    
-    SYNOPSIS
-        public final boolean HasMoved();
-        
-        No parameters.
-    
-    DESCRIPTION
-        This method returns if this piece has moved in the current game.
-    
-    RETURNS
-        boolean: True if this piece has moved at least once this game, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final boolean HasMoved(){
-        return this.m_moves > Utilities.ZERO;
-    }
-    
-    /**/
-    /*
-    NAME
-        public final int HowManyMoves();
-    
-    SYNOPSIS
-        public final int HowManyMoves();
-        
-        No parameters.
-    
-    DESCRIPTION
-        This method returns how many moves this piece has made.
-    
-    RETURNS
-        int m_moves: The number of times this piece has moved.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final int HowManyMoves(){
-        return this.m_moves;
-    }
+    public abstract char GetBoardIcon();
     
     /**/
     /*
@@ -779,6 +252,246 @@ public abstract class Piece{
     */
     public abstract boolean IsKnight();
     
+    /* Constructor and all non-abstract methods. */
+    
+    // The constructor.
+    
+    /**/
+    /*
+    NAME
+        public Piece(final ChessColor a_color, final int a_currentRow, final int a_currentColumn);
+    
+    SYNOPSIS
+        public Piece(final ChessColor a_color, final int a_currentRow, final int a_currentColumn);
+    
+        ChessColor a_color -----------> The piece's color, e.g. black or white.
+
+        int a_currentRow -------------> The current row of the piece.
+        
+        int a_currentColumn ----------> The current column of the piece.
+    
+    DESCRIPTION
+        This constructor initializes all of the universal fields for a piece of any type.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    public Piece(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
+        this.m_color = a_color;
+        this.m_currentRow = a_currentRow;
+        this.m_currentColumn = a_currentColumn;
+        this.m_moves = Utilities.ZERO;
+        this.m_currentLegalMoves = new ArrayList<>();
+    }
+    
+    // The copy constructor.
+    /**/
+    /*
+    NAME
+        public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
+        
+    SYNOPSIS
+        public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves);
+        
+        Piece a_piece -----------> The Piece to be copied.
+        
+        int a_newRow ------------> The Piece's new row.
+        
+        int a_newColumn ---------> The Piece's new column.
+        
+        int a_moves -------------> The number of times this piece has moved.
+        
+    DESCRIPTION
+        This copy constructor initializes most of the universal fields for a Piece of any type.
+        It sets all of the specific fields not set in the regular constructor, as this assumes
+        the caller is passing in a fully fleshed-out Piece object.
+            
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
+        this.m_color = a_piece.GetColor();
+        this.m_currentRow = a_newRow;
+        this.m_currentColumn = a_newColumn;
+        this.m_moves = a_moves;
+        this.m_currentLegalMoves = new ArrayList<>();
+        this.m_currentLegalMoves.addAll(a_piece.GetCurrentLegalMoves());
+    }
+    
+    // Accessors for every field.
+    
+    /**/
+    /*
+    NAME
+        public final ChessColor GetColor();
+    
+    SYNOPSIS
+        public final ChessColor GetColor();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's color.
+    
+    RETURNS
+        ChessColor m_color: This piece's color.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ChessColor GetColor(){
+        return this.m_color;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int GetCurrentRow();
+    
+    SYNOPSIS
+        public final int GetCurrentRow();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's current row.
+    
+    RETURNS
+        int m_currentRow: This piece's current row.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int GetCurrentRow(){
+        return this.m_currentRow;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int GetCurrentColumn();
+    
+    SYNOPSIS
+        public final int GetCurrentColumn();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's current column.
+    
+    RETURNS
+        int m_currentColumn: This piece's current column.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int GetCurrentColumn(){
+        return this.m_currentColumn;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final ArrayList<Move> GetCurrentLegalMoves();
+    
+    SYNOPSIS
+        public final ArrayList<Move> GetCurrentLegalMoves();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the ArrayList of all this piece's
+        legal moves usable on the current turn.
+    
+    RETURNS
+        ArrayList<Move> m_currentLegalMoves: All of the piece's legal moves for the current turn.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Move> GetCurrentLegalMoves(){
+        return this.m_currentLegalMoves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int HowManyMoves();
+    
+    SYNOPSIS
+        public final int HowManyMoves();
+        
+        No parameters.
+    
+    DESCRIPTION
+        This method returns how many moves this piece has made.
+    
+    RETURNS
+        int m_moves: The number of times this piece has moved.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int HowManyMoves(){
+        return this.m_moves;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean CanMove();
+    
+    SYNOPSIS
+        public final boolean CanMove();
+        
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if this piece is able to move
+        by checking if its current legal moves ArrayList
+        has a size larger than zero.
+    
+    RETURNS
+        boolean: True if the size of the current legal moves ArrayList is nonzero, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean CanMove(){
+        return this.m_currentLegalMoves.size() > Utilities.ZERO;    
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean HasMoved();
+    
+    SYNOPSIS
+        public final boolean HasMoved();
+        
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if this piece has moved in the current game.
+    
+    RETURNS
+        boolean: True if this piece has moved at least once this game, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean HasMoved(){
+        return this.m_moves > Utilities.ZERO;
+    }
+    
     /**/
     /*
     NAME
@@ -790,8 +503,7 @@ public abstract class Piece{
         No parameters.
     
     DESCRIPTION
-        This method returns if this piece is white.
-    
+        This method returns if this piece is white.   
     
     RETURNS
         boolean: True if the piece is white and false otherwise.

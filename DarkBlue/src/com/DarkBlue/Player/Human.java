@@ -2,6 +2,14 @@ package com.DarkBlue.Player;
 
 import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.ChessColor;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.Test;
+
 import com.DarkBlue.Board.Board;
 
 /*

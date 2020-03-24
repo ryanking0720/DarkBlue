@@ -29,10 +29,7 @@ public abstract class Player{
     
     // How many active pieces the player has on the board, which starts at 16
     protected final ArrayList<Piece> m_activePieces;
-    
-    // How many of the opposing player's pieces this player has captured, which starts at 0
-    protected final ArrayList<Piece> m_capturedPieces;
-    
+
     // All the legal moves the player can make on the current turn
     protected final ArrayList<Move> m_allCurrentLegalMoves;
 
@@ -63,7 +60,6 @@ public abstract class Player{
     public Player(final ChessColor a_color, final Board a_board){
         this.m_color = a_color;
         this.m_activePieces = new ArrayList<>();
-        this.m_capturedPieces = new ArrayList<>();
         this.m_allCurrentLegalMoves = new ArrayList<>();
     }
     /**/
@@ -95,13 +91,7 @@ public abstract class Player{
 
         // Initialize ArrayLists
         this.m_allCurrentLegalMoves = new ArrayList<>();
-        this.m_activePieces = new ArrayList<>();        
-        this.m_capturedPieces = new ArrayList<>();
-        
-        // Copy the old captured Piece ArrayList
-        for(int index = Utilities.ZERO; index < a_player.GetCapturedPieces().size(); index++){
-            this.m_capturedPieces.add(a_player.GetCapturedPieces().get(index));
-        }
+        this.m_activePieces = new ArrayList<>();
 
         // Initialize the Pieces and Moves according to the Board argument
         this.Refresh(a_board);
@@ -199,7 +189,10 @@ public abstract class Player{
         Ryan King
     */
     public final void InitializePieces(final Board a_board){
+        // Clear out the pieces to avoid errors
         this.m_activePieces.clear();
+        
+        // Look through every spot on the board
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
             int row = index / Utilities.EIGHT;
             int column = index % Utilities.EIGHT;
@@ -317,30 +310,6 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public void AddCapturedPiece(final Piece a_piece);
-    
-    SYNOPSIS
-        public void AddCapturedPiece(final Piece a_piece);
-    
-        final Piece a_piece ------> The piece that just got captured.
-    
-    DESCRIPTION
-        This method adds an opposing piece to the player's
-        captured piece ArrayList once it gets captured.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    public final void AddCapturedPiece(final Piece a_piece){
-        this.m_capturedPieces.add(a_piece);
-    }
-    
-    /**/
-    /*
-    NAME
         public ChessColor GetColor();
     
     SYNOPSIS
@@ -405,6 +374,30 @@ public abstract class Player{
         Ryan King
     */
     public abstract boolean IsComputer();
+    
+    /**/
+    /*
+    NAME
+        public abstract PlayerType GetPlayerType();
+    
+    SYNOPSIS
+        public abstract PlayerType GetPlayerType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns which type of player
+        this player is, i.e. a human or computer.
+    
+    RETURNS
+        PlayerType.HUMAN if human, or PlayerType.COMPUTER
+        if the player is an AI.
+        One of these two options will always return.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract PlayerType GetPlayerType();
     
     /**/
     /*
@@ -557,34 +550,6 @@ public abstract class Player{
         return this.m_activePieces.size() == Utilities.TWO
                 && ((this.m_activePieces.get(Utilities.ZERO).IsKing() && this.m_activePieces.get(Utilities.ONE).IsBishop())
                 || (this.m_activePieces.get(Utilities.ONE).IsKing() && this.m_activePieces.get(Utilities.ZERO).IsBishop()));
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean IsInCheck(final Board a_board);
-    
-    SYNOPSIS
-        public final boolean IsInCheck(final Board a_board);
-    
-        Board a_board ------> The current board.
-    
-    DESCRIPTION
-        This method determines if the player's king is in check,
-        i.e. if he is threatened by an enemy piece but has at least
-        one legal move he can use to escape, capture the opposing piece,
-        or use another piece to capture or block the threatening piece.
-        The player who is in check has no choice but to remove the threat.
-        The game continues normally after the player does so.
-    
-    RETURNS
-        True if the player is in check, and false otherwise.
-    
-    AUTHOR
-        Ryan King
-    */
-    public final boolean IsInCheck(final Board a_board){
-        return !MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() > Utilities.ZERO;
     }
     
     /**/
@@ -755,6 +720,34 @@ public abstract class Player{
     public final boolean IsInStalemate(final Board a_board){
         return MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() == Utilities.ZERO;
     }
+    
+    /**/
+    /*
+    NAME
+        public final boolean IsInCheck(final Board a_board);
+    
+    SYNOPSIS
+        public final boolean IsInCheck(final Board a_board);
+    
+        Board a_board ------> The current board.
+    
+    DESCRIPTION
+        This method determines if the player's king is in check,
+        i.e. if he is threatened by an enemy piece but has at least
+        one legal move he can use to escape, capture the opposing piece,
+        or use another piece to capture or block the threatening piece.
+        The player who is in check has no choice but to remove the threat.
+        The game continues normally after the player does so.
+    
+    RETURNS
+        True if the player is in check, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean IsInCheck(final Board a_board){
+        return !MoveEvaluation.IsKingSafe(a_board, this.GetKing().GetCurrentRow(), this.GetKing().GetCurrentColumn(), this.GetColor()) && this.HowManyMoves() > Utilities.ZERO;
+    }
 
     /**/
     /*
@@ -816,30 +809,6 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public abstract PlayerType GetPlayerType();
-    
-    SYNOPSIS
-        public abstract PlayerType GetPlayerType();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns which type of player
-        this player is, i.e. a human or computer.
-    
-    RETURNS
-        PlayerType.HUMAN if human, or PlayerType.COMPUTER
-        if the player is an AI.
-        One of these two options will always return.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract PlayerType GetPlayerType();
-    
-    /**/
-    /*
-    NAME
         public ArrayList<Piece> GetActivePieces();
     
     SYNOPSIS
@@ -865,31 +834,6 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public ArrayList<Piece> GetCapturedPieces();
-    
-    SYNOPSIS
-        public ArrayList<Piece> GetCapturedPieces();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns the ArrayList of a player's
-        captured pieces, i.e. the ones that s/he has
-        captured from the opposing player.
-        
-    RETURNS
-        An ArrayList<Piece> of a player's captured pieces.
-    
-    AUTHOR
-        Ryan King
-    */
-    public ArrayList<Piece> GetCapturedPieces(){
-        return this.m_capturedPieces;
-    }
-    
-    /**/
-    /*
-    NAME
         public final ArrayList<Move> UglyMoves();
     
     SYNOPSIS
@@ -909,8 +853,11 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> UglyMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> uglyMoves = new ArrayList<>();
+        
         for(final Piece piece : this.m_activePieces){
+            // Get every move
             uglyMoves.addAll(piece.GetCurrentLegalMoves());
         }
         return uglyMoves;
@@ -938,13 +885,17 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> AttackingMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> attackingMoves = new ArrayList<>();
+        
         for(final Piece piece : this.m_activePieces){
-           for(final Move move : piece.GetCurrentLegalMoves()){
-        	   if(move.IsAttacking()){
-        		   attackingMoves.add(move);
-        	   }
-           }
+            
+            // Find every possible move
+            for(final Move move : piece.GetCurrentLegalMoves()){
+                if(move.IsAttacking()){
+                    attackingMoves.add(move);
+                }
+            }
         }
         return attackingMoves;
     }
@@ -971,15 +922,20 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> CastlingMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> castlingMoves = new ArrayList<>();
+
         for(final Piece piece : this.m_activePieces){
+            // Skip all pieces except kings
         	if(!piece.IsKing()){
         		continue;
         	}
-           for(final Move move : piece.GetCurrentLegalMoves()){
-        	   if(move.IsCastling()){
-        		   castlingMoves.add(move);
-        	   }
+        	
+        	// Find every possible move
+        	for(final Move move : piece.GetCurrentLegalMoves()){
+        	    if(move.IsCastling()){
+        	        castlingMoves.add(move);
+        	    }
            }
         }
         return castlingMoves;
@@ -1007,13 +963,16 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> RegularMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> regularMoves = new ArrayList<>();
         for(final Piece piece : this.m_activePieces){
-           for(final Move move : piece.GetCurrentLegalMoves()){
-        	   if(move.IsRegular()){
-        		   regularMoves.add(move);
-        	   }
-           }
+            
+            // Find every possible move
+            for(final Move move : piece.GetCurrentLegalMoves()){
+                if(move.IsRegular()){
+                    regularMoves.add(move);
+                }
+            }
         }
         return regularMoves;
     }
@@ -1040,13 +999,18 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> CheckMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> checkMoves = new ArrayList<>();
+        
+        // Find every possible move
         for(final Piece piece : this.m_activePieces){
-           for(final Move move : piece.GetCurrentLegalMoves()){
-        	   if(move.PlacesOpponentIntoCheck()){
-        		   checkMoves.add(move);
-        	   }
-           }
+            
+            // Only add the move if it is of the proper type
+            for(final Move move : piece.GetCurrentLegalMoves()){
+                if(move.PlacesOpponentIntoCheck()){
+                    checkMoves.add(move);
+                }
+            }
         }
         return checkMoves;
     }
@@ -1073,13 +1037,18 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> CheckmateMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> checkmateMoves = new ArrayList<>();
+        
+        // Find every possible move
         for(final Piece piece : this.m_activePieces){
-           for(final Move move : piece.GetCurrentLegalMoves()){
-        	   if(move.PlacesOpponentIntoCheckmate()){
-        		   checkmateMoves.add(move);
-        	   }
-           }
+           
+            // Only add the move if it is of the proper type
+            for(final Move move : piece.GetCurrentLegalMoves()){
+                if(move.PlacesOpponentIntoCheckmate()){
+                    checkmateMoves.add(move);
+                }
+            }
         }
         return checkmateMoves;
     }
@@ -1105,12 +1074,20 @@ public abstract class Player{
         Ryan King
     */
     public final ArrayList<Move> EnPassantMoves(){
+        // Make a new list to hold the moves
         final ArrayList<Move> enPassantMoves = new ArrayList<>();
+        
+        // Find every possible move
         for(final Piece piece : this.m_activePieces){
+            // Skip all pieces except pawns
         	if(!piece.IsPawn()){
         		continue;
         	}
+        	
+        	// Find all possible moves
         	for(final Move move : piece.GetCurrentLegalMoves()){
+        	    
+        	    // Only add the move if it is of the proper type
         		if(move.IsEnPassant()){
         			enPassantMoves.add(move);
         		}

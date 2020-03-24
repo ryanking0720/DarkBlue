@@ -111,7 +111,7 @@ public final class King extends Piece{
     */
     public King(final ChessColor a_color, final int a_currentRow, final int a_currentColumn, final boolean a_canKingsideCastle, final boolean a_canQueensideCastle){
         
-        super(a_color, Utilities.WHITE_KING_ICON, AssignPieceBoardIcon(PieceType.KING, a_color), a_currentRow, a_currentColumn);
+        super(a_color, a_currentRow, a_currentColumn);
         
         this.m_currentCastlingMoves = new ArrayList<>();
         this.m_canKingsideCastle = a_canKingsideCastle;
@@ -224,6 +224,62 @@ public final class King extends Piece{
     @Override
     public final PieceType GetPieceType(){
         return PieceType.KING;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetIcon();
+    
+    SYNOPSIS
+        public final char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_KING_ICON;
+        }else{
+            return Utilities.BLACK_KING_ICON;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetBoardIcon();
+    
+    SYNOPSIS
+        public final char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetBoardIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_KING_BOARD_ICON;
+        }else{
+            return Utilities.BLACK_KING_BOARD_ICON;
+        }
     }
     
     /**/
@@ -402,9 +458,11 @@ public final class King extends Piece{
         Ryan King
     */
     private final void AddCurrentCastlingMoves(final Board a_board){
+        // Check to see if the king is in his original spot and has not moved before
         if((this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN && this.GetCurrentColumn() == Utilities.FOUR) 
                 || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO && this.GetCurrentColumn() == Utilities.FOUR)
                 && !this.HasMoved()){
+            
             int kingDestinationRow = this.GetCurrentRow(), kingDestinationColumn;
 
             // Do not instantiate the move if the king cannot castle for any reason

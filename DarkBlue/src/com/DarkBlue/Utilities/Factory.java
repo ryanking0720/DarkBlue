@@ -263,17 +263,21 @@ public interface Factory{
         its first move and could have been taken by the other pawn had it only moved 1 tile.
         This is the only legal move where the destination tile is not the same as the tile
         of the captured piece).
+        
+        Null is returned if invalid parameters were passed in.
     
     RETURNS
         Move move: The evaluated move, ready to be made.
-        This method will never return null, because at this point,
-        all the possible moves it could generate with the arguments given
-        are deemed to be legal.
+        Returns null on error.
     
     AUTHOR
         Ryan King
     */
     public static Move MoveFactory(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Piece a_victim, final Board a_board){
+        if(a_candidate == null || !BoardUtilities.HasValidValue(a_destinationRow) || !BoardUtilities.HasValidValue(a_destinationColumn) || a_board == null){
+            return null;
+        }
+        
         // Get the coordinates of the piece
     	final int sourceRow = a_candidate.GetCurrentRow();
     	final int sourceColumn = a_candidate.GetCurrentColumn();

@@ -23,9 +23,9 @@ import com.DarkBlue.Board.Board;
  * Queenside castle: R - - - K becomes - - K R -
  * 
  * For black:
- * Kingside castle: R - - K becomes - K R -
+ * Kingside castle: r - - k becomes - k r -
  * 
- * Queenside castle: K - - - R becomes - R K - -
+ * Queenside castle: k - - - r becomes - r k - -
  * 
  * There are special rules that pertain to castling, so a player may not
  * always have the privilege to castle.
@@ -36,7 +36,8 @@ import com.DarkBlue.Board.Board;
  * 
  * 3. The tiles the king will move across must not be threatened by any enemy piece.
  * That is, the king must not castle through check.
- * This does not apply if the rook is being threatened on the turn or passes through threatening tiles.
+ * This does not apply if the rook is being threatened on the turn or passes through threatening tiles
+ * on a queenside castle.
  * 
  * 4. The king cannot use castling as a means to escape from check.
  * 
@@ -45,7 +46,6 @@ import com.DarkBlue.Board.Board;
  * If the king has not moved but one rook has moved 
  * and the player decides to castle with the other one that has not 
  * moved yet, this is legal.
- * 
  */
 public final class CastlingMove extends Move{
     
@@ -307,10 +307,10 @@ public final class CastlingMove extends Move{
     /**/
     /*
     NAME
-        public int GetRookDestinationRow();
+        public final int GetRookDestinationRow();
     
     SYNOPSIS
-        public int GetRookDestinationRow();
+        public final int GetRookDestinationRow();
     
         No parameters.
     
@@ -330,10 +330,10 @@ public final class CastlingMove extends Move{
     /**/
     /*
     NAME
-        public int GetRookDestinationColumn();
+        public final int GetRookDestinationColumn();
     
     SYNOPSIS
-        public int GetRookDestinationColumn();
+        public final int GetRookDestinationColumn();
     
         No parameters.
     

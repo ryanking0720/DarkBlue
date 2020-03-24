@@ -243,7 +243,8 @@ public abstract class Move{
         Board m_initialBoard: The initial board field.
     
     AUTHOR
-        Ryan King
+        Based off a similar method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     public final Board GetInitialBoard(){
         return this.m_initialBoard;
@@ -400,7 +401,8 @@ public abstract class Move{
         Board: The initial board field with this move made on it.
     
     AUTHOR
-        Ryan King
+        Based off the execute() method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     public final Board GetTransitionalBoard(){
         // Make a copy of the initial board
@@ -441,7 +443,8 @@ public abstract class Move{
         One of these two options will always occur.
     
     AUTHOR
-        Ryan King
+        Based off isThreatenedBoardImmediate() by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/BoardUtils.java
     */
     public final boolean PlacesOpponentIntoCheck(){
         // Make a copy of the transitional board
@@ -485,7 +488,8 @@ public abstract class Move{
         One of these two options will always occur.
     
     AUTHOR
-        Ryan King
+        Based off isThreatenedBoardImmediate() by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/BoardUtils.java
     */
     public final boolean PlacesOpponentIntoCheckmate(){
         // Make a copy of the transitional board

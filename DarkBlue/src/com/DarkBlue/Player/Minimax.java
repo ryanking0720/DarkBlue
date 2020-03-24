@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 
 /**
- * This class is the bread and butter of the computer player.
+ * This interface is the bread and butter of the computer player.
  * 
  * It has a move searching algorithm that finds the best moves
  * based on its value in terms of piece quantity and position.
@@ -37,13 +37,13 @@ import java.util.LinkedHashSet;
  * 
  * All moves are sorted when they are taken from each player. Sorted order is as follows:
  * 
- * Moves that put the opponent into checkmate
- * Moves that put the opponent into check
- * Attacking moves
- * Regular moves
- * En passant moves
+ * 1. Moves that put the opponent into checkmate
+ * 2. Moves that put the opponent into check
+ * 3. Attacking moves
+ * 4. Regular moves
+ * 5. En passant moves
  */
-public class Minimax{
+public interface Minimax{
 
 	// Symbolic constants
 	public static final double PAWN_VALUE = 10;
@@ -55,37 +55,10 @@ public class Minimax{
 	/**/
     /*
     NAME
-        private Minimax();
-    
-    SYNOPSIS
-        private Minimax();
-        
-        No parameters.
-       
-    DESCRIPTION
-        This constructor is private and not callable.
-        Trying to call it will throw a RuntimeException
-        because all Minimax fields are static and the class
-       	therefore does not need an instance to run.
-
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Amir Afghani, Black Widow Chess: 
-    */
-	private Minimax(){
-		throw new RuntimeException("You cannot instantiate me!");
-	}
-	
-	
-	/**/
-    /*
-    NAME
         public static final Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer);
     
     SYNOPSIS
-        public static final Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer);
+        public static Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer);
     
     	int a_depth --------------> The AI search depth.
     
@@ -106,10 +79,10 @@ public class Minimax{
         Move bestMove: The computer's best possible move.
     
     AUTHOR
-        Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
+        Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer, final ChessColor a_callerColor){
+	public static Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer, final ChessColor a_callerColor){
 		// bestMove will hold the best move found by the board evaluation
 		Move bestMove = null;
 		
@@ -136,6 +109,7 @@ public class Minimax{
 			
 			// Recursively search for the best value
 			currentValue = Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, !a_isMaximizer, a_callerColor);
+			//currentValue = (a_isMaximizer ? Maximize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, a_callerColor) : Minimize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, a_callerColor));
 			
 			// Update the value if the next one found is better; update the move accordingly
 			if(currentValue >= bestValue){
@@ -154,10 +128,10 @@ public class Minimax{
 	/**/
     /*
     NAME
-        public static final double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer);
+        public static double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer);
     
     SYNOPSIS
-        public static final double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer);
+        public static double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer);
     
     	int a_depth --------------> The AI search depth.
     
@@ -177,19 +151,17 @@ public class Minimax{
         This method searches for the best possible board value from the pool of possible moves for the computer player.
         It maximizes and minimizes the board recursively depending on who's moving.
         This uses alpha-beta pruning, so moves that are determined to give a value lower than alpha or higher than beta will be ignored.
-        If a move is found that places the opponent's king in checkmate, it will break out immediately and return that move.
 
     RETURNS
         double bestValue: The best board evaluation found.
     
     AUTHOR
-    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
+    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer, final ChessColor a_callerColor){
+	public static double Recurse(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final boolean a_isMaximizer, final ChessColor a_callerColor){
 		// Base case: The search depth is as deep as it can go
 		if(a_depth == Utilities.ZERO){
-			//return (a_callerColor.IsBlack() ? -Evaluate(a_board, a_callerColor) : Evaluate(a_board, a_callerColor));
 		    return -Evaluate(a_board, a_callerColor);
 		}
 
@@ -314,10 +286,210 @@ public class Minimax{
 	/**/
     /*
     NAME
-        public static final double Evaluate(final Board a_board);
+        public static double Maximize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
     
     SYNOPSIS
-        public static final double Evaluate(final Board a_board);
+        public static double Maximize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
+    
+        int a_depth --------------> The AI search depth.
+    
+        Board a_board ------------> The board to evaluate.
+        
+        Player a_white -----------> The white player.
+        
+        Player a_black -----------> The black player.
+        
+        double a_alpha -----------> The best value for the maximizer.
+        
+        double a_beta ------------> The best value for the minimizer.
+        
+        ChessColor a_callerColor -> The color who called Minimax initially.
+
+    DESCRIPTION
+        This method searches for the best possible board value from the pool of possible moves for the maximizer.
+        It minimizes the board recursively.
+        This uses alpha-beta pruning, so moves that are determined to give a value lower than alpha or higher than beta will be ignored.
+        
+    RETURNS
+        double bestValue: The best board evaluation found.
+    
+    AUTHOR
+        Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
+        Modifications written specifically for this engine by Ryan King.
+    */
+	public static double Maximize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor){
+	    // Base case: The search depth is as deep as it can go
+        if(a_depth == Utilities.ZERO){
+            return -Evaluate(a_board, a_callerColor);
+        }
+
+        // moves will hold the current player's moves
+        final ArrayList<Move> moves = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black), (a_board.WhoseTurnIsIt().IsWhite() ? a_black : a_white), a_board, a_depth);
+        
+        // bestValue will hold the current best board evaluation
+        double bestValue = a_alpha;
+        
+        for(Move move : moves){
+            // Make a deep copy of the board with the move made on it
+            final Board result = move.GetTransitionalBoard();
+            
+            // Initialize temporary players to determine evaluations on this board
+            final Player tempWhite = new Human(ChessColor.WHITE, result);
+            final Player tempBlack = new Human(ChessColor.BLACK, result);
+            
+            tempWhite.Refresh(result);
+            tempBlack.Refresh(result);
+            
+            // currentPlayer will be an alias to whoever is playing next
+            final Player currentPlayer = (result.WhoseTurnIsIt().IsWhite() ? tempWhite : tempBlack);
+            
+            // promotedPawn will contain a pawn that can be promoted if the player has one
+            final Pawn promotedPawn = currentPlayer.GetPromotedPawn(result);
+            
+            // Evaluate the move as normal if no promotion can be made
+            if(promotedPawn == null){
+                // Find the highest value recursively
+                bestValue = Math.max(bestValue, Minimize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
+            
+                // Keep track of the boundaries
+                a_alpha = Math.max(a_alpha, bestValue);
+            }else{
+                // Change the pawn to a promoted piece and then continue evaluating
+                for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
+                    final Board promotion = promotedPawn.Promote(result, i);
+                    
+                    tempWhite.Refresh(promotion);
+                    tempBlack.Refresh(promotion);
+                    
+                    // Find the highest value recursively
+                    bestValue = Math.max(bestValue, Minimize(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
+                
+                    // Keep track of the boundaries
+                    a_alpha = Math.max(a_alpha, bestValue);
+                    
+                    if(a_beta <= a_alpha){
+                        return bestValue;
+                    }
+                }
+            }
+            // Discontinue evaluating if the lower bound is worse
+            if(a_beta <= a_alpha){
+                return bestValue;
+            }
+        }
+        
+        return bestValue;
+	}
+	
+	/**/
+    /*
+    NAME
+        public static double Minimize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
+    
+    SYNOPSIS
+        public static double Minimize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
+    
+        int a_depth --------------> The AI search depth.
+    
+        Board a_board ------------> The board to evaluate.
+        
+        Player a_white -----------> The white player.
+        
+        Player a_black -----------> The black player.
+        
+        double a_alpha -----------> The best value for the maximizer.
+        
+        double a_beta ------------> The best value for the minimizer.
+        
+        ChessColor a_callerColor -> The color who called Minimax initially.
+
+    DESCRIPTION
+        This method searches for the best possible board value from the pool of possible moves for the minimizer.
+        It maximizes the board recursively.
+        This uses alpha-beta pruning, so moves that are determined to give a value lower than alpha or higher than beta will be ignored.
+
+    RETURNS
+        double bestValue: The best board evaluation found.
+    
+    AUTHOR
+        Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
+        Modifications written specifically for this engine by Ryan King.
+    */
+	public static double Minimize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor){
+	    // Base case: The search depth is as deep as it can go
+        if(a_depth == Utilities.ZERO){
+            return -Evaluate(a_board, a_callerColor);
+        }
+
+        // moves will hold the current player's moves
+        final ArrayList<Move> moves = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black), (a_board.WhoseTurnIsIt().IsWhite() ? a_black : a_white), a_board, a_depth);
+        
+        // bestValue will hold the current best board evaluation
+        double bestValue;
+        
+        // All values found will be lower than this
+        bestValue = a_beta;
+        
+        for(Move move : moves){
+            // Make a deep copy of the board with the move made on it
+            final Board result = move.GetTransitionalBoard();
+            
+            // Initialize temporary players to determine evaluations on this board
+            final Player tempWhite = new Human(ChessColor.WHITE, result);
+            final Player tempBlack = new Human(ChessColor.BLACK, result);
+            
+            tempWhite.Refresh(result);
+            tempBlack.Refresh(result);
+            
+            // currentPlayer will be an alias to whoever is playing next
+            final Player currentPlayer = (result.WhoseTurnIsIt().IsWhite() ? tempWhite : tempBlack);
+            
+            // promotedPawn will contain a pawn that can be promoted if the player has one
+            final Pawn promotedPawn = currentPlayer.GetPromotedPawn(result);
+            
+            // Evaluate the move as normal if no promotion can be made
+            if(promotedPawn == null){
+                // Find the lowest value recursively
+                bestValue = Math.min(bestValue, Maximize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
+            
+                // Keep track of the boundaries
+                a_beta = Math.min(a_beta, bestValue);
+            }else{
+                // Change the pawn to a promoted piece and then continue evaluating
+                for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
+                    final Board promotion = promotedPawn.Promote(result, i);
+                    
+                    tempWhite.Refresh(promotion);
+                    tempBlack.Refresh(promotion);
+                    
+                    // Find the lowest value recursively
+                    bestValue = Math.min(bestValue, Maximize(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
+                
+                    // Keep track of the boundaries
+                    a_beta = Math.min(a_beta, bestValue);
+                    
+                    if(a_beta <= a_alpha){
+                        return bestValue;
+                    }
+                }
+            }
+            
+            // Discontinue evaluating if the lower bound is worse
+            if(a_beta <= a_alpha){
+                return bestValue;
+            }
+        }
+        
+        return bestValue;
+	}
+	
+	/**/
+    /*
+    NAME
+        public static double Evaluate(final Board a_board);
+    
+    SYNOPSIS
+        public static double Evaluate(final Board a_board);
     
         Board a_board ------------> The board to evaluate.
        
@@ -328,10 +500,10 @@ public class Minimax{
         double evaluation: The value of all pieces on the board.
     
     AUTHOR
-    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
+    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double Evaluate(final Board a_board, final ChessColor a_callerColor){
+	public static double Evaluate(final Board a_board, final ChessColor a_callerColor){
 		double evaluation = Utilities.ZERO;
 		
 		// Evaluate every tile of the board
@@ -356,10 +528,10 @@ public class Minimax{
 	/**/
     /*
     NAME
-        public static final double GetPieceValue(final Piece a_piece, final int a_x, final int a_y);
+        public static double GetPieceValue(final Piece a_piece, final int a_x, final int a_y);
     
     SYNOPSIS
-        public static final double GetPieceValue(final Piece a_piece, final int a_x, final int a_y);
+        public static double GetPieceValue(final Piece a_piece, final int a_x, final int a_y);
     
         Piece a_piece --------------> The piece to evaluate.
         
@@ -375,10 +547,10 @@ public class Minimax{
         One of these two options will always occur.
     
     AUTHOR
-    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
+    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double GetPieceValue(final Piece a_piece, final int a_x, final int a_y, final ChessColor a_callerColor){
+	public static double GetPieceValue(final Piece a_piece, final int a_x, final int a_y, final ChessColor a_callerColor){
 		// Null arguments do not return any value of significance
 	    if (a_piece == null){
 	        return Utilities.ZERO;
@@ -394,10 +566,10 @@ public class Minimax{
 	/**/
     /*
     NAME
-        public static final double GetAbsoluteValue(final Piece a_piece, final int a_x, final int a_y);
+        public static double GetAbsoluteValue(final Piece a_piece, final int a_x, final int a_y);
     
     SYNOPSIS
-        public static final double GetAbsoluteValue(final Piece a_piece, final int a_x, final int a_y);
+        public static double GetAbsoluteValue(final Piece a_piece, final int a_x, final int a_y);
     
         Piece a_piece --------------> The piece to evaluate.
         
@@ -414,10 +586,10 @@ public class Minimax{
         One of these two options will always occur.
     
     AUTHOR
-    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://github.com/lhartikk/simple-chess-ai/blob/master/script.js
+    	Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
         Modifications written specifically for this engine by Ryan King.
     */
-	public static final double GetAbsoluteValue(final Piece a_piece, final int a_x , final int a_y){
+	public static double GetAbsoluteValue(final Piece a_piece, final int a_x , final int a_y){
 		// Idiot proofing in case of null arguments
 		if(a_piece == null || (!BoardUtilities.HasValidCoordinates(a_y, a_x))){
 			return Utilities.ZERO;
@@ -480,10 +652,10 @@ public class Minimax{
 	/**/
     /*
     NAME
-        public static int Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth, final String a_moveHistory);
+        public static ArrayList<Move> Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth, final String a_moveHistory);
     
     SYNOPSIS
-        public static int Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth, final String a_moveHistory);
+        public static ArrayList<Move> Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth, final String a_moveHistory);
     
     	Player a_player ----------> The current player.
     	

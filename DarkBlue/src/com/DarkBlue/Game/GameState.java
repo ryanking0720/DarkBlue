@@ -80,6 +80,8 @@ public enum GameState{
     CHECK,
     CHECKMATE,
     STALEMATE,
-    DRAW,
+    THREEFOLD_REPETITION,
+    FIFTY_MOVE_RULE,
+    INSUFFICIENT_MATERIAL,
     EMPTY;
 }

@@ -56,7 +56,7 @@ public class Bishop extends Piece{
     */
     public Bishop(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
 
-        super(a_color, Utilities.WHITE_BISHOP_ICON, AssignPieceBoardIcon(PieceType.BISHOP, a_color), a_currentRow, a_currentColumn);
+        super(a_color, a_currentRow, a_currentColumn);
         
         m_currentDownAndRightMoves = new ArrayList<>();
         m_currentUpAndRightMoves = new ArrayList<>();
@@ -105,6 +105,7 @@ public class Bishop extends Piece{
         this.m_currentDownAndLeftMoves.addAll(candidate.GetCurrentDownAndLeftMoves());
     }
     
+    /**/
     /*
     NAME
         public final void AddCurrentLegalMoves(final Board a_board);
@@ -171,6 +172,62 @@ public class Bishop extends Piece{
     @Override
     public final PieceType GetPieceType(){
         return PieceType.BISHOP;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetIcon();
+    
+    SYNOPSIS
+        public final char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_BISHOP_ICON;
+        }else{
+            return Utilities.BLACK_BISHOP_ICON;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetBoardIcon();
+    
+    SYNOPSIS
+        public final char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetBoardIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_BISHOP_BOARD_ICON;
+        }else{
+            return Utilities.BLACK_BISHOP_BOARD_ICON;
+        }
     }
     
     /**/

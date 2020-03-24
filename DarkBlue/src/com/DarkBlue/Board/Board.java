@@ -23,6 +23,7 @@ public final class Board{
     // The en passant tile, used for serialization
     private final Tile m_enPassantTile;
     
+    /**/
     /*
     NAME
         private Board(final BoardBuilder a_builder);
@@ -40,7 +41,8 @@ public final class Board{
         Nothing
     
     AUTHOR
-        Ryan King
+        Ryan King, with help taken from Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
     */
     private Board(final BoardBuilder a_builder){
         // Set the board object
@@ -57,6 +59,7 @@ public final class Board{
         }
     }
     
+    /**/
     /*
     NAME
         private Board(final Board a_board);
@@ -97,6 +100,7 @@ public final class Board{
         }
     }
     
+    /**/
     /*
     NAME
         public final ChessColor WhoseTurnIsIt();
@@ -116,9 +120,10 @@ public final class Board{
         Ryan King
     */
     public final ChessColor WhoseTurnIsIt(){
-        return m_whoseTurn;
+        return this.m_whoseTurn;
     }
     
+    /**/
     /*
     NAME
         public final Tile[][] GetBoard();
@@ -141,6 +146,7 @@ public final class Board{
         return this.m_boardObject;
     }
     
+    /**/
     /*
     NAME
         public final int PieceCount();
@@ -162,6 +168,7 @@ public final class Board{
     public final int PieceCount(){
         int count = Utilities.ZERO;
         
+        // Look through every tile on the board for pieces
         for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
             int row = i / Utilities.EIGHT;
             int column = i % Utilities.EIGHT;
@@ -174,10 +181,31 @@ public final class Board{
         return count;
     }
     
+    /**/
+    /*
+    NAME
+        public final Tile GetEnPassantTile();
+    
+    SYNOPSIS
+        public final Tile GetEnPassantTile();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the en passant tile,
+        or null if none got set.
+    
+    RETURNS
+        Tile m_enPassantTile: The en passant tile.
+    
+    AUTHOR
+        Ryan King
+    */
     public final Tile GetEnPassantTile(){
         return this.m_enPassantTile;
     }
     
+    /**/
     /*
     NAME
         private static final Tile[][] GetCurrentBoard(final BoardBuilder a_builder);
@@ -233,7 +261,8 @@ public final class Board{
         with white oriented to what would be the bottom.
     
     AUTHOR
-        Ryan King
+        Help taken from Amir Afghani
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
     */
     public static final Board GetStartingPosition(){
         // Make a new builder
@@ -284,6 +313,25 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
+    /*
+    NAME
+        public static final Board GetEmptyBoard();
+    
+    SYNOPSIS
+        public static final Board GetEmptyBoard();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method creates an empty board object with no pieces on it.
+    
+    RETURNS
+        A new Board that is completely empty.
+    
+    AUTHOR
+        Ryan King
+    */
     public static final Board GetEmptyBoard(){
         final BoardBuilder builder = new BoardBuilder();
         
@@ -292,6 +340,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public static final Board GetDeepCopy(final Board a_board);
@@ -317,6 +366,7 @@ public final class Board{
         return new Board(a_board);
     }
     
+    /**/
     /*
     NAME
         public static final Board GetStalemateTest();
@@ -353,6 +403,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public static final Board GetCheckmateTest();
@@ -389,6 +440,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public static final Board GetCastlingTest();
@@ -414,14 +466,11 @@ public final class Board{
         
         // Set the white pieces
         builder.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
-        //builder.SetPiece(new Queen(ChessColor.WHITE, Utilities.SEVEN, Utilities.THREE));
         builder.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.SEVEN));
         builder.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.ZERO));
         
         // Set the black pieces
         builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
-        //builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.SIX));
-        //builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.SIX, Utilities.SIX));
         builder.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
         builder.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
         
@@ -432,6 +481,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public static final Board GetPromotionTest();
@@ -668,6 +718,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public final Tile Board.GetTile(final int a_row, final int a_column);
@@ -700,8 +751,49 @@ public final class Board{
         }catch(Exception e){
             return null;
         }
+    }   
+    
+    /**/
+    /*
+    NAME
+        public final King GetKing(final ChessColor a_color);
+    
+    SYNOPSIS
+        public final King GetKing(final ChessColor a_color);
+    
+        ChessColor a_color ----------> The desired color.
+    
+    DESCRIPTION
+        This method returns the king of the given color.
+    
+    RETURNS
+        King: The king piece of the given color or null on error.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final King GetKing(final ChessColor a_color){
+        for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
+            // Assign aliases for row and column
+            int row = i / Utilities.EIGHT;
+            int column = i % Utilities.EIGHT;
+        
+            // Only check occupied tiles
+            if(this.m_boardObject[row][column].IsEmpty()){
+                continue;
+            }else{
+                if(this.m_boardObject[row][column].GetPiece().IsKing() && this.m_boardObject[row][column].GetPiece().GetColor().IsAlly(a_color)){
+                    return (King) this.m_boardObject[row][column].GetPiece();
+                }
+            }
+        }
+        
+        // Return null on error
+        return null;
     }
     
+    /**/
     /*
     NAME
         public final String GetWhiteBoard();
@@ -727,30 +819,39 @@ public final class Board{
         String whiteBoardString = "";
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
             
+            // Assign aliases for row and column
             int row = index / Utilities.EIGHT;
             int column = index % Utilities.EIGHT;
             
+            // Print the algebraic row
             if(column == Utilities.ZERO){
                 whiteBoardString += Integer.toString(Utilities.EIGHT - row) + " ";
             }
             
+            // Get the piece's image if the tile is occupied, otherwise put a hyphen-minus
             if(m_boardObject[row][column].IsOccupied()){
                 whiteBoardString += Character.toString(m_boardObject[row][column].GetPiece().GetBoardIcon());
             }else{
                 whiteBoardString += "-";
             }
             
+            // Add spaces between tiles
             whiteBoardString += " ";
             
+            // Start a new line once this has reached the end of the current row
             if(column == Utilities.SEVEN){
                 whiteBoardString += "\n";
             }
         }
+        
+        // Add letters of columns
         whiteBoardString += "  a b c d e f g h\n";
+        
         // Return the String
         return whiteBoardString;
     }    
     
+    /**/
     /*
     NAME
         public final String GetBlackBoard();
@@ -775,55 +876,59 @@ public final class Board{
         // Initialize an empty String
         String blackBoardString = "";
         for(int index = Utilities.SIXTY_FOUR - Utilities.ONE; index >= Utilities.ZERO; index--){
+            
+            // Assign aliases for row and column
             int row = index / Utilities.EIGHT;
             int column = index % Utilities.EIGHT;
             
+            // Print the algebraic row
             if(column == Utilities.SEVEN){
                 blackBoardString += Integer.toString(Utilities.EIGHT - row) + " ";
             }
-                
+            
+            // Get the piece's image if the tile is occupied, otherwise put a hyphen-minus
             if(m_boardObject[row][column].IsOccupied()){
                 blackBoardString += Character.toString(m_boardObject[row][column].GetPiece().GetBoardIcon());
             }else{
                 blackBoardString += "-";
             }
             
+            // Add spaces between tiles
             blackBoardString += " ";
             
+            // Start a new line once this has reached the end of the current row
             if(column == Utilities.ZERO){
                 blackBoardString += "\n";
             }
         }
+        
+        // Add letters of columns
         blackBoardString += "  h g f e d c b a\n";
+        
         // Return the String
         return blackBoardString;
     }
     
-    public final King GetKing(final ChessColor a_color){
-        for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
-            int row = i / Utilities.EIGHT;
-            int column = i % Utilities.EIGHT;
-        
-            if(this.m_boardObject[row][column].IsEmpty()){
-                continue;
-            }else{
-                if(this.m_boardObject[row][column].GetPiece().IsKing() && this.m_boardObject[row][column].GetPiece().GetColor().IsAlly(a_color)){
-                    return (King) this.m_boardObject[row][column].GetPiece();
-                }
-            }
-        }
-        
-        return null;
-    }   
+    /**/
+    /*
+    NAME
+        public final String toString();
     
-    public final void PrintBoard(){
-        if(this.WhoseTurnIsIt().IsWhite()){
-            System.out.println(this.GetWhiteBoard());
-        }else{
-            System.out.println(this.GetBlackBoard());
-        }
-    }
+    SYNOPSIS
+        public final String toString();
     
+        No parameters.
+    
+    DESCRIPTION
+        This method returns an FEN string of the current board,
+        excluding the number of halfmoves and fullmoves made during the game.
+    
+    RETURNS
+        String serial: The FEN string of this board.
+    
+    AUTHOR
+        Ryan King
+    */
     @Override
     public String toString(){
         // Initialize the serialization string
@@ -833,7 +938,7 @@ public final class Board{
         // the current number of empty tiles encountered in part of a row
         int emptyTiles = Utilities.ZERO;
         
-        // Add the contents of the board; works correctly!
+        // Add the contents of the board
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
             int row = index / Utilities.EIGHT;
             int column = index % Utilities.EIGHT;
@@ -842,6 +947,8 @@ public final class Board{
             if(m_boardObject[row][column].IsEmpty()){
                 emptyTiles++;
             }else{
+                // Place the empty tile counter into the string once another occupied tile
+                // is found on the same row
                 if(emptyTiles > Utilities.ZERO){
                     serial += Integer.toString(emptyTiles);
                     emptyTiles = Utilities.ZERO;
@@ -859,6 +966,8 @@ public final class Board{
                 if(row < Utilities.SEVEN){
                     serial += "/";
                 }
+                
+                // Reset the empty tile counter
                 emptyTiles = Utilities.ZERO;
             }
         }
@@ -904,7 +1013,7 @@ public final class Board{
         
         serial += " ";
         
-        // Add the en passant tile
+        // Add the en passant tile, if any
         if(this.GetEnPassantTile() != null){
             serial += this.GetEnPassantTile().toString();
         }else{
@@ -914,348 +1023,27 @@ public final class Board{
         // Return the serialization string
         return serial;
     }
-
-    // The BoardBuilder class is responsible for generating any new moves 
-    // made on the Board object and passing it into the Board at
-    // the end of every turn. This is an internal class residing inside the Board.
-    // Adapted from Black Widow Chess by Amir Afghani
-    //
-    public static class BoardBuilder{
-        private final Tile[][] m_builderBoard;
-        private ChessColor m_whoseTurn;
-        
-        /*
-        NAME
-            public BoardBuilder();
-        
-        SYNOPSIS
-            public BoardBuilder();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This constructor initializes the space for the BoardBuilder object
-            and sets it with empty tiles. It also initializes the m_whoseTurn
-            field with white, assuming this is the first board of the game.
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            Ryan King
-        */
-        public BoardBuilder(){
-            this.m_builderBoard = new Tile[Utilities.EIGHT][Utilities.EIGHT];
-            this.InitializeEmptyBoard();
-        }
-        
-        /*
-        NAME
-            public BoardBuilder(final Tile[][] a_copy, final ChessColor a_color);
-        
-        SYNOPSIS
-            public BoardBuilder();
-        
-            Tile[][] a_copy ----------> The 8 by 8 Tile array to be copied.
-            
-            ChessColor a_color -------> The color whose turn it is to move.
-        
-        DESCRIPTION
-            This constructor initializes the space for the BoardBuilder object
-            and sets it with a deep copy of the two-dimensional Tile array that
-            gets passed in. It also initializes the whose turn field to the argument provided.
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            Ryan King
-        */
-        public BoardBuilder(final Tile[][] a_copy, final ChessColor a_turn){
-            // Initialize the new array space
-            this.m_builderBoard = new Tile[Utilities.EIGHT][Utilities.EIGHT];
-            // Set the turn
-            this.SetWhoseTurn(a_turn);
-            // Iterate through each tile from a_copy
-            for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-                int row = index / Utilities.EIGHT;
-                int column = index % Utilities.EIGHT;
-                // Instantiate a new Tile with the given color and coordinates
-                this.m_builderBoard[row][column] = new Tile(a_copy[row][column]);
-            }
-        }
-        
-        /*
-        NAME
-            private final void InitializeEmptyBoard();
-        
-        SYNOPSIS
-            private final void InitializeEmptyBoard();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method initializes an empty Board for the BoardBuilder object.
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            Ryan King
-        */
-        private final void InitializeEmptyBoard(){
-            for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-                int row = index / Utilities.EIGHT;
-                int column = index % Utilities.EIGHT;
-                
-                // Determine the proper color for each tile depending on where it is located
-                if(row % Utilities.TWO == Utilities.ONE){
-                    if(column % Utilities.TWO == Utilities.ONE){
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.WHITE, row, column, null);
-                    }else{
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.BLACK, row, column, null);
-                    }
-                }else{
-                    if(column % Utilities.TWO == Utilities.ONE){
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.BLACK, row, column, null);
-                    }else{
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.WHITE, row, column, null);
-                    }
-                }
-            }
-        }
-        
-        /*
-        NAME
-            public final Tile[][] GetBuilderBoard();
-        
-        SYNOPSIS
-            public final Tile[][] GetBuilderBoard();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns an 8-by-8 Tile array from the BoardBuilder object.
-        
-        RETURNS
-            The BoardBuilder object array.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final Tile[][] GetBuilderBoard(){
-            return this.m_builderBoard;
-        }
-        
-        /*
-        NAME
-            public final Board Build();
-        
-        SYNOPSIS
-            public final Board Build();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns the Board object that gets passed to the quasi singleton Board.
-        
-        RETURNS
-            A new Board object.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final Board Build(){
-            return new Board(this);
-        }
-        
-        /*
-        NAME
-            public final BoardBuilder SetWhoseTurn(final ChessColor a_color);
-        
-        SYNOPSIS
-            public final BoardBuilder SetWhoseTurn(final ChessColor a_color);
-        
-            ChessColor a_color -------> The side whose turn it is.
-        
-        DESCRIPTION
-            This method returns the BoardBuilder object
-            and sets the color of the moving player.
-        
-        RETURNS
-            The BoardBuilder object.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final BoardBuilder SetWhoseTurn(final ChessColor a_color){
-            try{
-                // Set the turn to the proper color
-                this.m_whoseTurn = a_color;
-                return this;
-            }catch(Exception e){
-                return this;
-            }
-        }
-        
-        /*
-        NAME
-            public final BoardBuilder RemovePiece(final int a_row, final int a_column);
-        
-        SYNOPSIS
-            public final BoardBuilder RemovePiece(final int a_row, final int a_column);
-        
-            int a_row ----------> The row of the tile to empty.
-            
-            int a_column -------> The column of the tile to empty.
-        
-        DESCRIPTION
-            This method removes the piece from the tile coordinates specified.
-            If the given coordinates are invalid, the BoardBuilder
-            simply returns itself as is.
-        
-        RETURNS
-            The BoardBuilder object.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final BoardBuilder RemovePiece(final int a_row, final int a_column){
-            try{
-                // Remove the piece from the tile if coordinates are valid
-                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    final Tile original = m_builderBoard[a_row][a_column];
-                    m_builderBoard[a_row][a_column] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), null);
-                }
-                return this;
-            }catch(Exception e){
-                return this;
-            }
-        }
-        
-        /*
-        NAME
-            public final BoardBuilder SetPiece(final Piece a_piece, final int a_row, final int a_column);
-        
-        SYNOPSIS
-            public final BoardBuilder SetPiece(final Piece a_piece);
-        
-            Piece a_piece --------> The piece to be set.
-        
-        DESCRIPTION
-            This method returns the BoardBuilder object
-            and sets the piece on its spot on the BoardBuilder array.
-        
-        RETURNS
-            The BoardBuilder object.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final BoardBuilder SetPiece(final Piece a_piece){
-            try{
-                // Set the piece on tile if the piece's coordinates are valid
-                if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
-                    final Tile original = m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
-                    m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), a_piece);
-                }
-                return this;
-            }catch(Exception e){
-                return this;
-            }
-        }
-        
-        /*
-        NAME
-            public final void BoardBuilder.SetTile(final Tile a_tile, final int a_row, final int a_column);
-        
-        SYNOPSIS
-            public final void BoardBuilder.SetTile(final Tile a_tile, final int a_row, final int a_column);
-            
-            Tile a_tile -----> The Tile to be set.
-        
-            int a_row -------> The row of the Tile to be set.
-            
-            int a_column ----> The column of the Tile to be set.
-        
-        DESCRIPTION
-            This method sets the tile argument into the position on
-            the tile array determined by the a_row and a_column arguments.
-            It returns if it encounters an exception.
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            Ryan King
-        */
-        public final void SetTile(final Tile a_tile, final int a_row, final int a_column){
-            try{
-                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    m_builderBoard[a_row][a_column] = a_tile;
-                }
-            }catch(Exception e){
-                return;
-            }
-        }
-        
-        /*
-        NAME
-            public final Tile BoardBuilder.GetTile(final int a_row, final int a_column)
-        
-        SYNOPSIS
-            public final Tile BoardBuilder.GetTile(final int a_row, final int a_column)
-        
-            int a_row ------> The row of the tile to be retrieved.
-            
-            int a_column ---> The column of the tile to be retrieved.
-        
-        DESCRIPTION
-            This method returns a tile based on that tile's position on the
-            two-dimensional tile array. It will return the error tile if
-            invalid arguments are given.
-        
-        RETURNS
-            The desired Tile object if coordinates are valid, or null if they're not.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final Tile GetTile(final int a_row, final int a_column){
-            try{
-                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    return m_builderBoard[a_row][a_column];
-                }else{
-                    return null;
-                }
-            }catch(Exception e){
-                return null;
-            }
-        }
-        
-        /*
-        NAME
-            public final ChessColor BoardBuilder.WhoseTurnIsIt();
-        
-        SYNOPSIS
-            public final ChessColor BoardBuilder.WhoseTurnIsIt();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns whose turn it is, either white or black.
-        
-        RETURNS
-            The ChessColor representing whose turn it is.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final ChessColor WhoseTurnIsIt(){
-            return m_whoseTurn;
-        }
-    }//End of BoardBuilder class
     
+    /**/
+    /*
+    NAME
+        private final void AdjustCastlingPrivileges(final Move a_candidate);
+    
+    SYNOPSIS
+        private final void AdjustCastlingPrivileges(final Move a_candidate);
+    
+        Move a_candidate -------> The move that may change castling privileges.
+    
+    DESCRIPTION
+        This method adjusts the castling privileges of both kings
+        after a move has been made.
+    
+    RETURNS
+        The ChessColor representing whose turn it is.
+    
+    AUTHOR
+        Ryan King
+    */
     private final void AdjustCastlingPrivileges(final Move a_candidate){
         // Get all information about the old piece
         final int oldRow = a_candidate.GetPiece().GetCurrentRow();
@@ -1264,9 +1052,8 @@ public final class Board{
         final int newColumn = a_candidate.GetNewColumn();
         final ChessColor moverColor = a_candidate.GetPiece().GetColor();
         
-        // Find both kings
+        // Find the affected king
         final King king = this.GetKing(a_candidate.GetPiece().GetColor());
-        final King opposingKing = this.GetKing(BoardUtilities.Reverse(moverColor));
         final int kingRow = king.GetCurrentRow();
         final int kingColumn = king.GetCurrentColumn();
         final ChessColor tileColor = m_boardObject[kingRow][kingColumn].GetColor();
@@ -1297,14 +1084,12 @@ public final class Board{
                 queensideCastle = true && king.CanQueensideCastleOnThisTurn(this);
             }
             
-            opponentKingsideCastle = opposingKing.CanKingsideCastleOnThisTurn(this);
-            opponentQueensideCastle = opposingKing.CanQueensideCastleOnThisTurn(this);
-            
             // Reset the king with new castling privileges
             m_boardObject[kingRow][kingColumn] = new Tile(tileColor, kingRow, kingColumn, new King(moverColor, kingRow, kingColumn, kingsideCastle, queensideCastle));
         }
     }
     
+    /**/
     /*
     NAME
         public final Board Move(final RegularMove a_candidate, final Player a_white, final Player a_black);
@@ -1324,15 +1109,22 @@ public final class Board{
         Ryan King
     */
     public final Board Move(final RegularMove a_candidate){
+        // Preserve the old row and column
         final int oldRow = a_candidate.GetPiece().GetCurrentRow();
         final int oldColumn = a_candidate.GetPiece().GetCurrentColumn();
+        
+        // Make note of the new row and column
         final int newRow = a_candidate.GetNewRow();
         final int newColumn = a_candidate.GetNewColumn();
+        
+        // Make note of the color of the moving piece
         final ChessColor moverColor = a_candidate.GetPiece().GetColor();
 
+        // Make note of the new and old tiles
         final Tile newTile = m_boardObject[newRow][newColumn];
         final Tile oldTile = m_boardObject[oldRow][oldColumn];
         
+        // Change castling privileges if this scenario eliminates them
         AdjustCastlingPrivileges(a_candidate);
                 
         // Set the moved Piece to the new Tile
@@ -1343,9 +1135,11 @@ public final class Board{
         // Initialize a new BoardBuilder object with the configuration of the new Board
         BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
+        // Build the board
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public final Board Attack(final AttackingMove a_candidate);
@@ -1376,10 +1170,8 @@ public final class Board{
 
         // Adjust pieces
         if(this.WhoseTurnIsIt().IsWhite()){
-            a_white.AddCapturedPiece(victim);
             a_black.RemoveActivePiece(victim);
         }else{
-            a_black.AddCapturedPiece(victim);
             a_white.RemoveActivePiece(victim);
         }
         
@@ -1392,6 +1184,7 @@ public final class Board{
         
         // Set the moved Piece to the new Tile
         m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
+        
         // Remove the moved Piece from the old Tile
         m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
         
@@ -1402,6 +1195,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public final Board Castle(final CastlingMove a_candidate);
@@ -1447,11 +1241,13 @@ public final class Board{
     
         // Set the moved king to the new Tile
         m_boardObject[newKingRow][newKingColumn] = new Tile(newKingTile.GetColor(), newKingTile.GetRow(), newKingTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newKingRow, newKingColumn));
+        
         // Remove the moved king from the old Tile
         m_boardObject[oldKingRow][oldKingColumn] = new Tile(oldKingTile.GetColor(), oldKingTile.GetRow(), oldKingTile.GetColumn(), null);
         
         // Set the moved rook to the new Tile
         m_boardObject[newRookRow][newRookColumn] = new Tile(newRookTile.GetColor(), newRookTile.GetRow(), newRookTile.GetColumn(), Factory.MovedPieceFactory(this.m_boardObject[oldRookRow][oldRookColumn].GetPiece(), newRookRow, newRookColumn));
+        
         // Remove the moved rook from the old Tile
         m_boardObject[oldRookRow][oldRookColumn] = new Tile(oldRookTile.GetColor(), oldRookTile.GetRow(), oldRookTile.GetColumn(), null);
         
@@ -1462,6 +1258,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public final Board EnPassant(final EnPassantMove a_candidate, final Player a_white, final Player a_black);
@@ -1499,17 +1296,15 @@ public final class Board{
         final int capturedPawnRow = a_candidate.GetCapturedPawnRow();
         final int capturedPawnColumn = a_candidate.GetCapturedPawnColumn();
 
-
+        // Find all tiles used in this move
         final Tile newTile = m_boardObject[newRow][newColumn];
         final Tile oldTile = m_boardObject[oldRow][oldColumn];
         final Tile pawnTile = m_boardObject[capturedPawnRow][capturedPawnColumn];
         
         // Adjust the pieces on both sides depending on the mover and the victim
         if(this.WhoseTurnIsIt().IsWhite()){
-            a_white.AddCapturedPiece(m_boardObject[capturedPawnRow][capturedPawnColumn].GetPiece());
             a_black.RemoveActivePiece(m_boardObject[capturedPawnRow][capturedPawnColumn].GetPiece());
         }else{
-            a_black.AddCapturedPiece(m_boardObject[capturedPawnRow][capturedPawnColumn].GetPiece());
             a_white.RemoveActivePiece(m_boardObject[capturedPawnRow][capturedPawnColumn].GetPiece());
         }
         
@@ -1529,6 +1324,7 @@ public final class Board{
         return builder.Build();
     }
     
+    /**/
     /*
     NAME
         public final Board Promote(final Piece a_promotedPiece);
@@ -1565,4 +1361,368 @@ public final class Board{
         // Return the newly-moved board
         return builder.Build();
     }
+
+    /*
+     * The BoardBuilder class is responsible for generating any new moves 
+     * made on the Board object and passing it into the Board at
+     * the end of every turn. This is an internal class residing inside the Board.
+     * 
+     * Adapted from the Builder class in Black Widow Chess by Amir Afghani
+     * https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
+     */
+    public static class BoardBuilder{
+        private final Tile[][] m_builderBoard;
+        private ChessColor m_whoseTurn;
+        
+        /**/
+        /*
+        NAME
+            public BoardBuilder();
+        
+        SYNOPSIS
+            public BoardBuilder();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This constructor initializes the space for the BoardBuilder object
+            and sets it with empty tiles. It also initializes the m_whoseTurn
+            field with white, assuming this is the first board of the game.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Amir Afghani,
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
+        */
+        public BoardBuilder(){
+            this.m_builderBoard = new Tile[Utilities.EIGHT][Utilities.EIGHT];
+            this.InitializeEmptyBoard();
+        }
+        
+        /**/
+        /*
+        NAME
+            public BoardBuilder(final Tile[][] a_copy, final ChessColor a_color);
+        
+        SYNOPSIS
+            public BoardBuilder();
+        
+            Tile[][] a_copy ----------> The 8 by 8 Tile array to be copied.
+            
+            ChessColor a_color -------> The color whose turn it is to move.
+        
+        DESCRIPTION
+            This constructor initializes the space for the BoardBuilder object
+            and sets it with a deep copy of the two-dimensional Tile array that
+            gets passed in. It also initializes the whose turn field to the argument provided.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        public BoardBuilder(final Tile[][] a_copy, final ChessColor a_turn){
+            // Initialize the new array space
+            this.m_builderBoard = new Tile[Utilities.EIGHT][Utilities.EIGHT];
+            // Set the turn
+            this.SetWhoseTurn(a_turn);
+            // Iterate through each tile from a_copy
+            for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
+                int row = index / Utilities.EIGHT;
+                int column = index % Utilities.EIGHT;
+                // Instantiate a new Tile with the given color and coordinates
+                this.m_builderBoard[row][column] = new Tile(a_copy[row][column]);
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void InitializeEmptyBoard();
+        
+        SYNOPSIS
+            private final void InitializeEmptyBoard();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method initializes an empty Board for the BoardBuilder object.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void InitializeEmptyBoard(){
+            for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
+                // Assign aliases for the row and column
+                int row = index / Utilities.EIGHT;
+                int column = index % Utilities.EIGHT;
+                
+                // Determine the proper color for each tile depending on where it is located
+                if(row % Utilities.TWO == Utilities.ONE){
+                    if(column % Utilities.TWO == Utilities.ONE){
+                        this.m_builderBoard[row][column] = new Tile(ChessColor.WHITE, row, column, null);
+                    }else{
+                        this.m_builderBoard[row][column] = new Tile(ChessColor.BLACK, row, column, null);
+                    }
+                }else{
+                    if(column % Utilities.TWO == Utilities.ONE){
+                        this.m_builderBoard[row][column] = new Tile(ChessColor.BLACK, row, column, null);
+                    }else{
+                        this.m_builderBoard[row][column] = new Tile(ChessColor.WHITE, row, column, null);
+                    }
+                }
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            public final Tile[][] GetBuilderBoard();
+        
+        SYNOPSIS
+            public final Tile[][] GetBuilderBoard();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method returns an 8-by-8 Tile array from the BoardBuilder object.
+        
+        RETURNS
+            The BoardBuilder object array.
+        
+        AUTHOR
+            Ryan King
+        */
+        public final Tile[][] GetBuilderBoard(){
+            return this.m_builderBoard;
+        }
+        
+        /**/
+        /*
+        NAME
+            public final Board Build();
+        
+        SYNOPSIS
+            public final Board Build();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method returns the Board object that gets passed to the quasi singleton Board.
+        
+        RETURNS
+            A new Board object.
+        
+        AUTHOR
+            Amir Afghani,
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
+        */
+        public final Board Build(){
+            return new Board(this);
+        }
+        
+        /**/
+        /*
+        NAME
+            public final BoardBuilder SetWhoseTurn(final ChessColor a_color);
+        
+        SYNOPSIS
+            public final BoardBuilder SetWhoseTurn(final ChessColor a_color);
+        
+            ChessColor a_color -------> The side whose turn it is.
+        
+        DESCRIPTION
+            This method returns the BoardBuilder object
+            and sets the color of the moving player.
+        
+        RETURNS
+            The BoardBuilder object.
+        
+        AUTHOR
+            Amir Afghani,
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
+            with exception handling inserted by Ryan King
+        */
+        public final BoardBuilder SetWhoseTurn(final ChessColor a_color){
+            try{
+                // Set the turn to the proper color
+                this.m_whoseTurn = a_color;
+                return this;
+            }catch(Exception e){
+                return this;
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            public final BoardBuilder RemovePiece(final int a_row, final int a_column);
+        
+        SYNOPSIS
+            public final BoardBuilder RemovePiece(final int a_row, final int a_column);
+        
+            int a_row ----------> The row of the tile to empty.
+            
+            int a_column -------> The column of the tile to empty.
+        
+        DESCRIPTION
+            This method removes the piece from the tile coordinates specified.
+            If the given coordinates are invalid, the BoardBuilder
+            simply returns itself as is.
+        
+        RETURNS
+            The BoardBuilder object.
+        
+        AUTHOR
+            Amir Afghani,
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
+            with exception handling inserted by Ryan King
+        */
+        public final BoardBuilder RemovePiece(final int a_row, final int a_column){
+            try{
+                // Remove the piece from the tile if coordinates are valid
+                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
+                    final Tile original = m_builderBoard[a_row][a_column];
+                    m_builderBoard[a_row][a_column] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), null);
+                }
+                return this;
+            }catch(Exception e){
+                return this;
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            public final BoardBuilder SetPiece(final Piece a_piece, final int a_row, final int a_column);
+        
+        SYNOPSIS
+            public final BoardBuilder SetPiece(final Piece a_piece);
+        
+            Piece a_piece --------> The piece to be set.
+        
+        DESCRIPTION
+            This method returns the BoardBuilder object
+            and sets the piece on its spot on the BoardBuilder array.
+        
+        RETURNS
+            The BoardBuilder object.
+        
+        AUTHOR
+            Amir Afghani,
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
+            with exceptiond handling inserted by Ryan King
+        */
+        public final BoardBuilder SetPiece(final Piece a_piece){
+            try{
+                // Set the piece on tile if the piece's coordinates are valid
+                if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
+                    final Tile original = m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
+                    m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), a_piece);
+                }
+                return this;
+            }catch(Exception e){
+                return this;
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            public final void BoardBuilder.SetTile(final Tile a_tile, final int a_row, final int a_column);
+        
+        SYNOPSIS
+            public final void BoardBuilder.SetTile(final Tile a_tile, final int a_row, final int a_column);
+            
+            Tile a_tile -----> The Tile to be set.
+        
+            int a_row -------> The row of the Tile to be set.
+            
+            int a_column ----> The column of the Tile to be set.
+        
+        DESCRIPTION
+            This method sets the tile argument into the position on
+            the tile array determined by the a_row and a_column arguments.
+            It returns if it encounters an exception.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        public final void SetTile(final Tile a_tile, final int a_row, final int a_column){
+            try{
+                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
+                    m_builderBoard[a_row][a_column] = a_tile;
+                }
+            }catch(Exception e){
+                return;
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            public final Tile BoardBuilder.GetTile(final int a_row, final int a_column)
+        
+        SYNOPSIS
+            public final Tile BoardBuilder.GetTile(final int a_row, final int a_column)
+        
+            int a_row ------> The row of the tile to be retrieved.
+            
+            int a_column ---> The column of the tile to be retrieved.
+        
+        DESCRIPTION
+            This method returns a tile based on that tile's position on the
+            two-dimensional tile array. It will return the error tile if
+            invalid arguments are given.
+        
+        RETURNS
+            The desired Tile object if coordinates are valid, or null if they're not.
+        
+        AUTHOR
+            Ryan King
+        */
+        public final Tile GetTile(final int a_row, final int a_column){
+            try{
+                if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
+                    return m_builderBoard[a_row][a_column];
+                }else{
+                    return null;
+                }
+            }catch(Exception e){
+                return null;
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            public final ChessColor BoardBuilder.WhoseTurnIsIt();
+        
+        SYNOPSIS
+            public final ChessColor BoardBuilder.WhoseTurnIsIt();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method returns whose turn it is, either white or black.
+        
+        RETURNS
+            The ChessColor representing whose turn it is.
+        
+        AUTHOR
+            Ryan King
+        */
+        public final ChessColor WhoseTurnIsIt(){
+            return m_whoseTurn;
+        }
+    }//End of BoardBuilder class
 }//End of Board class

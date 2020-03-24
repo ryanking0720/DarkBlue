@@ -1,12 +1,23 @@
 package com.DarkBlue.Testing;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.*;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import org.junit.Test;
 
 import com.DarkBlue.Board.*;
 import com.DarkBlue.Game.*;
 import com.DarkBlue.GUI.*;
+import com.DarkBlue.GUI.DarkBlue.MoveTextArea;
 import com.DarkBlue.Move.*;
 import com.DarkBlue.Piece.*;
 import com.DarkBlue.Player.*;
@@ -56,6 +67,25 @@ public class GameTest{
         
     }
     
+    private final void TransitionBoardTest(){
+        Board sample = Board.GetPromotionTest();
+        Move e4 = new RegularMove(sample.GetTile(6, 4).GetPiece(), 4, 4, sample);
+        System.out.println("Original board:\n" + sample.toString());
+        Board moveMade = e4.GetTransitionalBoard();
+        System.out.println("Original board after e4:\n" + sample.toString());
+        System.out.println("Copy board:\n" + moveMade.toString());
+    }
+    
+    @Test
+    public final void Test(){
+        Board board = Board.GetStartingPosition();
+        
+        Move e4 = new RegularMove(board.GetTile(6, 4).GetPiece(), 4, 4, board);
+        
+        assertEquals("e4", e4.toString());
+    }
+    
+    /**/
     /*
     NAME
         private final void CheckForPromotions(final Player a_player);
@@ -145,34 +175,33 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
-    /*
     public static final void CheckSourceTile(){
         do{
-            System.out.print(DarkBlue.SOURCE + ": ");
+            System.out.print("Source Tile: ");
             String tile = m_keyboard.nextLine();
             m_sourceRow = BoardUtilities.ToBoardRow(tile);
             m_sourceColumn = BoardUtilities.ToBoardColumn(tile);
         try{
             if(!BoardUtilities.HasValidCoordinates(m_sourceRow, m_sourceColumn)){
-                JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Invalid tile", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
             }else{
             
                 Piece mover = m_board.GetTile(m_sourceRow, m_sourceColumn).GetPiece();
             
                 if(m_board.GetTile(m_sourceRow, m_sourceColumn).IsEmpty()){
-                    JOptionPane.showMessageDialog(null, DarkBlue.EMPTY_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "That tile is empty", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
                 }else if(mover.GetColor().IsEnemy(m_currentPlayer.GetColor())){
-                    JOptionPane.showMessageDialog(null, DarkBlue.WRONG_COLOR, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "That piece is not your color", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
                 }else if(mover.GetColor().IsAlly(m_currentPlayer.GetColor()) && !mover.CanMove()){
-                    JOptionPane.showMessageDialog(null, DarkBlue.NO_LEGAL_MOVES, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "That piece has no legal moves", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
                 }
             }
         }catch(Exception e){
-            JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Invalid tile", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
         }
         }while(!BoardUtilities.HasValidCoordinates(m_sourceRow, m_sourceColumn));
     }
-    */
+    
     /*
     NAME
         public final boolean CheckDestinationTile(final Delta a_destination);
@@ -195,47 +224,48 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
-    /*
     public static final void CheckDestinationTile(){
         do{
-            System.out.print(DarkBlue.DESTINATION + ": ");
+            System.out.print("Destination Tile: ");
             String tile = m_keyboard.nextLine();
             m_destinationRow = BoardUtilities.ToBoardRow(tile);
             m_destinationColumn = BoardUtilities.ToBoardColumn(tile);
-        try{
-            if(!BoardUtilities.HasValidCoordinates(m_destinationRow, m_destinationColumn)){
-                JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-            }else{
-                
-                Piece mover = m_board.GetTile(m_sourceRow, m_sourceColumn).GetPiece();
-                Piece victim = m_board.GetTile(m_destinationRow, m_destinationColumn).GetPiece();
             
-                if(!Utilities.IsLegal(mover, m_destinationRow, m_destinationColumn)){
-                    JOptionPane.showMessageDialog(null, DarkBlue.ILLEGAL_MOVE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-                }else if(victim != null && victim.IsAlly(mover)){
-                    JOptionPane.showMessageDialog(null, DarkBlue.OWN_COLOR, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-                }else if(victim != null && victim.IsEnemy(mover) && victim.IsKing()){
-                    JOptionPane.showMessageDialog(null, DarkBlue.KING, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+            try{
+                if(!BoardUtilities.HasValidCoordinates(m_destinationRow, m_destinationColumn)){
+                    JOptionPane.showMessageDialog(null, "Invalid tile", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                }else{
+                
+                    Piece mover = m_board.GetTile(m_sourceRow, m_sourceColumn).GetPiece();
+                    Piece victim = m_board.GetTile(m_destinationRow, m_destinationColumn).GetPiece();
+            
+                    if(!Utilities.IsLegal(mover, m_destinationRow, m_destinationColumn)){
+                        JOptionPane.showMessageDialog(null, "That move is illegal", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                    }else if(victim != null && victim.IsAlly(mover)){
+                        JOptionPane.showMessageDialog(null, "You cannot capture a piece of your own color", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                    }else if(victim != null && victim.IsEnemy(mover) && victim.IsKing()){
+                        JOptionPane.showMessageDialog(null, "You cannot capture the opponent\'s king", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+            }catch(Exception e){
+                JOptionPane.showMessageDialog(null, "Invalid tile", DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
             }
-        }catch(Exception e){
-            JOptionPane.showMessageDialog(null, DarkBlue.INVALID_TILE, DarkBlue.TITLE, JOptionPane.ERROR_MESSAGE);
-        }
         }while(!BoardUtilities.HasValidCoordinates(m_destinationRow, m_destinationColumn));
     }
-    */
+    
+    /**/
     /*
     NAME
-        private final void EvaluateGameState();
+        public static final GameState EvaluateGameState();
     
     SYNOPSIS
-        private final void EvaluateGameState();
+        public static final GameState EvaluateGameState();
         
         No parameters.
     
     DESCRIPTION
-        This method checks the state of the game.
-        It sets the m_state variable to one of the following:
+        This method determines the state of the game.
+        It sets the m_gameState variable to one of the following:
         
         GameState.CHECK: One player's king is in check. He must either move out of it,
         capture the threatening piece himself, use a friendly piece to 
@@ -251,11 +281,11 @@ public class GameTest{
         in his current position and wherever he moves.
         He cannot escape, he cannot capture the piece(s) putting him into check,
         no other friendly piece can capture the piece(s) putting him into check,
-        and no friendly piece can block the check. 
+        and no friendly piece can block the check if the threatening piece is not a knight or pawn. 
         Any other friendly pieces with moves that would not help the king are not allowed to move.
         The other player wins and the game is over.
         
-        GameState.DRAW: The game can end with no winner due to a number of conditions:
+        GameState.INSUFFICIENT_MATERIAL: The game can end with no winner due to a number of conditions:
         
             1. White and black have only bare kings left on the board.
         
@@ -264,13 +294,13 @@ public class GameTest{
             3. One player has a king and the other has a king and a knight.
         
             4. Both players have a king and a bishop and both bishops 
-                move on the same tile color.
+               move on the same tile color.
+                
+        GameState.FIFTY_MOVE_RULE: Fifty halfmoves have been made with no capture or pawn movement.
         
-        5. The same board configuration has been repeated 3 times. 
-            This is typically a symptom of continually putting the opponent's king into check.
-            
-        6. Fifty moves have been made without a pawn movement or capture.
-        
+        GameState.THREEFOLD_REPETITION: The same configuration of the board has been repeated three times.
+        This need not be consecutive.
+
         GameState.NORMAL: The game proceeds as normal.
     
     RETURNS
@@ -280,48 +310,24 @@ public class GameTest{
         Ryan King
     */
     public static final GameState EvaluateGameState(){
-        if(m_currentPlayer.IsInCheck(m_board)){
+        if(m_currentPlayer.IsInCheckmate(m_board)){
+            return GameState.CHECKMATE;
+        }else if(m_currentPlayer.IsInCheck(m_board)){
             return GameState.CHECK;
         }else if(m_currentPlayer.IsInStalemate(m_board)){
             return GameState.STALEMATE;
-        }else if(m_currentPlayer.IsInCheckmate(m_board)){
-            return GameState.CHECKMATE;
-        }else if(IsDrawByInsufficientMaterial() || IsDrawByFiftyMoveRule() || IsDrawByThreefoldRepetition()){
-            return GameState.DRAW;
+        }else if(IsDrawByInsufficientMaterial()){
+            return GameState.INSUFFICIENT_MATERIAL;
+        }else if(IsDrawByFiftyMoveRule()){
+            return GameState.FIFTY_MOVE_RULE;
+        }else if(IsDrawByThreefoldRepetition()){
+            return GameState.THREEFOLD_REPETITION;
         }else{
             return GameState.NORMAL;
         }
     }
     
-    /*
-    NAME
-        private final void AssignCurrentPlayer();
-    
-    SYNOPSIS
-        private final void AssignCurrentPlayer();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method assigns the current player.
-        This is done to reduce code later on and
-        give a convenient way to address the player
-        whose turn it is.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final void AssignCurrentPlayer(){
-        if(m_board.WhoseTurnIsIt().IsWhite()){
-            m_currentPlayer = m_white;
-        }else{
-            m_currentPlayer = m_black;
-        }
-    }
-    
+    /**/
     /*
     NAME
         private final boolean IsDrawByInsufficientMaterial();
@@ -368,8 +374,10 @@ public class GameTest{
         }else if(m_black.HasBareKing() && m_white.HasKingAndKnight()){
             return true;
         }else if(m_white.HasKingAndBishop() && m_black.HasKingAndBishop()){
+            // Initialize the white and black bishop coordinates
             int whiteBishopRow = Utilities.NEGATIVE_ONE, whiteBishopColumn = Utilities.NEGATIVE_ONE, 
                     blackBishopRow = Utilities.NEGATIVE_ONE, blackBishopColumn = Utilities.NEGATIVE_ONE;
+            // Find both bishops
             for(int index = Utilities.ZERO; index < Utilities.TWO; index++){
                 if(m_white.GetActivePieces().get(index).IsBishop()){
                     whiteBishopRow = m_white.GetActivePieces().get(index).GetCurrentRow();
@@ -380,6 +388,7 @@ public class GameTest{
                     blackBishopColumn = m_black.GetActivePieces().get(index).GetCurrentColumn();
                 }
             }
+            // See if the bishops are on the same tile colors
             if(m_board.GetTile(whiteBishopRow, whiteBishopColumn).GetColor() == m_board.GetTile(blackBishopRow, blackBishopColumn).GetColor()){
                 return true;
             }
@@ -387,6 +396,7 @@ public class GameTest{
         return false;
     }
     
+    /**/
     /*
     NAME
         private final boolean IsDrawByFiftyMoveRule();
@@ -417,6 +427,7 @@ public class GameTest{
         return m_moves >= Utilities.FIFTY;
     }
     
+    /**/
     /*
     NAME
         private final boolean IsDrawByThreefoldRepetition();
@@ -448,6 +459,7 @@ public class GameTest{
         return false;
     }
     
+    /**/
     /*
     NAME
         private final boolean IsEnPassantMove();
@@ -474,19 +486,6 @@ public class GameTest{
         Ryan King
     */
     private static final boolean IsEnPassantMove(){
-        /*
-        return (((m_candidate.IsWhite() && m_destinationRow == m_startRow - Utilities.ONE) 
-                || (m_candidate.IsBlack() && m_destinationRow == m_startRow + Utilities.ONE)) 
-                && (m_destinationColumn == m_startColumn + Utilities.ONE || m_destinationColumn == m_startColumn - Utilities.ONE) 
-                && (Utilities.HasValidCoordinates(m_destinationRow, m_startRow - Utilities.ONE)
-                        || Utilities.HasValidCoordinates(m_destinationRow, m_startRow + Utilities.ONE))
-                && m_board.GetTile(m_destinationRow, m_destinationColumn).IsEmpty()
-                && (m_previouslyMoved.IsPawn() 
-                && m_previouslyMoved.IsEnemy(m_candidate)
-                && m_previouslyMoved.HowManyMoves() == Utilities.ONE
-                && Math.abs(m_previouslyMoved.GetCurrentRow() - m_oldRow) == Utilities.TWO
-                && m_oldColumn == m_previouslyMoved.GetCurrentColumn()));
-        */
         return m_victim != null
                     && m_victim.IsPawn() 
                     && m_victim.Equals(m_previouslyMoved) 
@@ -495,6 +494,7 @@ public class GameTest{
                     && m_victim.GetCurrentColumn() == m_destinationColumn;
     }
     
+    /**/
     /*
     NAME
         private final boolean IsCastlingMove();
@@ -522,6 +522,7 @@ public class GameTest{
                 || m_destinationColumn == m_sourceColumn - Utilities.TWO);
     }
     
+    /**/
     /*
     NAME
         public final Move EvaluateMove();
@@ -616,6 +617,7 @@ public class GameTest{
         return move;
     }
     */
+    /**/
     /*
     NAME
         public final void EvaluatePreviouslyMoved();
@@ -658,40 +660,8 @@ public class GameTest{
     }
     */
     
-    /*
-    NAME
-        private final void MakeMove();
-    
-    SYNOPSIS
-        private final void MakeMove();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method makes the desired
-        move on the board using the
-        appropriate method in the Board class.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    private static final void MakeMove(){
-        if(m_nextMove.IsAttacking()){
-            m_board = m_board.Attack((AttackingMove)m_nextMove, m_white, m_black);
-        }else if(m_nextMove.IsCastling()){
-            m_board = m_board.Castle((CastlingMove)m_nextMove);
-        }else if(m_nextMove.IsEnPassant()){
-            m_board = m_board.EnPassant((EnPassantMove)m_nextMove, m_white, m_black);
-        }else{
-            m_board = m_board.Move((RegularMove)m_nextMove);
-        }
-    }
-    
     private static final void InitializePlayers(final Board a_board){
-        if(m_humanColor.IsWhite()){// Timeout exception?
+        if(m_humanColor.IsWhite()){
             m_white = new Human(ChessColor.WHITE, a_board);
             m_black = new Computer(ChessColor.BLACK, a_board);
             m_computerPlayer = m_black;
@@ -703,6 +673,7 @@ public class GameTest{
         RefreshPlayers();
     }
     
+    /**/
     /*
     NAME
         public final void RefreshPlayers();
@@ -726,15 +697,8 @@ public class GameTest{
         m_white.Refresh(m_board);
         m_black.Refresh(m_board);
     }
-    
-    public static final void PrintBoard(){
-        if(m_board.WhoseTurnIsIt().IsWhite()){
-            System.out.println(m_board.GetWhiteBoard());
-        }else{
-            System.out.println(m_board.GetBlackBoard());
-        }
-    }
-    
+
+    /**/
     /*
     NAME
         private final void ComputerPlay(final Computer a_computer);
@@ -765,8 +729,7 @@ public class GameTest{
         
         // Get the moving piece
         m_nextMove = allPossibleMoves.get(move);// For the stupid AI
-        //m_nextMove = a_computer.Search(Utilities.ZERO);// For a slightly better AI
-        
+
         // Get the piece's old coordinates
         m_sourceRow = m_nextMove.GetOldRow();
         m_sourceColumn = m_nextMove.GetOldColumn();
@@ -779,7 +742,7 @@ public class GameTest{
         m_victim = m_nextMove.GetVictim();
         
         // Make the move
-        MakeMove();
+        // m_nextMove = Factory.MoveFactory(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
         
         //EvaluatePreviouslyMoved();
         
@@ -792,39 +755,7 @@ public class GameTest{
         RefreshPlayers();
     }
     
-    /*
-    public static final void HumanPlay(){
-        CheckSourceTile();
-        
-        CheckDestinationTile();
-        
-        // Initialize the move
-        m_nextMove = EvaluateMove();
-        
-        // Reset the move count if a pawn gets moved or a piece gets captured
-        if(m_candidate.IsPawn() || m_victim != null){
-            m_moves = Utilities.ZERO;
-        }else{
-            m_moves++;
-        }
-    
-        // Make the move
-        MakeMove();
-        
-        // Take note of the previously moved piece
-        //EvaluatePreviouslyMoved();
-        
-        // Check for promotions on the side that's moving next
-        if(m_board.WhoseTurnIsIt() == ChessColor.WHITE){
-            CheckForPromotions(m_black);
-        }else{
-            CheckForPromotions(m_white);
-        }
-                
-        // Refresh pieces and legal moves for both sides
-        RefreshPlayers();
-    }
-    */
+    /**/
     /*
     NAME
         private final void ChooseColor();
@@ -871,8 +802,27 @@ public class GameTest{
             break;
         }
     }
+    
+    
 
-    public static final void main(String a_args){
+    public static final void main(final String a_args){
+        // Make a JFrame
+        JFrame frame = new JFrame();
+        
+        // Set up the JTextArea and JScrollPane
+        JScrollPane scroll = new JScrollPane();
+        JTextArea area = new JTextArea();
+        
+        // Set the size of the scroll pane to allow the JPanel to grow with it
+        scroll.setPreferredSize(new Dimension(100, 100));
+        scroll.add(area);
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        
+        // Add the components to the pane and show it
+        frame.getContentPane().add(scroll, BorderLayout.CENTER);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
     	
     	/*
         m_keyboard = new Scanner(System.in);
@@ -914,19 +864,17 @@ public class GameTest{
                     
             RefreshPlayers();
                     
-            PrintBoard();
+            System.out.println(m_board.toString());
                     
-            m_board.PrintWhoseTurn();
+            System.out.println("It\'s " + (m_board.WhoseTurnIsIt().IsWhite() ? "white" : "black") + "\'s turn.");
                     
-            if(m_currentPlayer.IsHuman()){
-                HumanPlay();                    
-            }else{
+            if(m_currentPlayer.IsComputer()){
                 System.out.println("Thinking...");
                 ComputerPlay((Computer)m_computerPlayer);
             }
                     
         }// End of while true game loop
-        */
-        
+        */  
     }
+    
 }

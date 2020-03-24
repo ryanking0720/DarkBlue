@@ -56,7 +56,7 @@ public final class Rook extends Piece{
     */
     public Rook(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
         
-        super(a_color, Utilities.WHITE_ROOK_ICON, AssignPieceBoardIcon(PieceType.ROOK, a_color), a_currentRow, a_currentColumn);
+        super(a_color, a_currentRow, a_currentColumn);
         
         this.m_currentDownMoves = new ArrayList<>();
         this.m_currentUpMoves = new ArrayList<>();
@@ -175,6 +175,62 @@ public final class Rook extends Piece{
     @Override
     public final PieceType GetPieceType(){
         return PieceType.ROOK;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetIcon();
+    
+    SYNOPSIS
+        public final char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_ROOK_ICON;
+        }else{
+            return Utilities.BLACK_ROOK_ICON;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public final char GetBoardIcon();
+    
+    SYNOPSIS
+        public final char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final char GetBoardIcon(){
+        if(this.IsWhite()){
+            return Utilities.WHITE_ROOK_BOARD_ICON;
+        }else{
+            return Utilities.BLACK_ROOK_BOARD_ICON;
+        }
     }
     
     /**/

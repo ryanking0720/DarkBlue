@@ -1,5 +1,9 @@
 package com.DarkBlue.Utilities;
 
+import java.awt.Font;
+
+import javax.swing.JComponent;
+
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.Piece.Piece;
 
@@ -7,10 +11,11 @@ import com.DarkBlue.Piece.Piece;
  * This interface contains symbolic constants for
  * commonly used numbers such as 0, 1, 2, etc.
  * as well as algebraic and Unicode icons for all chess pieces.
+ * 
  * Fields and methods here are determined to be common enough
  * to be used anywhere regardless of the type of class.
  * 
- * It also contains move comparison and legality checking.
+ * It also contains move legality checking.
  */
 public interface Utilities{
     // Icons for pieces to be used in algebraic notation
@@ -96,6 +101,8 @@ public interface Utilities{
     public static final int FIFTY_ONE = 51;
     public static final int SIXTY = 60;
     public static final int SIXTY_FOUR = 64;
+    public static final int NINETY_NINE = 99;
+    public static final int ONE_HUNDRED = 100;
     public static final int ONE_HUNDRED_TWO = 102;
     public static final int ONE_HUNDRED_SEVENTY_EIGHT = 178;
     public static final int TWO_HUNDRED_FOUR = 204;
@@ -104,48 +111,15 @@ public interface Utilities{
 
     public static final long ONE_LONG = 1;
     
-    /**/
-    /*
-    NAME
-        public static boolean IsIdentical(final Move a_move1, final Move a_move2);
-    
-    SYNOPSIS
-        public static boolean IsIdentical(final Move a_move1, final Move a_move2);
-    
-        Move a_move1 -------------> The first move to compare.
-        
-        Move a_move2 -------------> The second move to compare.
-    
-    DESCRIPTION
-        This method determines if two given moves are identical
-        by comparing their deltas.
-    
-    RETURNS
-        True if the deltas of both moves match, and false otherwise.
-    
-    AUTHOR
-        Ryan King
-    */
-    public static boolean IsIdentical(final Move a_move1, final Move a_move2){
-        try{
-        return (a_move1.GetPiece().GetPieceType() == a_move2.GetPiece().GetPieceType()
-        		&& a_move1.GetPiece().GetColor() == a_move2.GetPiece().GetColor()
-        		&& a_move1.GetOldRow() == a_move2.GetOldRow()
-                && a_move1.GetOldColumn() == a_move2.GetOldColumn()
-                && a_move1.GetNewRow() == a_move2.GetNewRow()
-                && a_move1.GetNewColumn() == a_move2.GetNewColumn());
-        }catch(Exception e){
-            return false;
-        }
-    }
+    public static final float FIVE_FLOAT = 5.0f;
        
     /**/
     /*
     NAME
-        public static boolean IsLegal(final Piece a_piece, final int a_destRow, final int a_destCol);
+        public static boolean IsLegal(final Piece a_piece, final int a_destinationRow, final int a_destinationColumn);
     
     SYNOPSIS
-        public static boolean IsLegal(final Piece a_piece, final int a_destRow, final int a_destCol);
+        public static boolean IsLegal(final Piece a_piece, final int a_destinationRow, final int a_destinationColumn);
     
         Piece a_piece ---------> The candidate piece to move.
         
@@ -161,16 +135,44 @@ public interface Utilities{
     
     RETURNS
         boolean: True if the move is legal, and false otherwise.
+        One of these two options will always occur.
     
     AUTHOR
         Ryan King
     */
     public static boolean IsLegal(final Piece a_piece, final int a_destinationRow, final int a_destinationColumn){        
-        for(Move move : a_piece.GetCurrentLegalMoves()){
+        for(final Move move : a_piece.GetCurrentLegalMoves()){
             if(move.GetNewRow() == a_destinationRow && move.GetNewColumn() == a_destinationColumn){
                 return true;
             }
         }
         return false;
+    }
+    
+    /**/
+    /*
+    NAME
+        public static void EnlargeFont(final JComponent a_object);
+    
+    SYNOPSIS
+        public static void EnlargeFont(final JComponent a_object);
+    
+        JComponent a_object ------------> The JComponent whose font needs to be resized.
+    
+    DESCRIPTION
+        This method enlarges the font of this JComponent by a size of 5.0f.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Help taken from:
+        https://stackoverflow.com/questions/8675038/increasing-decreasing-font-size-inside-textarea-using-jbutton
+        with additional modifications made by Ryan King
+    */
+    public static void EnlargeFont(final JComponent a_object){
+        final Font font = a_object.getFont();
+        final float size = font.getSize() + FIVE_FLOAT;
+        a_object.setFont(font.deriveFont(size));
     }
 }

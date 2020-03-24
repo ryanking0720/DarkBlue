@@ -8,6 +8,7 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -38,9 +39,14 @@ import com.DarkBlue.Utilities.Utilities;
 public class CapturedPiecePanel extends JPanel{
 
 	private static final long serialVersionUID = Utilities.ONE_LONG;
+	
+	// Only 15 pieces can be captured in a normal game
 	public static final int MAX = 15;
 	
-	private final JLabel[] m_capturedPieces;
+	// This will hold 15 labels
+	private final ArrayList<JLabel> m_capturedPieces;
+	
+	// This keeps track of the number of spots that have been filled
 	private int m_spotsFilled;
 
 	/**/
@@ -75,19 +81,22 @@ public class CapturedPiecePanel extends JPanel{
 		this.setBackground(Color.WHITE);
 		
 		// Instaintiate the JLabel space
-		this.m_capturedPieces = new JLabel[MAX];
+		this.m_capturedPieces = new ArrayList<>();
 		
 		// No spots should be filled
 		this.m_spotsFilled = Utilities.ZERO;
 		
 		for(int i = Utilities.ZERO; i < MAX; i++){
 		    // Instantiate each JLabel
-			this.m_capturedPieces[i] = new JLabel("");
-			this.add(this.m_capturedPieces[i]);
+		    final JLabel label = new JLabel("");
+		    this.m_capturedPieces.add(label);
+		    
+		    // Add the JLabel to the panel
+			this.add(this.m_capturedPieces.get(i));
 			this.add(Box.createRigidArea(new Dimension(60, 10)));
 			
 			// Make the font larger
-			final Font font = this.m_capturedPieces[i].getFont();
+			final Font font = this.m_capturedPieces.get(i).getFont();
 	        final float size = font.getSize() + 15.0f;
 	        this.setFont(font.deriveFont(size));
 		}
@@ -120,9 +129,9 @@ public class CapturedPiecePanel extends JPanel{
     */
 	public final void Clear(){
 		this.m_spotsFilled = Utilities.ZERO;
-		for(int i = Utilities.ZERO; i < MAX; i++){
+		for(int i = Utilities.ZERO; i < this.m_capturedPieces.size(); i++){
 		    // Change all JLabels to empty strings
-			this.m_capturedPieces[i].setText("");
+			this.m_capturedPieces.get(i).setText("");
 		}
 	}
 	
@@ -160,6 +169,12 @@ public class CapturedPiecePanel extends JPanel{
 	    int bishops = Bishops();
 	    int queens = Queens();
 	    
+	    // Add a new label for the new piece if necessary
+	    if(m_spotsFilled > MAX){
+	        final JLabel label = new JLabel("");
+	        this.m_capturedPieces.add(label);
+	    }
+	    
 	    // Increment the appropriate bucket
 	    switch(a_piece.GetPieceType()){
 	        case PAWN: pawns++;
@@ -182,9 +197,9 @@ public class CapturedPiecePanel extends JPanel{
 	    // Adjust all pawns
 	    while(i < m_spotsFilled && j < pawns){
 	        if(a_piece.IsWhite()){
-	            m_capturedPieces[i].setText(Character.toString(Utilities.WHITE_PAWN_BOARD_ICON));
+	            m_capturedPieces.get(i).setText(Character.toString(Utilities.WHITE_PAWN_BOARD_ICON));
 	        }else{
-                m_capturedPieces[i].setText(Character.toString(Utilities.BLACK_PAWN_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.BLACK_PAWN_BOARD_ICON));
             }
 	        i++;
 	        j++;
@@ -196,9 +211,9 @@ public class CapturedPiecePanel extends JPanel{
 	    // Adjust all rooks
 	    while(i < m_spotsFilled && j < rooks){
             if(a_piece.IsWhite()){
-                m_capturedPieces[i].setText(Character.toString(Utilities.WHITE_ROOK_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.WHITE_ROOK_BOARD_ICON));
             }else{
-                m_capturedPieces[i].setText(Character.toString(Utilities.BLACK_ROOK_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.BLACK_ROOK_BOARD_ICON));
             }
             i++;
             j++;
@@ -210,9 +225,9 @@ public class CapturedPiecePanel extends JPanel{
 	    // Adjust all knights
         while(i < m_spotsFilled && j < knights){
             if(a_piece.IsWhite()){
-                m_capturedPieces[i].setText(Character.toString(Utilities.WHITE_KNIGHT_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.WHITE_KNIGHT_BOARD_ICON));
             }else{
-                m_capturedPieces[i].setText(Character.toString(Utilities.BLACK_KNIGHT_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.BLACK_KNIGHT_BOARD_ICON));
             }
             i++;
             j++;
@@ -224,9 +239,9 @@ public class CapturedPiecePanel extends JPanel{
 	    // Adjust all bishops
         while(i < m_spotsFilled && j < bishops){
             if(a_piece.IsWhite()){
-                m_capturedPieces[i].setText(Character.toString(Utilities.WHITE_BISHOP_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.WHITE_BISHOP_BOARD_ICON));
             }else{
-                m_capturedPieces[i].setText(Character.toString(Utilities.BLACK_BISHOP_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.BLACK_BISHOP_BOARD_ICON));
             }
             i++;
             j++;
@@ -238,9 +253,9 @@ public class CapturedPiecePanel extends JPanel{
 	    // Adjust all queens
         while(i < m_spotsFilled && j < queens){
             if(a_piece.IsWhite()){
-                m_capturedPieces[i].setText(Character.toString(Utilities.WHITE_QUEEN_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.WHITE_QUEEN_BOARD_ICON));
             }else{
-                m_capturedPieces[i].setText(Character.toString(Utilities.BLACK_QUEEN_BOARD_ICON));
+                m_capturedPieces.get(i).setText(Character.toString(Utilities.BLACK_QUEEN_BOARD_ICON));
             }
             i++;
             j++;
@@ -268,10 +283,11 @@ public class CapturedPiecePanel extends JPanel{
         Ryan King
     */
 	public final int Pawns(){
+	    // This variable will hold how many of this piece are in the panel
 		int pawns = Utilities.ZERO;
 		
 		for(int i = Utilities.ZERO; i < MAX; i++){
-			if(this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.WHITE_PAWN_BOARD_ICON)) || this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.BLACK_PAWN_BOARD_ICON))){
+			if(this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.WHITE_PAWN_BOARD_ICON)) || this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.BLACK_PAWN_BOARD_ICON))){
 				pawns++;
 			}
 		}
@@ -300,10 +316,11 @@ public class CapturedPiecePanel extends JPanel{
         Ryan King
     */
 	public final int Rooks(){
+	    // This variable will hold how many of this piece are in the panel
 		int rooks = Utilities.ZERO;
 		
 		for(int i = Utilities.ZERO; i < MAX; i++){
-			if(this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.WHITE_ROOK_BOARD_ICON)) || this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.BLACK_ROOK_BOARD_ICON))){
+			if(this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.WHITE_ROOK_BOARD_ICON)) || this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.BLACK_ROOK_BOARD_ICON))){
 				rooks++;
 			}
 		}
@@ -332,10 +349,11 @@ public class CapturedPiecePanel extends JPanel{
         Ryan King
     */
 	public final int Knights(){
+	    // This variable will hold how many of this piece are in the panel
 		int knights = Utilities.ZERO;
 		
 		for(int i = Utilities.ZERO; i < MAX; i++){
-			if(this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.WHITE_KNIGHT_BOARD_ICON)) || this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.BLACK_KNIGHT_BOARD_ICON))){
+			if(this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.WHITE_KNIGHT_BOARD_ICON)) || this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.BLACK_KNIGHT_BOARD_ICON))){
 				knights++;
 			}
 		}
@@ -364,10 +382,11 @@ public class CapturedPiecePanel extends JPanel{
         Ryan King
     */
 	public final int Bishops(){
+	    // This variable will hold how many of this piece are in the panel
 		int bishops = Utilities.ZERO;
 		
 		for(int i = Utilities.ZERO; i < MAX; i++){
-			if(this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.WHITE_BISHOP_BOARD_ICON)) || this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.BLACK_BISHOP_BOARD_ICON))){
+			if(this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.WHITE_BISHOP_BOARD_ICON)) || this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.BLACK_BISHOP_BOARD_ICON))){
 				bishops++;
 			}
 		}
@@ -396,10 +415,11 @@ public class CapturedPiecePanel extends JPanel{
         Ryan King
     */
 	public final int Queens(){
+	    // This variable will hold how many of this piece are in the panel
 		int queens = Utilities.ZERO;
 		
 		for(int i = Utilities.ZERO; i < MAX; i++){
-			if(this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.WHITE_QUEEN_BOARD_ICON)) || this.m_capturedPieces[i].getText().equals(Character.toString(Utilities.BLACK_QUEEN_BOARD_ICON))){
+			if(this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.WHITE_QUEEN_BOARD_ICON)) || this.m_capturedPieces.get(i).getText().equals(Character.toString(Utilities.BLACK_QUEEN_BOARD_ICON))){
 				queens++;
 			}
 		}
