@@ -92,17 +92,17 @@ public class Bishop extends Piece{
     */
     public Bishop(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         super(a_piece, a_newRow, a_newColumn, a_moves);
-        Bishop candidate = (Bishop) a_piece;
+        final Bishop CANDIDATE = (Bishop) a_piece;
         
         this.m_currentDownAndRightMoves = new ArrayList<>();        
         this.m_currentUpAndRightMoves = new ArrayList<>();
         this.m_currentUpAndLeftMoves = new ArrayList<>();
         this.m_currentDownAndLeftMoves = new ArrayList<>();
         
-        this.m_currentDownAndRightMoves.addAll(candidate.GetCurrentDownAndRightMoves());
-        this.m_currentUpAndRightMoves.addAll(candidate.GetCurrentUpAndRightMoves());
-        this.m_currentUpAndLeftMoves.addAll(candidate.GetCurrentUpAndLeftMoves());
-        this.m_currentDownAndLeftMoves.addAll(candidate.GetCurrentDownAndLeftMoves());
+        this.m_currentDownAndRightMoves.addAll(CANDIDATE.GetCurrentDownAndRightMoves());
+        this.m_currentUpAndRightMoves.addAll(CANDIDATE.GetCurrentUpAndRightMoves());
+        this.m_currentUpAndLeftMoves.addAll(CANDIDATE.GetCurrentUpAndLeftMoves());
+        this.m_currentDownAndLeftMoves.addAll(CANDIDATE.GetCurrentDownAndLeftMoves());
     }
     
     /**/
@@ -374,6 +374,7 @@ public class Bishop extends Piece{
         return false;
     }
     
+    /**/
     /*
     NAME
         public final ArrayList<Move> GetCurrentDownAndRightMoves();
@@ -396,6 +397,7 @@ public class Bishop extends Piece{
         return this.m_currentDownAndRightMoves;
     }
     
+    /**/
     /*
     NAME
         public final ArrayList<Move> GetCurrentUpAndRightMoves();
@@ -418,6 +420,7 @@ public class Bishop extends Piece{
         return this.m_currentUpAndRightMoves;
     }
     
+    /**/
     /*
     NAME
         public final ArrayList<Move> GetCurrentUpAndLeftMoves();
@@ -437,9 +440,10 @@ public class Bishop extends Piece{
         Ryan King
     */
     public final ArrayList<Move> GetCurrentUpAndLeftMoves(){
-        return m_currentUpAndLeftMoves;
+        return this.m_currentUpAndLeftMoves;
     }
     
+    /**/
     /*
     NAME
         public final ArrayList<Move> GetCurrentDownAndLeftMoves();
@@ -459,6 +463,6 @@ public class Bishop extends Piece{
         Ryan King
     */
     public final ArrayList<Move> GetCurrentDownAndLeftMoves(){
-        return m_currentDownAndLeftMoves;
+        return this.m_currentDownAndLeftMoves;
     }
 }

@@ -6,7 +6,7 @@ package com.DarkBlue.Game;
     This enumeration represents the possible states of the chessboard
     during a game of chess:
    
-    GameState.CHECK: One player's king is in check. 
+    GameState.CHECK: One player's king is in check (threatened with capture by an enemy piece). 
     That player must perform one of the following options on his/her next turn:
     
         1. Move his/her king to a safe tile, as dictated by his legal moves (if any),
@@ -26,6 +26,9 @@ package com.DarkBlue.Game;
     The game resumes as normal after the player removes the threat,
     and any moves that were previously illegal as explained above
     are deemed legal again.
+    
+    It is illegal for either player to deliberately move his/her king into check.
+    Such moves will not be usable by the human player.
         
     GameState.STALEMATE: One player's king is in stalemate.
     This means that the player's king is not in check but has no legal moves.
@@ -48,13 +51,13 @@ package com.DarkBlue.Game;
         4. No other friendly piece can capture the threatening piece(s), and
         
         5. No other friendly piece can block the check 
-        if the attacking piece moves linearly. 
+        if the attacking piece is not a knight or a pawn.
     
     As with the state of ordinary check,
     any moves that would not help the king are deemed illegal.
     The player placed in checkmate loses the game.
         
-    GameState.DRAW: The game can end with no winner due to a number of conditions:
+    GameState.INSUFFICIENT_MATERIAL: The game can end this way due to a number of conditions:
         
         1. Both players have only bare kings left on the board,
         
@@ -63,13 +66,14 @@ package com.DarkBlue.Game;
         3. One player has a king and the other has a king and a knight,
         
         4. Both players have a king and a bishop and both bishops 
-           move on the same tile color, or
-        
-        5. The same board configuration has been repeated 3 times. 
-           This is typically a symptom of continually putting the opponent's king into check,
-           which is referred to as "perpetual check".
+           move on the same tile color.
+           
+    GameState.THREEFOLD_REPETITION: The same board configuration has been repeated three times.
+    These three occurrences do not need to be consecutive.
+    This is typically a symptom of continually putting the opponent's king into check,
+    which is referred to as "perpetual check".
             
-        6. Fifty halfmoves have been made without a pawn movement or capture.
+    GameState.FIFTY_MOVE_RULE: Fifty halfmoves have been made without a capture or pawn movement.
         
     GameState.NORMAL: Neither king is threatened. The game proceeds as normal.
     

@@ -55,7 +55,7 @@ public interface Minimax{
 	/**/
     /*
     NAME
-        public static final Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer);
+        public static Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer);
     
     SYNOPSIS
         public static Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer);
@@ -85,37 +85,34 @@ public interface Minimax{
 	public static Move MinimaxRoot(final int a_depth, final Board a_board, final Player a_white, final Player a_black, final boolean a_isMaximizer, final ChessColor a_callerColor){
 		// bestMove will hold the best move found by the board evaluation
 		Move bestMove = null;
-		
-		// mover will be an alias of the player whose turn it is
-		Player mover = (a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black);
-		
+
 		// Order the moves so the best ones come first (e.g. checkmate, check, attacks, castling, etc.)
-		final ArrayList<Move> moves = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black), (a_board.WhoseTurnIsIt().IsWhite() ? a_black : a_white), a_board, a_depth);
+		final ArrayList<Move> MOVES = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black));
 		
 		// Set default values for our variables
 		double currentValue = Utilities.ZERO;
 		double bestValue = Integer.MIN_VALUE;
 		
-		for(Move move : moves){
-			// result will hold the board after the move has been made
-			final Board result = move.GetTransitionalBoard();
+		for(final Move MOVE : MOVES){
+			// This will hold the board after the move has been made
+			final Board RESULT = MOVE.GetTransitionalBoard();
 			
-			// tempWhite and tempBlack will be new players which will be evaluated independently of the ones passed in
-			final Player tempWhite = new Human(ChessColor.WHITE, result);
-			final Player tempBlack = new Human(ChessColor.BLACK, result);
+			// These new players will be evaluated independently of the ones passed in
+			final Player WHITE = new Human(ChessColor.WHITE, RESULT);
+			final Player BLACK = new Human(ChessColor.BLACK, RESULT);
 			
-			tempWhite.Refresh(result);
-			tempBlack.Refresh(result);
+			WHITE.Refresh(RESULT);
+			BLACK.Refresh(RESULT);
 			
 			// Recursively search for the best value
-			currentValue = Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, !a_isMaximizer, a_callerColor);
-			//currentValue = (a_isMaximizer ? Maximize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, a_callerColor) : Minimize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, Integer.MIN_VALUE, Integer.MAX_VALUE, a_callerColor));
-			
+			currentValue = Recurse(a_depth - Utilities.ONE, RESULT, WHITE, BLACK, Integer.MIN_VALUE, Integer.MAX_VALUE, !a_isMaximizer, a_callerColor);
+
 			// Update the value if the next one found is better; update the move accordingly
 			if(currentValue >= bestValue){
 				bestValue = currentValue;
-				bestMove = move;
+				bestMove = MOVE;
 				
+				// Stop evaluating if the move places the opponent into checkmate
 				if(bestMove.PlacesOpponentIntoCheckmate()){
 					return bestMove;
 				}
@@ -165,8 +162,8 @@ public interface Minimax{
 		    return -Evaluate(a_board, a_callerColor);
 		}
 
-		// moves will hold the current player's moves
-		final ArrayList<Move> moves = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black), (a_board.WhoseTurnIsIt().IsWhite() ? a_black : a_white), a_board, a_depth);
+		// This will hold the current player's moves
+		final ArrayList<Move> MOVES = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black));
 		
 		// bestValue will hold the current best board evaluation
 		double bestValue;
@@ -175,40 +172,40 @@ public interface Minimax{
 			// All values found will be higher than this
 			bestValue = a_alpha;
 			
-			for(Move move : moves){
+			for(final Move MOVE : MOVES){
 				// Make a deep copy of the board with the move made on it
-				final Board result = move.GetTransitionalBoard();
+				final Board RESULT = MOVE.GetTransitionalBoard();
 				
 				// Initialize temporary players to determine evaluations on this board
-				final Player tempWhite = new Human(ChessColor.WHITE, result);
-				final Player tempBlack = new Human(ChessColor.BLACK, result);
+				final Player WHITE = new Human(ChessColor.WHITE, RESULT);
+				final Player BLACK = new Human(ChessColor.BLACK, RESULT);
 				
-				tempWhite.Refresh(result);
-				tempBlack.Refresh(result);
+				WHITE.Refresh(RESULT);
+				BLACK.Refresh(RESULT);
 				
-				// currentPlayer will be an alias to whoever is playing next
-				final Player currentPlayer = (result.WhoseTurnIsIt().IsWhite() ? tempWhite : tempBlack);
+				// This will be an alias to whoever is playing next
+				final Player CURRENT_PLAYER = (RESULT.WhoseTurnIsIt().IsWhite() ? WHITE : BLACK);
 				
-				// promotedPawn will contain a pawn that can be promoted if the player has one
-				final Pawn promotedPawn = currentPlayer.GetPromotedPawn(result);
+				// This will contain a pawn that can be promoted if the player has one
+				final Pawn PROMOTED_PAWN = CURRENT_PLAYER.GetPromotedPawn(RESULT);
 				
 				// Evaluate the move as normal if no promotion can be made
-				if(promotedPawn == null){
+				if(PROMOTED_PAWN == null){
 					// Find the highest value recursively
-					bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
+					bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, RESULT, WHITE, BLACK, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 				
 					// Keep track of the boundaries
 					a_alpha = Math.max(a_alpha, bestValue);
 				}else{
 					// Change the pawn to a promoted piece and then continue evaluating
 					for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
-						final Board promotion = promotedPawn.Promote(result, i);
+						final Board PROMOTION = PROMOTED_PAWN.Promote(RESULT, i);
 						
-						tempWhite.Refresh(promotion);
-						tempBlack.Refresh(promotion);
+						WHITE.Refresh(PROMOTION);
+						BLACK.Refresh(PROMOTION);
 						
 						// Find the highest value recursively
-						bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
+						bestValue = Math.max(bestValue, Recurse(a_depth - Utilities.ONE, PROMOTION, WHITE, BLACK, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 					
 						// Keep track of the boundaries
 						a_alpha = Math.max(a_alpha, bestValue);
@@ -229,40 +226,40 @@ public interface Minimax{
 			// All values found will be lower than this
 			bestValue = a_beta;
 			
-			for(Move move : moves){
+			for(final Move MOVE : MOVES){
 				// Make a deep copy of the board with the move made on it
-				final Board result = move.GetTransitionalBoard();
+				final Board RESULT = MOVE.GetTransitionalBoard();
 				
 				// Initialize temporary players to determine evaluations on this board
-				final Player tempWhite = new Human(ChessColor.WHITE, result);
-				final Player tempBlack = new Human(ChessColor.BLACK, result);
+				final Player WHITE = new Human(ChessColor.WHITE, RESULT);
+				final Player BLACK = new Human(ChessColor.BLACK, RESULT);
 				
-				tempWhite.Refresh(result);
-				tempBlack.Refresh(result);
+				WHITE.Refresh(RESULT);
+				BLACK.Refresh(RESULT);
 				
 				// currentPlayer will be an alias to whoever is playing next
-				final Player currentPlayer = (result.WhoseTurnIsIt().IsWhite() ? tempWhite : tempBlack);
+				final Player CURRENT_PLAYER = (RESULT.WhoseTurnIsIt().IsWhite() ? WHITE : BLACK);
 				
 				// promotedPawn will contain a pawn that can be promoted if the player has one
-				final Pawn promotedPawn = currentPlayer.GetPromotedPawn(result);
+				final Pawn PROMOTED_PAWN = CURRENT_PLAYER.GetPromotedPawn(RESULT);
 				
 				// Evaluate the move as normal if no promotion can be made
-				if(promotedPawn == null){
+				if(PROMOTED_PAWN == null){
 					// Find the lowest value recursively
-					bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
+					bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, RESULT, WHITE, BLACK, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 				
 					// Keep track of the boundaries
 					a_beta = Math.min(a_beta, bestValue);
 				}else{
 					// Change the pawn to a promoted piece and then continue evaluating
 					for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
-						final Board promotion = promotedPawn.Promote(result, i);
+						final Board PROMOTION = PROMOTED_PAWN.Promote(RESULT, i);
 						
-						tempWhite.Refresh(promotion);
-						tempBlack.Refresh(promotion);
+						WHITE.Refresh(PROMOTION);
+						BLACK.Refresh(PROMOTION);
 						
 						// Find the lowest value recursively
-						bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
+						bestValue = Math.min(bestValue, Recurse(a_depth - Utilities.ONE, PROMOTION, WHITE, BLACK, a_alpha, a_beta, !a_isMaximizer, a_callerColor));
 					
 						// Keep track of the boundaries
 						a_beta = Math.min(a_beta, bestValue);
@@ -281,207 +278,7 @@ public interface Minimax{
 			
 			return bestValue;
 		}
-	}
-	
-	/**/
-    /*
-    NAME
-        public static double Maximize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
-    
-    SYNOPSIS
-        public static double Maximize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
-    
-        int a_depth --------------> The AI search depth.
-    
-        Board a_board ------------> The board to evaluate.
-        
-        Player a_white -----------> The white player.
-        
-        Player a_black -----------> The black player.
-        
-        double a_alpha -----------> The best value for the maximizer.
-        
-        double a_beta ------------> The best value for the minimizer.
-        
-        ChessColor a_callerColor -> The color who called Minimax initially.
-
-    DESCRIPTION
-        This method searches for the best possible board value from the pool of possible moves for the maximizer.
-        It minimizes the board recursively.
-        This uses alpha-beta pruning, so moves that are determined to give a value lower than alpha or higher than beta will be ignored.
-        
-    RETURNS
-        double bestValue: The best board evaluation found.
-    
-    AUTHOR
-        Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
-        Modifications written specifically for this engine by Ryan King.
-    */
-	public static double Maximize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor){
-	    // Base case: The search depth is as deep as it can go
-        if(a_depth == Utilities.ZERO){
-            return -Evaluate(a_board, a_callerColor);
-        }
-
-        // moves will hold the current player's moves
-        final ArrayList<Move> moves = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black), (a_board.WhoseTurnIsIt().IsWhite() ? a_black : a_white), a_board, a_depth);
-        
-        // bestValue will hold the current best board evaluation
-        double bestValue = a_alpha;
-        
-        for(Move move : moves){
-            // Make a deep copy of the board with the move made on it
-            final Board result = move.GetTransitionalBoard();
-            
-            // Initialize temporary players to determine evaluations on this board
-            final Player tempWhite = new Human(ChessColor.WHITE, result);
-            final Player tempBlack = new Human(ChessColor.BLACK, result);
-            
-            tempWhite.Refresh(result);
-            tempBlack.Refresh(result);
-            
-            // currentPlayer will be an alias to whoever is playing next
-            final Player currentPlayer = (result.WhoseTurnIsIt().IsWhite() ? tempWhite : tempBlack);
-            
-            // promotedPawn will contain a pawn that can be promoted if the player has one
-            final Pawn promotedPawn = currentPlayer.GetPromotedPawn(result);
-            
-            // Evaluate the move as normal if no promotion can be made
-            if(promotedPawn == null){
-                // Find the highest value recursively
-                bestValue = Math.max(bestValue, Minimize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
-            
-                // Keep track of the boundaries
-                a_alpha = Math.max(a_alpha, bestValue);
-            }else{
-                // Change the pawn to a promoted piece and then continue evaluating
-                for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
-                    final Board promotion = promotedPawn.Promote(result, i);
-                    
-                    tempWhite.Refresh(promotion);
-                    tempBlack.Refresh(promotion);
-                    
-                    // Find the highest value recursively
-                    bestValue = Math.max(bestValue, Minimize(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
-                
-                    // Keep track of the boundaries
-                    a_alpha = Math.max(a_alpha, bestValue);
-                    
-                    if(a_beta <= a_alpha){
-                        return bestValue;
-                    }
-                }
-            }
-            // Discontinue evaluating if the lower bound is worse
-            if(a_beta <= a_alpha){
-                return bestValue;
-            }
-        }
-        
-        return bestValue;
-	}
-	
-	/**/
-    /*
-    NAME
-        public static double Minimize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
-    
-    SYNOPSIS
-        public static double Minimize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor);
-    
-        int a_depth --------------> The AI search depth.
-    
-        Board a_board ------------> The board to evaluate.
-        
-        Player a_white -----------> The white player.
-        
-        Player a_black -----------> The black player.
-        
-        double a_alpha -----------> The best value for the maximizer.
-        
-        double a_beta ------------> The best value for the minimizer.
-        
-        ChessColor a_callerColor -> The color who called Minimax initially.
-
-    DESCRIPTION
-        This method searches for the best possible board value from the pool of possible moves for the minimizer.
-        It maximizes the board recursively.
-        This uses alpha-beta pruning, so moves that are determined to give a value lower than alpha or higher than beta will be ignored.
-
-    RETURNS
-        double bestValue: The best board evaluation found.
-    
-    AUTHOR
-        Lauri Hartikka, A step-by-step guide to building a simple chess AI, https://jsfiddle.net/q76uzxwe/1/
-        Modifications written specifically for this engine by Ryan King.
-    */
-	public static double Minimize(final int a_depth, final Board a_board, final Player a_white, final Player a_black, double a_alpha, double a_beta, final ChessColor a_callerColor){
-	    // Base case: The search depth is as deep as it can go
-        if(a_depth == Utilities.ZERO){
-            return -Evaluate(a_board, a_callerColor);
-        }
-
-        // moves will hold the current player's moves
-        final ArrayList<Move> moves = Minimax.Sort((a_board.WhoseTurnIsIt().IsWhite() ? a_white : a_black), (a_board.WhoseTurnIsIt().IsWhite() ? a_black : a_white), a_board, a_depth);
-        
-        // bestValue will hold the current best board evaluation
-        double bestValue;
-        
-        // All values found will be lower than this
-        bestValue = a_beta;
-        
-        for(Move move : moves){
-            // Make a deep copy of the board with the move made on it
-            final Board result = move.GetTransitionalBoard();
-            
-            // Initialize temporary players to determine evaluations on this board
-            final Player tempWhite = new Human(ChessColor.WHITE, result);
-            final Player tempBlack = new Human(ChessColor.BLACK, result);
-            
-            tempWhite.Refresh(result);
-            tempBlack.Refresh(result);
-            
-            // currentPlayer will be an alias to whoever is playing next
-            final Player currentPlayer = (result.WhoseTurnIsIt().IsWhite() ? tempWhite : tempBlack);
-            
-            // promotedPawn will contain a pawn that can be promoted if the player has one
-            final Pawn promotedPawn = currentPlayer.GetPromotedPawn(result);
-            
-            // Evaluate the move as normal if no promotion can be made
-            if(promotedPawn == null){
-                // Find the lowest value recursively
-                bestValue = Math.min(bestValue, Maximize(a_depth - Utilities.ONE, result, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
-            
-                // Keep track of the boundaries
-                a_beta = Math.min(a_beta, bestValue);
-            }else{
-                // Change the pawn to a promoted piece and then continue evaluating
-                for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
-                    final Board promotion = promotedPawn.Promote(result, i);
-                    
-                    tempWhite.Refresh(promotion);
-                    tempBlack.Refresh(promotion);
-                    
-                    // Find the lowest value recursively
-                    bestValue = Math.min(bestValue, Maximize(a_depth - Utilities.ONE, promotion, tempWhite, tempBlack, a_alpha, a_beta, a_callerColor));
-                
-                    // Keep track of the boundaries
-                    a_beta = Math.min(a_beta, bestValue);
-                    
-                    if(a_beta <= a_alpha){
-                        return bestValue;
-                    }
-                }
-            }
-            
-            // Discontinue evaluating if the lower bound is worse
-            if(a_beta <= a_alpha){
-                return bestValue;
-            }
-        }
-        
-        return bestValue;
-	}
+	}	
 	
 	/**/
     /*
@@ -492,7 +289,7 @@ public interface Minimax{
         public static double Evaluate(final Board a_board);
     
         Board a_board ------------> The board to evaluate.
-       
+      
     DESCRIPTION
         This method evaluates all pieces and their positions on the board.
 
@@ -506,20 +303,25 @@ public interface Minimax{
 	public static double Evaluate(final Board a_board, final ChessColor a_callerColor){
 		double evaluation = Utilities.ZERO;
 		
+		// Null arguments do not return any value of significance
+		if(a_board == null || a_callerColor == null){
+		    return evaluation;
+		}
+		
 		// Evaluate every tile of the board
 		for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
-			int row = i / Utilities.EIGHT;
-			int column = i % Utilities.EIGHT;
+			final int ROW = i / Utilities.EIGHT;
+			final int COLUMN = i % Utilities.EIGHT;
 			
 			// Do not evaluate any empty tiles
-			if(a_board.GetTile(row, column).IsEmpty()){
+			if(a_board.GetTile(ROW, COLUMN).IsEmpty()){
 				continue;
 			}
 			
 			// Get the value of the piece
-			final Piece piece = a_board.GetTile(row, column).GetPiece();
+			final Piece PIECE = a_board.GetTile(ROW, COLUMN).GetPiece();
 			
-			evaluation += GetPieceValue(piece, row, column, a_callerColor);
+			evaluation += GetPieceValue(PIECE, ROW, COLUMN, a_callerColor);
 		}
 		
 		return evaluation;
@@ -551,16 +353,16 @@ public interface Minimax{
         Modifications written specifically for this engine by Ryan King.
     */
 	public static double GetPieceValue(final Piece a_piece, final int a_x, final int a_y, final ChessColor a_callerColor){
-		// Null arguments do not return any value of significance
-	    if (a_piece == null){
+		// Null or invalid arguments do not return any value of significance
+	    if (a_piece == null || !BoardUtilities.HasValidCoordinates(a_y, a_x)){
 	        return Utilities.ZERO;
 	    }
 
 	    // Find the absolute value of the piece, e.g. 10, 30, 50, 70, 90, or 900
-	    final double absoluteValue = GetAbsoluteValue(a_piece, a_x ,a_y);
+	    final double ABSOLUTE_VALUE = GetAbsoluteValue(a_piece, a_x ,a_y);
 	    
-	    // Negate the value if the piece is black or keep it positive if it's white
-	    return (a_piece.GetColor().IsEnemy(a_callerColor) ? absoluteValue : -absoluteValue);
+	    // Negate the value if the piece is the caller's color or keep it positive if it's not
+	    return (a_piece.GetColor().IsEnemy(a_callerColor) ? ABSOLUTE_VALUE : -ABSOLUTE_VALUE);
 	}
 
 	/**/
@@ -591,7 +393,7 @@ public interface Minimax{
     */
 	public static double GetAbsoluteValue(final Piece a_piece, final int a_x , final int a_y){
 		// Idiot proofing in case of null arguments
-		if(a_piece == null || (!BoardUtilities.HasValidCoordinates(a_y, a_x))){
+		if(a_piece == null || !BoardUtilities.HasValidCoordinates(a_y, a_x)){
 			return Utilities.ZERO;
 		}
 		
@@ -611,62 +413,16 @@ public interface Minimax{
 	        
 	    return Utilities.ZERO;
 	}
-
-	/**/
-    /*
-    NAME
-        public static Board MakeMove(final Board a_board, final Move a_move, final Player a_white, final Player a_black);
-    
-    SYNOPSIS
-        public static Board MakeMove(final Board a_board, final Move a_move, final Player a_white, final Player a_black);
-    
-        Board a_board ------------> The board.
-        
-        Move a_move --------------> The move to be made.
-        
-        Player a_white -----------> The white player.
-        
-        Player a_black -----------> The black player.
-       
-    DESCRIPTION
-        This method makes any type of move on the given board.
-
-    RETURNS
-        The board with the newly-made move.
-    
-    AUTHOR
-        Ryan King
-    */
-	public static Board MakeMove(final Board a_board, final Move a_move, final Player a_white, final Player a_black){
-		if(a_move.IsEnPassant()){
-			return a_board.EnPassant((EnPassantMove)a_move, a_white, a_black);
-		}else if(a_move.IsCastling()){
-			return a_board.Castle((CastlingMove)a_move);
-		}else if(a_move.IsAttacking()){
-			return a_board.Attack((AttackingMove)a_move, a_white, a_black);
-		}else{
-			return a_board.Move((RegularMove)a_move);
-		}
-	}
 	
 	/**/
     /*
     NAME
-        public static ArrayList<Move> Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth, final String a_moveHistory);
+        public static ArrayList<Move> Sort(final Player a_player);
     
     SYNOPSIS
-        public static ArrayList<Move> Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth, final String a_moveHistory);
+        public static ArrayList<Move> Sort(final Player a_player);
     
     	Player a_player ----------> The current player.
-    	
-    	Player a_opponent --------> The opponent.
-    
-        Board a_board ------------> The board.
-        
-        int a_depth --------------> The search depth.
-        
-        String a_moveHistory -----> The player's move history in algebraic notation.
-
        
     DESCRIPTION
         This method sorts the ArrayList of moves by ascending "priority", that is,
@@ -680,24 +436,25 @@ public interface Minimax{
     AUTHOR
         Ryan King
     */
-	public static ArrayList<Move> Sort(final Player a_player, final Player a_opponent, final Board a_board, final int a_depth){
-		// moves will contain the moves a player can make
-		ArrayList<Move> moves = new ArrayList<>();
+	public static ArrayList<Move> Sort(final Player a_player){
+		// MOVES will contain the moves the player can make on this turn
+		final ArrayList<Move> MOVES = new ArrayList<>();
 
 		// Add the moves in order of priority
-		moves.addAll(a_player.CheckmateMoves());
-		moves.addAll(a_player.CheckMoves());
-		moves.addAll(a_player.AttackingMoves());
-		moves.addAll(a_player.CastlingMoves());
-		moves.addAll(a_player.RegularMoves());
-		moves.addAll(a_player.EnPassantMoves());
+		MOVES.addAll(a_player.CheckmateMoves());
+		MOVES.addAll(a_player.CheckMoves());
+		MOVES.addAll(a_player.AttackingMoves());
+		MOVES.addAll(a_player.CastlingMoves());
+		MOVES.addAll(a_player.RegularMoves());
+		MOVES.addAll(a_player.EnPassantMoves());
 		
 		// Get rid of duplicates in the list
-		LinkedHashSet<Move> set = new LinkedHashSet<>(moves);
+		final LinkedHashSet<Move> SET = new LinkedHashSet<>(MOVES);
 		
 		// Make a new list with no duplicates
-		ArrayList<Move> sortedMoves = new ArrayList<>(set);
+		final ArrayList<Move> SORTED_MOVES = new ArrayList<>(SET);
 		
-		return sortedMoves;
+		// Return the list with no duplicates
+		return SORTED_MOVES;
 	}
 }

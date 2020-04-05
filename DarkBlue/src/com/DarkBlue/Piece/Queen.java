@@ -113,7 +113,7 @@ public final class Queen extends Piece{
     */
     public Queen(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         super(a_piece, a_newRow, a_newColumn, a_moves);
-        Queen candidate = (Queen) a_piece;
+        final Queen CANDIDATE = (Queen) a_piece;
                
         // Initialize the ArrayLists
         this.m_currentDownMoves = new ArrayList<>();
@@ -127,15 +127,15 @@ public final class Queen extends Piece{
         this.m_currentDownAndLeftMoves = new ArrayList<>();
         
         // Add all moves from the original piece
-        this.m_currentDownMoves.addAll(candidate.GetCurrentDownMoves());
-        this.m_currentUpMoves.addAll(candidate.GetCurrentUpMoves());
-        this.m_currentRightMoves.addAll(candidate.GetCurrentRightMoves());
-        this.m_currentLeftMoves.addAll(candidate.GetCurrentLeftMoves());
+        this.m_currentDownMoves.addAll(CANDIDATE.GetCurrentDownMoves());
+        this.m_currentUpMoves.addAll(CANDIDATE.GetCurrentUpMoves());
+        this.m_currentRightMoves.addAll(CANDIDATE.GetCurrentRightMoves());
+        this.m_currentLeftMoves.addAll(CANDIDATE.GetCurrentLeftMoves());
         
-        this.m_currentDownAndRightMoves.addAll(candidate.GetCurrentDownAndRightMoves());
-        this.m_currentUpAndRightMoves.addAll(candidate.GetCurrentUpAndRightMoves());
-        this.m_currentUpAndLeftMoves.addAll(candidate.GetCurrentUpAndLeftMoves());
-        this.m_currentDownAndLeftMoves.addAll(candidate.GetCurrentDownAndLeftMoves());
+        this.m_currentDownAndRightMoves.addAll(CANDIDATE.GetCurrentDownAndRightMoves());
+        this.m_currentUpAndRightMoves.addAll(CANDIDATE.GetCurrentUpAndRightMoves());
+        this.m_currentUpAndLeftMoves.addAll(CANDIDATE.GetCurrentUpAndLeftMoves());
+        this.m_currentDownAndLeftMoves.addAll(CANDIDATE.GetCurrentDownAndLeftMoves());
     }
     
     /**/

@@ -87,9 +87,9 @@ public final class Board{
         
         // Make new tiles one at a time
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){    
-            final int row = index / Utilities.EIGHT;
-            final int column = index % Utilities.EIGHT;
-            this.m_boardObject[row][column] = new Tile(a_board.m_boardObject[row][column]);
+            final int ROW = index / Utilities.EIGHT;
+            final int COLUMN = index % Utilities.EIGHT;
+            this.m_boardObject[ROW][COLUMN] = new Tile(a_board.m_boardObject[ROW][COLUMN]);
         }
         
         // Set the en passant tile if the engine has one
@@ -170,10 +170,10 @@ public final class Board{
         
         // Look through every tile on the board for pieces
         for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
-            int row = i / Utilities.EIGHT;
-            int column = i % Utilities.EIGHT;
+            final int ROW = i / Utilities.EIGHT;
+            final int COLUMN = i % Utilities.EIGHT;
             
-            if(this.m_boardObject[row][column].IsOccupied()){
+            if(this.m_boardObject[ROW][COLUMN].IsOccupied()){
                 count++;
             }
         }
@@ -227,17 +227,17 @@ public final class Board{
     */
     private static final Tile[][] GetCurrentBoard(final BoardBuilder a_builder){
         // Make a new 8 by 8 array
-        Tile[][] boardDuplicate = new Tile[Utilities.EIGHT][Utilities.EIGHT];
+        final Tile[][] BOARD_DUPLICATE = new Tile[Utilities.EIGHT][Utilities.EIGHT];
         
         // Place every tile one at a time
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-            final int row = index / Utilities.EIGHT;
-            final int column = index % Utilities.EIGHT;
-            boardDuplicate[row][column] = new Tile(a_builder.GetBuilderBoard()[row][column]);
+            final int ROW = index / Utilities.EIGHT;
+            final int COLUMN = index % Utilities.EIGHT;
+            BOARD_DUPLICATE[ROW][COLUMN] = new Tile(a_builder.GetBuilderBoard()[ROW][COLUMN]);
         }
         
         // Return the array
-        return boardDuplicate;
+        return BOARD_DUPLICATE;
     }
     
     /*
@@ -266,51 +266,51 @@ public final class Board{
     */
     public static final Board GetStartingPosition(){
         // Make a new builder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set all white Pieces
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ZERO));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ONE));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.TWO));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.THREE));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.FOUR));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.FIVE));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.SIX));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.SEVEN));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ZERO));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ONE));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.TWO));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.THREE));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.FOUR));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.FIVE));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.SIX));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.SEVEN));
         
-        builder.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.ZERO));
-        builder.SetPiece(new Knight(ChessColor.WHITE, Utilities.SEVEN, Utilities.ONE));
-        builder.SetPiece(new Bishop(ChessColor.WHITE, Utilities.SEVEN, Utilities.TWO));
-        builder.SetPiece(new Queen(ChessColor.WHITE, Utilities.SEVEN, Utilities.THREE));
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
-        builder.SetPiece(new Bishop(ChessColor.WHITE, Utilities.SEVEN, Utilities.FIVE));
-        builder.SetPiece(new Knight(ChessColor.WHITE, Utilities.SEVEN, Utilities.SIX));
-        builder.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.SEVEN));
+        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.ZERO));
+        BUILDER.SetPiece(new Knight(ChessColor.WHITE, Utilities.SEVEN, Utilities.ONE));
+        BUILDER.SetPiece(new Bishop(ChessColor.WHITE, Utilities.SEVEN, Utilities.TWO));
+        BUILDER.SetPiece(new Queen(ChessColor.WHITE, Utilities.SEVEN, Utilities.THREE));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
+        BUILDER.SetPiece(new Bishop(ChessColor.WHITE, Utilities.SEVEN, Utilities.FIVE));
+        BUILDER.SetPiece(new Knight(ChessColor.WHITE, Utilities.SEVEN, Utilities.SIX));
+        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.SEVEN));
         
         // Set all black Pieces
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.ZERO));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.ONE));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.TWO));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.FOUR));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.FIVE));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.SIX));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.SEVEN));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.ZERO));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.ONE));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.TWO));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.FOUR));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.FIVE));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.SIX));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.SEVEN));
         
-        builder.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
-        builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.ONE));
-        builder.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.TWO));
-        builder.SetPiece(new Queen(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE));
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
-        builder.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.FIVE));
-        builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.SIX));
-        builder.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
+        BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
+        BUILDER.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.ONE));
+        BUILDER.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.TWO));
+        BUILDER.SetPiece(new Queen(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
+        BUILDER.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.FIVE));
+        BUILDER.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.SIX));
+        BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
         
         // Set the turn to white because white always goes first
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
         // Return the newly-built board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -333,11 +333,11 @@ public final class Board{
         Ryan King
     */
     public static final Board GetEmptyBoard(){
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Empty, because no pieces need to be added
         
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -388,19 +388,19 @@ public final class Board{
     */
     public static final Board GetStalemateTest(){
         // Initialize a new BoardBuilder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set the pieces
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.TWO, Utilities.THREE, false, false));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.TWO, Utilities.TWO));
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE, false, false));
-        builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.TWO, Utilities.THREE, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.TWO, Utilities.TWO));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE, false, false));
+        BUILDER.SetPiece(new Knight(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
         
         // Set the turn to white
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
         // Return the newly-built board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -425,19 +425,19 @@ public final class Board{
     */
     public static final Board GetCheckmateTest(){
         // Initialize a new BoardBuilder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set the pieces
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.TWO, Utilities.THREE, false, false));
-        builder.SetPiece(new Queen(ChessColor.WHITE, Utilities.TWO, Utilities.TWO));
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE, false, false));
-        builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.TWO, Utilities.THREE, false, false));
+        BUILDER.SetPiece(new Queen(ChessColor.WHITE, Utilities.TWO, Utilities.TWO));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE, false, false));
+        BUILDER.SetPiece(new Knight(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
         
         // Set the turn to white
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
         // Return the newly-built board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -462,23 +462,23 @@ public final class Board{
     */
     public static final Board GetCastlingTest(){
         // Initialize a new BoardBuilder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set the white pieces
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
-        builder.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.SEVEN));
-        builder.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.ZERO));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
+        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.SEVEN));
+        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.ZERO));
         
         // Set the black pieces
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
-        builder.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
-        builder.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
+        BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
+        BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
         
         // Set the turn to white
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
         // Return the newly-built board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -503,37 +503,37 @@ public final class Board{
     */
     public static final Board GetPromotionTest(){
         // Initialize a new BoardBuilder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set the white pieces
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.ONE, Utilities.ONE));
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.TWO, Utilities.THREE, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.ONE, Utilities.ONE));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.TWO, Utilities.THREE, false, false));
         
         // Set the black pieces
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE, false, false));
-        builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.SIX, Utilities.SIX));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.THREE, false, false));
+        BUILDER.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.SIX, Utilities.SIX));
         
         // Set the turn to black
-        builder.SetWhoseTurn(ChessColor.BLACK);
+        BUILDER.SetWhoseTurn(ChessColor.BLACK);
         
         // Return the newly-built board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
     /*
     NAME
-        public static final Board GetPromotionTest();
+        public static final Board GetEnPassantTest();
     
     SYNOPSIS
-        public static final Board GetPromotionTest();
+        public static final Board GetEnPassantTest();
     
         No parameters.
     
     DESCRIPTION
         This method returns a test configuration for
-        testing pawn promotion.
+        testing en passant.
     
     RETURNS
         A board in a predetermined configuration for test purposes.
@@ -543,22 +543,22 @@ public final class Board{
     */
     public static final Board GetEnPassantTest(){
         // Make a new builder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set pieces for white
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.THREE, Utilities.FOUR));
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, false, false));
-        builder.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ONE));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.THREE, Utilities.FOUR));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ONE));
         
         // Set pieces for black
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.ZERO));
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.ZERO));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, false, false));
         
         // Set who will go first in this test
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -584,19 +584,19 @@ public final class Board{
     */
     public static final Board GetBareKingTest(){
         // Make a new builder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set pieces for white
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
 
         // Set pieces for black
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
         
         // White will go first in this test
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -622,20 +622,20 @@ public final class Board{
         Ryan King
     */
     public static final Board GetKingAndBishopTest(){
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set pieces for white
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
 
         // Set pieces for black
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
-        builder.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
+        BUILDER.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
         
         // White will go first in this test
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -661,20 +661,20 @@ public final class Board{
     */
     public static final Board GetKingAndKnightTest(){
         // Make a new builder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set pieces for white
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
 
         // Set pieces for black
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
-        builder.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
+        BUILDER.SetPiece(new Knight(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
         
         // White will go first in this test
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -701,30 +701,30 @@ public final class Board{
     */
     public static final Board GetSameColorBishopTest(){
         // Make a new builder
-        final BoardBuilder builder = new BoardBuilder();
+        final BoardBuilder BUILDER = new BoardBuilder();
         
         // Set pieces for white
-        builder.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
-        builder.SetPiece(new Bishop(ChessColor.WHITE, Utilities.FIVE, Utilities.FIVE));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.THREE, Utilities.FIVE, false, false));
+        BUILDER.SetPiece(new Bishop(ChessColor.WHITE, Utilities.FIVE, Utilities.FIVE));
 
         // Set pieces for black
-        builder.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
-        builder.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
-        builder.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
+        BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.TWO, Utilities.ONE, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.FOUR));
+        BUILDER.SetPiece(new Bishop(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR));
         
         // White will go first in this test
-        builder.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.WHITE);
         
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
     /*
     NAME
-        public final Tile Board.GetTile(final int a_row, final int a_column);
+        public final Tile GetTile(final int a_row, final int a_column);
     
     SYNOPSIS
-        public final Tile Board.GetTile(final int a_row, final int a_column);
+        public final Tile GetTile(final int a_row, final int a_column);
     
         int a_row -----------> The row of the Tile.
         
@@ -751,7 +751,7 @@ public final class Board{
         }catch(Exception e){
             return null;
         }
-    }   
+    }  
     
     /**/
     /*
@@ -776,15 +776,15 @@ public final class Board{
     public final King GetKing(final ChessColor a_color){
         for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
             // Assign aliases for row and column
-            int row = i / Utilities.EIGHT;
-            int column = i % Utilities.EIGHT;
+            final int ROW = i / Utilities.EIGHT;
+            final int COLUMN = i % Utilities.EIGHT;
         
             // Only check occupied tiles
-            if(this.m_boardObject[row][column].IsEmpty()){
+            if(this.m_boardObject[ROW][COLUMN].IsEmpty() || !this.m_boardObject[ROW][COLUMN].GetPiece().IsKing()){
                 continue;
             }else{
-                if(this.m_boardObject[row][column].GetPiece().IsKing() && this.m_boardObject[row][column].GetPiece().GetColor().IsAlly(a_color)){
-                    return (King) this.m_boardObject[row][column].GetPiece();
+                if(this.m_boardObject[ROW][COLUMN].GetPiece().IsKing() && this.m_boardObject[ROW][COLUMN].GetPiece().GetColor().IsAlly(a_color)){
+                    return (King) this.m_boardObject[ROW][COLUMN].GetPiece();
                 }
             }
         }
@@ -820,17 +820,17 @@ public final class Board{
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
             
             // Assign aliases for row and column
-            int row = index / Utilities.EIGHT;
-            int column = index % Utilities.EIGHT;
+            final int ROW = index / Utilities.EIGHT;
+            final int COLUMN = index % Utilities.EIGHT;
             
             // Print the algebraic row
-            if(column == Utilities.ZERO){
-                whiteBoardString += Integer.toString(Utilities.EIGHT - row) + " ";
+            if(COLUMN == Utilities.ZERO){
+                whiteBoardString += Integer.toString(Utilities.EIGHT - ROW) + " ";
             }
             
             // Get the piece's image if the tile is occupied, otherwise put a hyphen-minus
-            if(m_boardObject[row][column].IsOccupied()){
-                whiteBoardString += Character.toString(m_boardObject[row][column].GetPiece().GetBoardIcon());
+            if(m_boardObject[ROW][COLUMN].IsOccupied()){
+                whiteBoardString += Character.toString(m_boardObject[ROW][COLUMN].GetPiece().GetBoardIcon());
             }else{
                 whiteBoardString += "-";
             }
@@ -839,7 +839,7 @@ public final class Board{
             whiteBoardString += " ";
             
             // Start a new line once this has reached the end of the current row
-            if(column == Utilities.SEVEN){
+            if(COLUMN == Utilities.SEVEN){
                 whiteBoardString += "\n";
             }
         }
@@ -878,17 +878,17 @@ public final class Board{
         for(int index = Utilities.SIXTY_FOUR - Utilities.ONE; index >= Utilities.ZERO; index--){
             
             // Assign aliases for row and column
-            int row = index / Utilities.EIGHT;
-            int column = index % Utilities.EIGHT;
+            final int ROW = index / Utilities.EIGHT;
+            final int COLUMN = index % Utilities.EIGHT;
             
             // Print the algebraic row
-            if(column == Utilities.SEVEN){
-                blackBoardString += Integer.toString(Utilities.EIGHT - row) + " ";
+            if(COLUMN == Utilities.SEVEN){
+                blackBoardString += Integer.toString(Utilities.EIGHT - ROW) + " ";
             }
             
             // Get the piece's image if the tile is occupied, otherwise put a hyphen-minus
-            if(m_boardObject[row][column].IsOccupied()){
-                blackBoardString += Character.toString(m_boardObject[row][column].GetPiece().GetBoardIcon());
+            if(m_boardObject[ROW][COLUMN].IsOccupied()){
+                blackBoardString += Character.toString(m_boardObject[ROW][COLUMN].GetPiece().GetBoardIcon());
             }else{
                 blackBoardString += "-";
             }
@@ -897,7 +897,7 @@ public final class Board{
             blackBoardString += " ";
             
             // Start a new line once this has reached the end of the current row
-            if(column == Utilities.ZERO){
+            if(COLUMN == Utilities.ZERO){
                 blackBoardString += "\n";
             }
         }
@@ -940,11 +940,11 @@ public final class Board{
         
         // Add the contents of the board
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-            int row = index / Utilities.EIGHT;
-            int column = index % Utilities.EIGHT;
+            final int ROW = index / Utilities.EIGHT;
+            final int COLUMN = index % Utilities.EIGHT;
         
             // Count how many tiles are empty between pieces
-            if(m_boardObject[row][column].IsEmpty()){
+            if(m_boardObject[ROW][COLUMN].IsEmpty()){
                 emptyTiles++;
             }else{
                 // Place the empty tile counter into the string once another occupied tile
@@ -953,17 +953,17 @@ public final class Board{
                     serial += Integer.toString(emptyTiles);
                     emptyTiles = Utilities.ZERO;
                 }
-                serial += m_boardObject[row][column].GetPiece().GetIcon();
+                serial += m_boardObject[ROW][COLUMN].GetPiece().GetIcon();
             }
         
             // Add any empty tiles left over at the end
-            if(column == Utilities.SEVEN){
+            if(COLUMN == Utilities.SEVEN){
                 if(emptyTiles > Utilities.ZERO){
                     serial += Integer.toString(emptyTiles);
                 }
                 
                 // Add a row delimiter if necessary
-                if(row < Utilities.SEVEN){
+                if(ROW < Utilities.SEVEN){
                     serial += "/";
                 }
                 
@@ -982,25 +982,25 @@ public final class Board{
         serial += " ";
         
         // Find both kings
-        final King whiteKing = this.GetKing(ChessColor.WHITE);
-        final King blackKing = this.GetKing(ChessColor.BLACK);
+        final King WHITE_KING = this.GetKing(ChessColor.WHITE);
+        final King BLACK_KING = this.GetKing(ChessColor.BLACK);
         
         // Add which player(s) can castle and on what side
         String castlingPrivileges = "";
     
-        if(whiteKing.CanKingsideCastle()){
+        if(WHITE_KING.CanKingsideCastle()){
             castlingPrivileges += Utilities.WHITE_KING_ICON;
         }
         
-        if(whiteKing.CanQueensideCastle()){
+        if(WHITE_KING.CanQueensideCastle()){
             castlingPrivileges += Utilities.WHITE_QUEEN_ICON;
         }
               
-        if(blackKing.CanKingsideCastle()){
+        if(BLACK_KING.CanKingsideCastle()){
             castlingPrivileges += Utilities.BLACK_KING_ICON;
         }
         
-        if(blackKing.CanQueensideCastle()){
+        if(BLACK_KING.CanQueensideCastle()){
             castlingPrivileges += Utilities.BLACK_QUEEN_ICON;
         }
         
@@ -1045,57 +1045,60 @@ public final class Board{
         Ryan King
     */
     private final void AdjustCastlingPrivileges(final Move a_candidate){
+        // Null values do not constitute valid moves
+        if(a_candidate == null){
+            return;
+        }
+        
         // Get all information about the old piece
-        final int oldRow = a_candidate.GetPiece().GetCurrentRow();
-        final int oldColumn = a_candidate.GetPiece().GetCurrentColumn();
-        final int newRow = a_candidate.GetNewRow();
-        final int newColumn = a_candidate.GetNewColumn();
-        final ChessColor moverColor = a_candidate.GetPiece().GetColor();
+        final int OLD_ROW = a_candidate.GetPiece().GetCurrentRow();
+        final int OLD_COLUMN = a_candidate.GetPiece().GetCurrentColumn();
+        final ChessColor MOVER_COLOR = a_candidate.GetPiece().GetColor();
         
         // Find the affected king
-        final King king = this.GetKing(a_candidate.GetPiece().GetColor());
-        final int kingRow = king.GetCurrentRow();
-        final int kingColumn = king.GetCurrentColumn();
-        final ChessColor tileColor = m_boardObject[kingRow][kingColumn].GetColor();
+        final King KING = this.GetKing(a_candidate.GetPiece().GetColor());
+        final int KING_ROW = KING.GetCurrentRow();
+        final int KING_COLUMN = KING.GetCurrentColumn();
+        final ChessColor TILE_COLOR = m_boardObject[KING_ROW][KING_COLUMN].GetColor();
         
         // Use Boolean fields for determining castling rights
-        final boolean kingsideCastle, queensideCastle, opponentKingsideCastle, opponentQueensideCastle;
+        final boolean KINGSIDE, QUEENSIDE;
         
         // Determine if white can castle
-        if(a_candidate.GetPiece().IsRook() && !a_candidate.GetPiece().HasMoved() && king.IsInOriginalSpot()){
+        if(a_candidate.GetPiece().IsRook() && !a_candidate.GetPiece().HasMoved() && KING.IsInOriginalSpot()){
             // Determine if white can kingside castle
-            if(a_candidate.GetPiece().IsWhite() && oldRow == Utilities.SEVEN && oldColumn == Utilities.ZERO){
-                kingsideCastle = true && king.CanKingsideCastleOnThisTurn(this);
-                queensideCastle = false;
+            if(a_candidate.GetPiece().IsWhite() && OLD_ROW == Utilities.SEVEN && OLD_COLUMN == Utilities.ZERO){
+                KINGSIDE = KING.CanKingsideCastleOnThisTurn(this);
+                QUEENSIDE = false;
             // Determine if white can queenside castle
-            }else if(a_candidate.GetPiece().IsWhite() && oldRow == Utilities.SEVEN && oldColumn == Utilities.SEVEN){
-                kingsideCastle = false;
-                queensideCastle = true && king.CanQueensideCastleOnThisTurn(this);
+            }else if(a_candidate.GetPiece().IsWhite() && OLD_ROW == Utilities.SEVEN && OLD_COLUMN == Utilities.SEVEN){
+                KINGSIDE = false;
+                QUEENSIDE = KING.CanQueensideCastleOnThisTurn(this);
             // Determine if black can kingside castle
-            }else if(a_candidate.GetPiece().IsBlack() && oldRow == Utilities.ZERO && oldColumn == Utilities.ZERO){
-                kingsideCastle = true && king.CanKingsideCastleOnThisTurn(this);
-                queensideCastle = false;
+            }else if(a_candidate.GetPiece().IsBlack() && OLD_ROW == Utilities.ZERO && OLD_COLUMN == Utilities.ZERO){
+                KINGSIDE = KING.CanKingsideCastleOnThisTurn(this);
+                QUEENSIDE = false;
             // Determine if black can queenside castle
-            }else if(a_candidate.GetPiece().IsBlack() && oldRow == Utilities.ZERO && oldColumn == Utilities.SEVEN){
-                kingsideCastle = false;
-                queensideCastle = true && king.CanQueensideCastleOnThisTurn(this);          
+            }else if(a_candidate.GetPiece().IsBlack() && OLD_ROW == Utilities.ZERO && OLD_COLUMN == Utilities.SEVEN){
+                KINGSIDE = false;
+                QUEENSIDE = KING.CanQueensideCastleOnThisTurn(this);          
             }else{
-                kingsideCastle = true && king.CanKingsideCastleOnThisTurn(this);
-                queensideCastle = true && king.CanQueensideCastleOnThisTurn(this);
+                KINGSIDE = KING.CanKingsideCastleOnThisTurn(this);
+                QUEENSIDE = KING.CanQueensideCastleOnThisTurn(this);
             }
             
             // Reset the king with new castling privileges
-            m_boardObject[kingRow][kingColumn] = new Tile(tileColor, kingRow, kingColumn, new King(moverColor, kingRow, kingColumn, kingsideCastle, queensideCastle));
+            m_boardObject[KING_ROW][KING_COLUMN] = new Tile(TILE_COLOR, KING_ROW, KING_COLUMN, new King(MOVER_COLOR, KING_ROW, KING_COLUMN, KINGSIDE, QUEENSIDE));
         }
     }
     
     /**/
     /*
     NAME
-        public final Board Move(final RegularMove a_candidate, final Player a_white, final Player a_black);
+        public final Board Move(final RegularMove a_candidate);
     
     SYNOPSIS
-        public final Board Move(final Move a_candidate, final Player a_white, final Player a_black);
+        public final Board Move(final RegularMove a_candidate);
     
         RegularMove a_candidate --------> The regular move to be performed.
 
@@ -1109,34 +1112,36 @@ public final class Board{
         Ryan King
     */
     public final Board Move(final RegularMove a_candidate){
+        // Null values do not constitute valid moves
+        if(a_candidate == null){
+            return this;
+        }
+        
         // Preserve the old row and column
-        final int oldRow = a_candidate.GetPiece().GetCurrentRow();
-        final int oldColumn = a_candidate.GetPiece().GetCurrentColumn();
+        final int OLD_ROW = a_candidate.GetPiece().GetCurrentRow();
+        final int OLD_COLUMN = a_candidate.GetPiece().GetCurrentColumn();
         
         // Make note of the new row and column
-        final int newRow = a_candidate.GetNewRow();
-        final int newColumn = a_candidate.GetNewColumn();
-        
-        // Make note of the color of the moving piece
-        final ChessColor moverColor = a_candidate.GetPiece().GetColor();
+        final int NEW_ROW = a_candidate.GetNewRow();
+        final int NEW_COLUMN = a_candidate.GetNewColumn();
 
         // Make note of the new and old tiles
-        final Tile newTile = m_boardObject[newRow][newColumn];
-        final Tile oldTile = m_boardObject[oldRow][oldColumn];
+        final Tile NEW_TILE = m_boardObject[NEW_ROW][NEW_COLUMN];
+        final Tile OLD_TILE = m_boardObject[OLD_ROW][OLD_COLUMN];
         
         // Change castling privileges if this scenario eliminates them
         AdjustCastlingPrivileges(a_candidate);
                 
         // Set the moved Piece to the new Tile
-        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
+        m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
         // Remove the moved Piece from the old Tile
-        m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
+        m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
+        BoardBuilder BUILDER = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Build the board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -1158,41 +1163,36 @@ public final class Board{
     AUTHOR
         Ryan King
     */
-    public final Board Attack(final AttackingMove a_candidate, final Player a_white, final Player a_black){
-        // Get the rows and columns of the source and destination tiles
-        final int oldRow = a_candidate.GetPiece().GetCurrentRow();
-        final int oldColumn = a_candidate.GetPiece().GetCurrentColumn();
-        final int newRow = a_candidate.GetNewRow();
-        final int newColumn = a_candidate.GetNewColumn();
-        
-        // Find the victim of the move
-        final Piece victim = m_boardObject[newRow][newColumn].GetPiece();
-
-        // Adjust pieces
-        if(this.WhoseTurnIsIt().IsWhite()){
-            a_black.RemoveActivePiece(victim);
-        }else{
-            a_white.RemoveActivePiece(victim);
+    public final Board Attack(final AttackingMove a_candidate){
+        // Null values do not constitute valid moves
+        if(a_candidate == null){
+            return this;
         }
         
+        // Get the rows and columns of the source and destination tiles
+        final int OLD_ROW = a_candidate.GetPiece().GetCurrentRow();
+        final int OLD_COLUMN = a_candidate.GetPiece().GetCurrentColumn();
+        final int NEW_ROW = a_candidate.GetNewRow();
+        final int NEW_COLUMN = a_candidate.GetNewColumn();
+
         // Find both source and destination tiles involved in this move
-        final Tile newTile = m_boardObject[newRow][newColumn];
-        final Tile oldTile = m_boardObject[oldRow][oldColumn];
+        final Tile NEW_TILE = m_boardObject[NEW_ROW][NEW_COLUMN];
+        final Tile OLD_TILE = m_boardObject[OLD_ROW][OLD_COLUMN];
         
         // Adjust castling privileges for both sides
         AdjustCastlingPrivileges(a_candidate);
         
         // Set the moved Piece to the new Tile
-        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
+        m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
         
         // Remove the moved Piece from the old Tile
-        m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
+        m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
+        final BoardBuilder BUILDER = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Return the newly-moved board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -1215,63 +1215,64 @@ public final class Board{
         Ryan King
     */
     public final Board Castle(final CastlingMove a_candidate){
+        // Null values do not constitute valid moves
+        if(a_candidate == null){
+            return this;
+        }
+        
         // Preserve the king's old coordinates
-        final int oldKingRow = a_candidate.GetPiece().GetCurrentRow();
-        final int oldKingColumn = a_candidate.GetPiece().GetCurrentColumn();
+        final int OLD_KING_ROW = a_candidate.GetPiece().GetCurrentRow();
+        final int OLD_KING_COLUMN = a_candidate.GetPiece().GetCurrentColumn();
         
         // Grab the king's new coordinates
-        final int newKingRow = a_candidate.GetNewRow();
-        final int newKingColumn = a_candidate.GetNewColumn();
+        final int NEW_KING_ROW = a_candidate.GetNewRow();
+        final int NEW_KING_COLUMN = a_candidate.GetNewColumn();
         
         // Preserve the rook's old coordinates
-        final int oldRookRow = a_candidate.GetRookCurrentRow();
-        final int oldRookColumn = a_candidate.GetRookCurrentColumn();
+        final int OLD_ROOK_ROW = a_candidate.GetRookCurrentRow();
+        final int OLD_ROOK_COLUMN = a_candidate.GetRookCurrentColumn();
         
         // Grab the rook's new coordinates
-        final int newRookRow = a_candidate.GetRookDestinationRow();
-        final int newRookColumn = a_candidate.GetRookDestinationColumn();
+        final int NEW_ROOK_ROW = a_candidate.GetRookDestinationRow();
+        final int NEW_ROOK_COLUMN = a_candidate.GetRookDestinationColumn();
         
         // Find the king's old and new tiles
-        final Tile oldKingTile = m_boardObject[oldKingRow][oldKingColumn];
-        final Tile newKingTile = m_boardObject[newKingRow][newKingColumn];
+        final Tile OLD_KING_TILE = m_boardObject[OLD_KING_ROW][OLD_KING_COLUMN];
+        final Tile NEW_KING_TILE = m_boardObject[NEW_KING_ROW][NEW_KING_COLUMN];
         
         // Find the rook's old and new tiles
-        final Tile oldRookTile = m_boardObject[oldRookRow][oldRookColumn];
-        final Tile newRookTile = m_boardObject[newRookRow][newRookColumn];
+        final Tile OLD_ROOK_TILE = m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN];
+        final Tile NEW_ROOK_TILE = m_boardObject[NEW_ROOK_ROW][NEW_ROOK_COLUMN];
     
         // Set the moved king to the new Tile
-        m_boardObject[newKingRow][newKingColumn] = new Tile(newKingTile.GetColor(), newKingTile.GetRow(), newKingTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newKingRow, newKingColumn));
+        m_boardObject[NEW_KING_ROW][NEW_KING_COLUMN] = new Tile(NEW_KING_TILE.GetColor(), NEW_KING_TILE.GetRow(), NEW_KING_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_KING_ROW, NEW_KING_COLUMN));
         
         // Remove the moved king from the old Tile
-        m_boardObject[oldKingRow][oldKingColumn] = new Tile(oldKingTile.GetColor(), oldKingTile.GetRow(), oldKingTile.GetColumn(), null);
+        m_boardObject[OLD_KING_ROW][OLD_KING_COLUMN] = new Tile(OLD_KING_TILE.GetColor(), OLD_KING_TILE.GetRow(), OLD_KING_TILE.GetColumn(), null);
         
         // Set the moved rook to the new Tile
-        m_boardObject[newRookRow][newRookColumn] = new Tile(newRookTile.GetColor(), newRookTile.GetRow(), newRookTile.GetColumn(), Factory.MovedPieceFactory(this.m_boardObject[oldRookRow][oldRookColumn].GetPiece(), newRookRow, newRookColumn));
+        m_boardObject[NEW_ROOK_ROW][NEW_ROOK_COLUMN] = new Tile(NEW_ROOK_TILE.GetColor(), NEW_ROOK_TILE.GetRow(), NEW_ROOK_TILE.GetColumn(), Factory.MovedPieceFactory(this.m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN].GetPiece(), NEW_ROOK_ROW, NEW_ROOK_COLUMN));
         
         // Remove the moved rook from the old Tile
-        m_boardObject[oldRookRow][oldRookColumn] = new Tile(oldRookTile.GetColor(), oldRookTile.GetRow(), oldRookTile.GetColumn(), null);
+        m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN] = new Tile(OLD_ROOK_TILE.GetColor(), OLD_ROOK_TILE.GetRow(), OLD_ROOK_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));            
+        final BoardBuilder BUILDER = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));            
 
         // Return the newly-moved board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
     /*
     NAME
-        public final Board EnPassant(final EnPassantMove a_candidate, final Player a_white, final Player a_black);
+        public final Board EnPassant(final EnPassantMove a_candidate);
     
     SYNOPSIS
-        public final Board EnPassant(final EnPassantMove a_candidate, final Player a_white, final Player a_black);
+        public final Board EnPassant(final EnPassantMove a_candidate);
     
         EnPassantMove a_candidate --------> The Move to be performed.
-        
-        Player a_white -------------------> The Player playing as white.
-        
-        Player a_black -------------------> The Player playing as black.
-    
+
     DESCRIPTION
         This method returns a new Board object with the specified Move made.
     
@@ -1281,47 +1282,45 @@ public final class Board{
     AUTHOR
         Ryan King
     */
-    public final Board EnPassant(final EnPassantMove a_candidate, final Player a_white, final Player a_black){
+    public final Board EnPassant(final EnPassantMove a_candidate){
+        // Null values do not constitute valid moves
+        if(a_candidate == null){
+            return this;
+        }
+        
         // Preserve the old coordinates of the moving pawn
-        final int oldRow = a_candidate.GetPiece().GetCurrentRow();
-        final int oldColumn = a_candidate.GetPiece().GetCurrentColumn();
+        final int OLD_ROW = a_candidate.GetPiece().GetCurrentRow();
+        final int OLD_COLUMN = a_candidate.GetPiece().GetCurrentColumn();
         
         // Get the coordinates where the moving pawn will move
-        final int newRow = a_candidate.GetNewRow();
-        final int newColumn = a_candidate.GetNewColumn();
+        final int NEW_ROW = a_candidate.GetNewRow();
+        final int NEW_COLUMN = a_candidate.GetNewColumn();
         
         // Get the coordinates of the captured pawn,
         // which are different from the destination
         // coordinates due to the nature of en passant
-        final int capturedPawnRow = a_candidate.GetCapturedPawnRow();
-        final int capturedPawnColumn = a_candidate.GetCapturedPawnColumn();
+        final int PAWN_ROW = a_candidate.GetCapturedPawnRow();
+        final int PAWN_COLUMN = a_candidate.GetCapturedPawnColumn();
 
         // Find all tiles used in this move
-        final Tile newTile = m_boardObject[newRow][newColumn];
-        final Tile oldTile = m_boardObject[oldRow][oldColumn];
-        final Tile pawnTile = m_boardObject[capturedPawnRow][capturedPawnColumn];
-        
-        // Adjust the pieces on both sides depending on the mover and the victim
-        if(this.WhoseTurnIsIt().IsWhite()){
-            a_black.RemoveActivePiece(m_boardObject[capturedPawnRow][capturedPawnColumn].GetPiece());
-        }else{
-            a_white.RemoveActivePiece(m_boardObject[capturedPawnRow][capturedPawnColumn].GetPiece());
-        }
-        
+        final Tile NEW_TILE = this.m_boardObject[NEW_ROW][NEW_COLUMN];
+        final Tile OLD_TILE = this.m_boardObject[OLD_ROW][OLD_COLUMN];
+        final Tile PAWN_TILE = this.m_boardObject[PAWN_ROW][PAWN_COLUMN];
+              
         // Set the moved Piece to the new Tile
-        m_boardObject[newRow][newColumn] = new Tile(newTile.GetColor(), newTile.GetRow(), newTile.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), newRow, newColumn));
+        this.m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
         
         // Remove the moved Piece from the old Tile
-        m_boardObject[oldRow][oldColumn] = new Tile(oldTile.GetColor(), oldTile.GetRow(), oldTile.GetColumn(), null);
+        this.m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
         
         // Remove the captured Pawn from its Tile
-        m_boardObject[capturedPawnRow][capturedPawnColumn] = new Tile(pawnTile.GetColor(), pawnTile.GetRow(), pawnTile.GetColumn(), null);
+        this.m_boardObject[PAWN_ROW][PAWN_COLUMN] = new Tile(PAWN_TILE.GetColor(), PAWN_TILE.GetRow(), PAWN_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder builder = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
+        final BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Return the newly-moved board
-        return builder.Build();
+        return BUILDER.Build();
     }
     
     /**/
@@ -1345,21 +1344,67 @@ public final class Board{
         Ryan King
     */
     public final Board Promote(final Piece a_promotedPiece){
+        // Null values do not constitute valid moves
+        if(a_promotedPiece == null){
+            return this;
+        }
+        
         // Find the coordinates of the promoted pawn
-        final int promotedRow = a_promotedPiece.GetCurrentRow();
-        final int promotedColumn = a_promotedPiece.GetCurrentColumn();
+        final int PROMOTED_ROW = a_promotedPiece.GetCurrentRow();
+        final int PROMOTED_COLUMN = a_promotedPiece.GetCurrentColumn();
         
         // Find the tile where the promoted pawn is located
-        final Tile promotedTile = this.m_boardObject[promotedRow][promotedColumn];
+        final Tile PROMOTED_TILE = this.m_boardObject[PROMOTED_ROW][PROMOTED_COLUMN];
         
         // Remove the old pawn and put the promoted piece in its place
-        this.m_boardObject[promotedRow][promotedColumn] = new Tile(promotedTile.GetColor(), promotedTile.GetRow(), promotedTile.GetColumn(), Factory.MovedPieceFactory(a_promotedPiece, promotedRow, promotedColumn));
+        this.m_boardObject[PROMOTED_ROW][PROMOTED_COLUMN] = new Tile(PROMOTED_TILE.GetColor(), PROMOTED_TILE.GetRow(), PROMOTED_TILE.GetColumn(), Factory.MovedPieceFactory(a_promotedPiece, PROMOTED_ROW, PROMOTED_COLUMN));
 
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        BoardBuilder builder = new BoardBuilder(this.m_boardObject, this.WhoseTurnIsIt());
+        BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, this.WhoseTurnIsIt());
         
         // Return the newly-moved board
-        return builder.Build();
+        return BUILDER.Build();
+    }
+    
+    /**/
+    /*
+    NAME
+        public final Board MakeMove(final Move a_move);
+    
+    SYNOPSIS
+        public final Board MakeMove(final Move a_move);
+
+        Move a_move --------------> The move to be made.
+
+    DESCRIPTION
+        This method makes any type of move on the given board.
+
+    RETURNS
+        The board with the newly-made move.
+    
+    AUTHOR
+        Based off the execute() method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
+    */
+    public final Board MakeMove(final Move a_move){
+        // Null values do not constitute valid moves
+        if(a_move == null){
+            return this;
+        }
+        
+        // Make a copy of the board to perform the move
+        final Board CLONE = Board.GetDeepCopy(this);
+        
+        // Make a different kind of move by type
+        if(a_move.IsEnPassant()){
+            return CLONE.EnPassant((EnPassantMove)a_move);
+        }else if(a_move.IsCastling()){
+            return CLONE.Castle((CastlingMove)a_move);
+        }else if(a_move.IsAttacking()){
+            return CLONE.Attack((AttackingMove)a_move);
+        }else{
+            return CLONE.Move((RegularMove)a_move);
+        }
     }
 
     /*
@@ -1386,9 +1431,8 @@ public final class Board{
         
         DESCRIPTION
             This constructor initializes the space for the BoardBuilder object
-            and sets it with empty tiles. It also initializes the m_whoseTurn
-            field with white, assuming this is the first board of the game.
-        
+            and sets it with empty tiles.
+            
         RETURNS
             Nothing
         
@@ -1431,10 +1475,10 @@ public final class Board{
             this.SetWhoseTurn(a_turn);
             // Iterate through each tile from a_copy
             for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
-                int row = index / Utilities.EIGHT;
-                int column = index % Utilities.EIGHT;
+                final int ROW = index / Utilities.EIGHT;
+                final int COLUMN = index % Utilities.EIGHT;
                 // Instantiate a new Tile with the given color and coordinates
-                this.m_builderBoard[row][column] = new Tile(a_copy[row][column]);
+                this.m_builderBoard[ROW][COLUMN] = new Tile(a_copy[ROW][COLUMN]);
             }
         }
         
@@ -1460,22 +1504,49 @@ public final class Board{
         private final void InitializeEmptyBoard(){
             for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
                 // Assign aliases for the row and column
-                int row = index / Utilities.EIGHT;
-                int column = index % Utilities.EIGHT;
+                final int ROW = index / Utilities.EIGHT;
+                final int COLUMN = index % Utilities.EIGHT;
                 
-                // Determine the proper color for each tile depending on where it is located
-                if(row % Utilities.TWO == Utilities.ONE){
-                    if(column % Utilities.TWO == Utilities.ONE){
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.WHITE, row, column, null);
-                    }else{
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.BLACK, row, column, null);
-                    }
+                // Determine the proper color for each tile depending on where it is located and assign it accordingly                
+                this.m_builderBoard[ROW][COLUMN] = new Tile(AssignTileColor(ROW, COLUMN), ROW, COLUMN, null);
+                
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            private final ChessColor AssignTileColor(final int a_row, final int a_column);
+        
+        SYNOPSIS
+            private final ChessColor AssignTileColor(final int a_row, final int a_column);
+            
+            int a_row ----------------> The row the piece is resting on.
+            
+            int a_column -------------> The column the piece is resting on.
+        
+        DESCRIPTION
+            This method returns a tile color given the row and column.
+            This color is based off the tile's position on a chessboard.
+        
+        RETURNS
+            ChessColor: A new color based on the coordinates provided.
+        
+        AUTHOR
+            Ryan King
+        */
+        private final ChessColor AssignTileColor(final int a_row, final int a_column){
+            if(a_row % Utilities.TWO == Utilities.ONE){
+                if(a_column % Utilities.TWO == Utilities.ONE){
+                    return ChessColor.WHITE;
                 }else{
-                    if(column % Utilities.TWO == Utilities.ONE){
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.BLACK, row, column, null);
-                    }else{
-                        this.m_builderBoard[row][column] = new Tile(ChessColor.WHITE, row, column, null);
-                    }
+                    return ChessColor.BLACK;
+                }
+            }else{
+                if(a_column % Utilities.TWO == Utilities.ONE){
+                    return ChessColor.BLACK;
+                }else{
+                    return ChessColor.WHITE;
                 }
             }
         }
@@ -1588,8 +1659,8 @@ public final class Board{
             try{
                 // Remove the piece from the tile if coordinates are valid
                 if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    final Tile original = m_builderBoard[a_row][a_column];
-                    m_builderBoard[a_row][a_column] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), null);
+                    final Tile ORIGINAL = m_builderBoard[a_row][a_column];
+                    m_builderBoard[a_row][a_column] = new Tile(ORIGINAL.GetColor(), ORIGINAL.GetRow(), ORIGINAL.GetColumn(), null);
                 }
                 return this;
             }catch(Exception e){
@@ -1600,7 +1671,7 @@ public final class Board{
         /**/
         /*
         NAME
-            public final BoardBuilder SetPiece(final Piece a_piece, final int a_row, final int a_column);
+            public final BoardBuilder SetPiece(final Piece a_piece);
         
         SYNOPSIS
             public final BoardBuilder SetPiece(final Piece a_piece);
@@ -1623,8 +1694,8 @@ public final class Board{
             try{
                 // Set the piece on tile if the piece's coordinates are valid
                 if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
-                    final Tile original = m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
-                    m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(original.GetColor(), original.GetRow(), original.GetColumn(), a_piece);
+                    final Tile ORIGINAL = m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
+                    m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(ORIGINAL.GetColor(), ORIGINAL.GetRow(), ORIGINAL.GetColumn(), a_piece);
                 }
                 return this;
             }catch(Exception e){
@@ -1635,10 +1706,10 @@ public final class Board{
         /**/
         /*
         NAME
-            public final void BoardBuilder.SetTile(final Tile a_tile, final int a_row, final int a_column);
+            public final void SetTile(final Tile a_tile, final int a_row, final int a_column);
         
         SYNOPSIS
-            public final void BoardBuilder.SetTile(final Tile a_tile, final int a_row, final int a_column);
+            public final void SetTile(final Tile a_tile, final int a_row, final int a_column);
             
             Tile a_tile -----> The Tile to be set.
         

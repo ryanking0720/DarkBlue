@@ -11,7 +11,8 @@ import com.DarkBlue.Utilities.ChessColor;
  * This class represents a move, which can take on several different forms.
  * 
  * The fields that all moves have in common are the moving piece,
- * its current row and column, its destination row and column,
+ * its current row and column (taken from the moving piece), 
+ * its destination row and column,
  * the victim (if any), and the type of the move.
  * 
  * All of these fields are final for immutability and protected to be passed down to the subclasses.
@@ -21,12 +22,14 @@ import com.DarkBlue.Utilities.ChessColor;
  * There are 4 different types of moves this extends to:
  * 
  * 1. The regular move. This move represents any piece moving to another tile without capturing any other pieces.
+ * Castling has its own class.
  * 
  * 2. The attacking move. This move represents any piece moving to a tile occupied by an enemy piece and capturing it.
  * The captured piece is no longer considered to be in the game and is removed from the board.
  * The special pawn capture of en passant has its own class which is treated differently.
  * 
  * 3. The castling move. This move is a special move performed only by the king as his first move.
+ * He switches places with the rook inside.
  * I will include more details about it in its own source file.
  * 
  * 4. The en passant move. This is a special pawn capture that can only occur after an enemy pawn's first move
@@ -36,34 +39,30 @@ import com.DarkBlue.Utilities.ChessColor;
  * depending on the rules of algebraic notation, the type of move, as well as the moving piece.
  * 
  * Inspired by the Move class by Amir Afghani in Black Widow Chess,
- * 
+ * https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
  */
 public abstract class Move{
 
     protected final Piece m_piece;// The piece on the old tile
-    protected final int m_oldRow;// The piece's current row
-    protected final int m_oldColumn;// The piece's current column
     protected final int m_newRow;// The new row the piece wants to move to
     protected final int m_newColumn;// The new column the piece wants to move to
-    protected final Piece m_victim;// The piece on the new tile. Set to null if empty.
+    //protected final Piece m_victim;// The piece on the new tile. Set to null if empty.
     protected final Board m_initialBoard;// The initial configuration of the board before this move is made
     
     /**/
     /*
     NAME
-        public Move(final Piece a_piece, final int a_oldRow, final int a_oldColumn, final int a_newRow, final int a_newColumn, final Piece a_victim);
+        public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board);
     
     SYNOPSIS
-        public Move(final Piece a_piece, final int a_oldRow, final int a_oldColumn, final int a_newRow, final int a_newColumn, final Piece a_victim);
+        public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board);
         
         Piece a_piece --------> The piece to be moved.
         
         int a_newRow ---------> The piece's desired row.
         
         int a_newColumn ------> The piece's desired column.
-        
-        Piece a_victim -------> The piece on the desired tile; set to null if regular or castling.
-        
+
         Board a_board --------> The initial board on which this move is made.
 
     DESCRIPTION
@@ -77,13 +76,10 @@ public abstract class Move{
     AUTHOR
         Ryan King
     */
-    public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Piece a_victim, final Board a_board){
+    public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board){
         this.m_piece = a_piece;
-        this.m_oldRow = a_piece.GetCurrentRow();
-        this.m_oldColumn = a_piece.GetCurrentColumn();
         this.m_newRow = a_newRow;
         this.m_newColumn = a_newColumn;
-        this.m_victim = a_victim;
         this.m_initialBoard = a_board;
     }
     
@@ -124,13 +120,13 @@ public abstract class Move{
         This method returns the piece's current row.
         
     RETURNS
-        int m_oldRow: The piece's current row.
+        int: The piece's current row.
     
     AUTHOR
         Ryan King
     */
     public final int GetOldRow(){
-        return this.m_oldRow;
+        return this.m_piece.GetCurrentRow();
     }
     
     /**/
@@ -147,13 +143,13 @@ public abstract class Move{
         This method returns the piece's current column.
         
     RETURNS
-        int m_oldColumn: The piece's current column.
+        int: The piece's current column.
     
     AUTHOR
         Ryan King
     */
     public final int GetOldColumn(){
-        return this.m_oldColumn;
+        return this.m_piece.GetCurrentColumn();
     }
     
     /**/
@@ -219,7 +215,7 @@ public abstract class Move{
         is defined separately for each subclass.
     
     RETURNS
-        Piece m_victim: The victim on the destination tile, if any.
+        Piece m_victim: The victim, if any.
     
     AUTHOR
         Ryan King
@@ -406,22 +402,10 @@ public abstract class Move{
     */
     public final Board GetTransitionalBoard(){
         // Make a copy of the initial board
-        final Board clone = Board.GetDeepCopy(this.m_initialBoard);
-        
-        // Initialize players to hold the pieces
-        final Player white = new Human(ChessColor.WHITE, clone);
-        final Player black = new Human(ChessColor.BLACK, clone);
-        
-        // Determine what pieces each side has
-        try{
-            white.InitializePieces(clone);
-            black.InitializePieces(clone);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        final Board CLONE = Board.GetDeepCopy(this.m_initialBoard);
 
         // Make the move on the copied board
-        return Minimax.MakeMove(clone, this, white, black);
+        return CLONE.MakeMove(this);
     }
     
     /**/
@@ -448,25 +432,21 @@ public abstract class Move{
     */
     public final boolean PlacesOpponentIntoCheck(){
         // Make a copy of the transitional board
-        final Board clone = this.GetTransitionalBoard();
+        final Board CLONE = this.GetTransitionalBoard();
         
         // Initialize players to hold the pieces
-        final Player white = new Human(ChessColor.WHITE, clone);
-        final Player black = new Human(ChessColor.BLACK, clone);
+        final Player WHITE = new Human(ChessColor.WHITE, CLONE);
+        final Player BLACK = new Human(ChessColor.BLACK, CLONE);
         
         // Determine what pieces each side has
-        try{
-            white.InitializePieces(clone);
-            black.InitializePieces(clone);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        WHITE.InitializePieces(CLONE);
+        BLACK.InitializePieces(CLONE);
 
         // Determine who the opponent is
-        final Player opponent = (this.m_piece.IsWhite() ? black : white);
+        final Player OPPONENT = (this.m_piece.IsWhite() ? BLACK : WHITE);
         
         // Return if the opponent is in check
-        return opponent.IsInCheck(clone);
+        return OPPONENT.IsInCheck(CLONE);
     }
     
     /**/
@@ -493,24 +473,20 @@ public abstract class Move{
     */
     public final boolean PlacesOpponentIntoCheckmate(){
         // Make a copy of the transitional board
-        final Board clone = this.GetTransitionalBoard();
+        final Board CLONE = this.GetTransitionalBoard();
         
         // Initialize players to hold the pieces
-        final Player white = new Human(ChessColor.WHITE, clone);
-        final Player black = new Human(ChessColor.BLACK, clone);
+        final Player WHITE = new Human(ChessColor.WHITE, CLONE);
+        final Player BLACK = new Human(ChessColor.BLACK, CLONE);
         
         // Determine what pieces each side has
-        try{
-            white.InitializePieces(clone);
-            black.InitializePieces(clone);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        WHITE.InitializePieces(CLONE);
+        BLACK.InitializePieces(CLONE);
 
         // Determine who the opponent is
-        final Player opponent = (this.m_piece.IsWhite() ? black : white);
+        final Player OPPONENT = (this.m_piece.IsWhite() ? BLACK : WHITE);
         
-        // Return if the opponent is in checkmate
-        return opponent.IsInCheckmate(clone);
+        // Return if the opponent is in check
+        return OPPONENT.IsInCheckmate(CLONE);
     }
 }

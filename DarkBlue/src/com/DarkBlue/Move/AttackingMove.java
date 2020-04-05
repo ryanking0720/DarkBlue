@@ -42,8 +42,8 @@ public final class AttackingMove extends Move{
     AUTHOR
         Ryan King
     */
-    public AttackingMove(final Piece a_piece, final int a_newRow, final int a_newColumn, final Piece a_victim, final Board a_board){
-        super(a_piece, a_newRow, a_newColumn, a_victim, a_board);
+    public AttackingMove(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board){
+        super(a_piece, a_newRow, a_newColumn, a_board);
     }
     
     /**/
@@ -114,7 +114,7 @@ public final class AttackingMove extends Move{
     */
     @Override
     public final Piece GetVictim(){
-        return this.m_victim;
+        return this.m_initialBoard.GetTile(this.m_newRow, this.m_newColumn).GetPiece();
     }
     
     /**/

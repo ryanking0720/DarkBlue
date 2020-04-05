@@ -86,7 +86,7 @@ public final class CastlingMove extends Move{
     */
     public CastlingMove(final King a_king, final int a_kingNewRow, final int a_kingNewColumn, final Board a_board){
         
-        super(a_king, a_kingNewRow, a_kingNewColumn, null, a_board);
+        super(a_king, a_kingNewRow, a_kingNewColumn, a_board);
         
         this.m_rookCurrentRow = a_king.GetCurrentRow();
         this.m_rookDestinationRow = a_king.GetCurrentRow();
@@ -123,7 +123,7 @@ public final class CastlingMove extends Move{
     */
     @Override
     public final String toString(){
-        if((this.m_newColumn - this.m_oldColumn) == Utilities.TWO){
+        if((this.m_newColumn - this.GetOldColumn()) == Utilities.TWO){
             return Utilities.KINGSIDE_CASTLE;
         }else{
             return Utilities.QUEENSIDE_CASTLE;

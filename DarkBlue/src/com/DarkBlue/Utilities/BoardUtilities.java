@@ -177,6 +177,7 @@ public interface BoardUtilities{
             return null;
         }
         
+        // Make a string with the letter followed by the number
         return ToAlgebraicColumn(a_column) + ToAlgebraicRow(a_row);
     }
     
@@ -203,10 +204,12 @@ public interface BoardUtilities{
         Ryan King
     */
     public static int ToBoardRow(final String a_algebraicSpot){
+        // Idiot proofing for invalid arguments
         if(a_algebraicSpot.length() != Utilities.TWO){
             return Utilities.NEGATIVE_ONE;
         }
         
+        // Usual valid arguments
         switch(a_algebraicSpot.charAt(Utilities.ONE)){
             case Utilities.ONE_CHAR: return Utilities.SEVEN;
             case Utilities.TWO_CHAR: return Utilities.SIX;
@@ -248,9 +251,11 @@ public interface BoardUtilities{
                 return Utilities.NEGATIVE_ONE;
             }
             
-            final String spot = a_algebraicSpot.toLowerCase();
+            // Turn the tile to lowercase
+            final String SPOT = a_algebraicSpot.toLowerCase();
             
-            switch(spot.charAt(Utilities.ZERO)){
+            // Look at the letter
+            switch(SPOT.charAt(Utilities.ZERO)){
                 case Utilities.H:  return Utilities.SEVEN;
                 case Utilities.G:  return Utilities.SIX;
                 case Utilities.F:  return Utilities.FIVE;
@@ -365,15 +370,18 @@ public interface BoardUtilities{
         Ryan King
     */
     public static boolean IsValidTile(final String a_string){
+        // Idiot proofing for invalid arguments
         if(a_string.length() != Utilities.TWO){
             return false;
         }
         
-        final String tile = a_string.toLowerCase();
+        // The tile must be lowercase
+        final String TILE = a_string.toLowerCase();
         
+        // Try to parse both the letter and the number of the tile
         try{
-            final int tileNumber = Integer.parseInt(Character.toString(tile.charAt(Utilities.ONE)));
-            return IsValidTileLetter(tile.charAt(Utilities.ZERO)) && IsValidTileNumber(tileNumber);
+            final int TILE_NUMBER = Integer.parseInt(Character.toString(TILE.charAt(Utilities.ONE)));
+            return IsValidTileLetter(TILE.charAt(Utilities.ZERO)) && IsValidTileNumber(TILE_NUMBER);
         }catch(Exception e){
             return false;
         }

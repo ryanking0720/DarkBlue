@@ -55,7 +55,7 @@ public final class EnPassantMove extends Move{
         Ryan King
     */
     public EnPassantMove(final Pawn a_pawn, final int a_newRow, final int a_newColumn, final Pawn a_victim, final Board a_board){
-        super(a_pawn, a_newRow, a_newColumn, a_victim, a_board);
+        super(a_pawn, a_newRow, a_newColumn, a_board);
         this.m_capturedPawnRow = a_victim.GetCurrentRow();
         this.m_capturedPawnColumn = a_victim.GetCurrentColumn();
     }
@@ -91,7 +91,7 @@ public final class EnPassantMove extends Move{
     */
     @Override
     public final String toString(){    
-        return BoardUtilities.ToAlgebraicColumn(this.m_oldColumn) + "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn) + " e.p.";
+        return BoardUtilities.ToAlgebraicColumn(this.GetOldColumn()) + "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn) + " e.p.";
     }
     
     /**/
@@ -116,7 +116,7 @@ public final class EnPassantMove extends Move{
     */
     @Override
     public final Piece GetVictim(){
-        return m_victim;
+        return this.m_initialBoard.GetTile(this.m_capturedPawnRow, this.m_capturedPawnColumn).GetPiece();
     }
     
     /**/

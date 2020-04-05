@@ -16,7 +16,7 @@ import com.DarkBlue.Board.Board;
 import java.util.ArrayList;
 
 /*
- * This class represents a player. It contains a color, a type (human or computer),
+ * This class represents a player. It contains a color,
  * a king, a list of active pieces, a list of captured pieces, and a list of all current legal moves.
  */
 public abstract class Player{
@@ -29,6 +29,9 @@ public abstract class Player{
     
     // How many active pieces the player has on the board, which starts at 16
     protected final ArrayList<Piece> m_activePieces;
+    
+    // The pieces this player has captured
+    protected final ArrayList<Piece> m_capturedPieces;
 
     // All the legal moves the player can make on the current turn
     protected final ArrayList<Move> m_allCurrentLegalMoves;
@@ -60,6 +63,7 @@ public abstract class Player{
     public Player(final ChessColor a_color, final Board a_board){
         this.m_color = a_color;
         this.m_activePieces = new ArrayList<>();
+        this.m_capturedPieces = new ArrayList<>();
         this.m_allCurrentLegalMoves = new ArrayList<>();
     }
     /**/
@@ -91,7 +95,8 @@ public abstract class Player{
 
         // Initialize ArrayLists
         this.m_allCurrentLegalMoves = new ArrayList<>();
-        this.m_activePieces = new ArrayList<>();
+        this.m_activePieces = new ArrayList<>();      
+        this.m_capturedPieces = new ArrayList<>(a_player.GetCapturedPieces());
 
         // Initialize the Pieces and Moves according to the Board argument
         this.Refresh(a_board);
@@ -136,10 +141,10 @@ public abstract class Player{
     /**/
     /*
     NAME
-        public int HowManyMoves();
+        public final int HowManyMoves();
     
     SYNOPSIS
-        public int HowManyMoves();
+        public final int HowManyMoves();
     
         No parameters.
     
@@ -164,6 +169,161 @@ public abstract class Player{
         }
         
         // Return this grand total
+        return total;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int CapturedPawns();
+    
+    SYNOPSIS
+        public final int CapturedPawns();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns how many enemy pawns the player has captured.
+    
+    RETURNS
+        int total: The total number of enemy pawns this player has captured.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int CapturedPawns(){
+        int total = Utilities.ZERO;
+        
+        for(final Piece piece : this.GetCapturedPieces()){
+            if(piece.IsPawn()){
+                total++;
+            }
+        }
+        
+        return total;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int CapturedRooks();
+    
+    SYNOPSIS
+        public final int CapturedRooks();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns how many enemy rooks the player has captured.
+    
+    RETURNS
+        int total: The total number of enemy rooks this player has captured.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int CapturedRooks(){
+        int total = Utilities.ZERO;
+        
+        for(final Piece piece : this.GetCapturedPieces()){
+            if(piece.IsRook()){
+                total++;
+            }
+        }
+        
+        return total;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int CapturedKnights();
+    
+    SYNOPSIS
+        public final int CapturedKnights();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns how many enemy knights the player has captured.
+    
+    RETURNS
+        int total: The total number of enemy knights this player has captured.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int CapturedKnights(){
+        int total = Utilities.ZERO;
+        
+        for(final Piece piece : this.GetCapturedPieces()){
+            if(piece.IsKnight()){
+                total++;
+            }
+        }
+        
+        return total;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int CapturedBishops();
+    
+    SYNOPSIS
+        public final int CapturedBishops();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns how many enemy bishops the player has captured.
+    
+    RETURNS
+        int total: The total number of enemy bishops this player has captured.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int CapturedBishops(){
+        int total = Utilities.ZERO;
+        
+        for(final Piece piece : this.GetCapturedPieces()){
+            if(piece.IsBishop()){
+                total++;
+            }
+        }
+        
+        return total;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final int CapturedQueens();
+    
+    SYNOPSIS
+        public final int CapturedQueens();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns how many enemy queens the player has captured.
+    
+    RETURNS
+        int total: The total number of enemy queens this player has captured.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final int CapturedQueens(){
+        int total = Utilities.ZERO;
+        
+        for(final Piece piece : this.GetCapturedPieces()){
+            if(piece.IsQueen()){
+                total++;
+            }
+        }
+        
         return total;
     }
     
@@ -200,6 +360,7 @@ public abstract class Player{
                 // Do not bother collecting a piece if the tile is empty
                 continue;
             }else if(a_board.GetTile(row, column).GetPiece().GetColor().IsEnemy(this.GetColor())){
+                // Do not bother collecting an enemy piece
                 continue;
             }else if(a_board.GetTile(row, column).GetPiece().IsKing() && a_board.GetTile(row, column).GetPiece().GetColor() == this.GetColor()){
                 // Assign the player's one and only king
@@ -280,6 +441,54 @@ public abstract class Player{
     /**/
     /*
     NAME
+        public void AddCapturedPiece(final Piece a_piece);
+    
+    SYNOPSIS
+        public void AddCapturedPiece(final Piece a_piece);
+    
+        Piece a_piece -------> The piece to be added.
+    
+    DESCRIPTION
+        This method adds a new captured Piece to the Player
+        by specifying which Piece needs to be added.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    public final void AddCapturedPiece(final Piece a_piece){
+        this.m_capturedPieces.add(a_piece);
+    }
+    
+    /**/
+    /*
+    NAME
+        public void RemoveCapturedPiece(final Piece a_piece);
+    
+    SYNOPSIS
+        public void RemoveCapturedPiece(final Piece a_piece);
+    
+        Piece a_piece -------> The piece to be removed.
+    
+    DESCRIPTION
+        This method removes a player's captured Piece
+        by specifying which Piece needs to be removed.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    public final void RemoveCapturedPiece(final Piece a_piece){
+        this.m_capturedPieces.remove(a_piece);
+    }
+    
+    /**/
+    /*
+    NAME
         public void InitializeCurrentLegalMoves(final Board a_board);
     
     SYNOPSIS
@@ -329,6 +538,54 @@ public abstract class Player{
     */
     public final ChessColor GetColor(){
         return this.m_color;
+    }
+    
+    /**/
+    /*
+    NAME
+        public ArrayList<Piece> GetActivePieces();
+    
+    SYNOPSIS
+        public ArrayList<Piece> GetActivePieces();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the ArrayList of a player's
+        currently active pieces, i.e. the ones that have
+        not been captured, even if they have no legal moves.
+        
+    RETURNS
+        An ArrayList<Piece> of a player's active pieces.
+    
+    AUTHOR
+        Ryan King
+    */
+    public ArrayList<Piece> GetActivePieces(){
+        return this.m_activePieces;
+    }
+    
+    /**/
+    /*
+    NAME
+        public ChessColor GetCapturedPieces();
+    
+    SYNOPSIS
+        public ChessColor GetCapturedPieces();
+    
+        No parameters
+    
+    DESCRIPTION
+        This method returns the player's captured piece ArrayList.
+    
+    RETURNS
+        ArrayList<Piece> m_capturedPieces.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final ArrayList<Piece> GetCapturedPieces(){
+        return this.m_capturedPieces;
     }
     
     /**/
@@ -804,31 +1061,6 @@ public abstract class Player{
     */
     public final boolean HasCastled(){
     	return !this.GetKing().CanKingsideCastle() && !this.GetKing().CanQueensideCastle();
-    }
-    
-    /**/
-    /*
-    NAME
-        public ArrayList<Piece> GetActivePieces();
-    
-    SYNOPSIS
-        public ArrayList<Piece> GetActivePieces();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns the ArrayList of a player's
-        currently active pieces, i.e. the ones that have
-        not been captured, even if they have no legal moves.
-        
-    RETURNS
-        An ArrayList<Piece> of a player's active pieces.
-    
-    AUTHOR
-        Ryan King
-    */
-    public ArrayList<Piece> GetActivePieces(){
-        return this.m_activePieces;
     }
     
     /**/

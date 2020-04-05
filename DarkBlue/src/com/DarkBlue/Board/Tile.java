@@ -3,6 +3,19 @@ package com.DarkBlue.Board;
 import com.DarkBlue.Piece.*;
 import com.DarkBlue.Utilities.*;
 
+/*
+ * This class represents a tile on the chessboard.
+ * 
+ * A tile has a set row, column, and color.
+ * The row and column must be between 0 and 7.
+ * It can also contain any type of piece, as indicated by the Piece pointer.
+ * Empty tiles have a piece pointer that points to null.
+ * All tiles are immutable.
+ * 
+ * The color is determined through the tile's coordinates.
+ * Though the color may look like a waste of space and bookkeeping,
+ * it is useful for determining draws when both players have a king and bishop.
+ */
 public final class Tile{
     // The color of the tile, i.e. black or white
     private final ChessColor m_color;
@@ -24,6 +37,7 @@ public final class Tile{
     //letter(row), |8 - column|
     //letter(0) = a, letter(1) = b, and so on.
     
+    /**/
     /*
     NAME
         public Tile(final ChessColor a_color, final int a_row, final int a_column);
@@ -57,6 +71,7 @@ public final class Tile{
         this.m_piece = a_piece;
     }
     
+    /**/
     /*
     NAME
         public Tile(final ChessColor a_color, final int a_row, final int a_column);
@@ -110,6 +125,7 @@ public final class Tile{
         }
     }
     
+    /**/
     /*
     NAME
         public final Piece GetPiece();
@@ -132,6 +148,7 @@ public final class Tile{
         return m_piece;
     }
     
+    /**/
     /*
     NAME
         public final int GetRow();
@@ -154,6 +171,7 @@ public final class Tile{
         return m_row;
     }
     
+    /**/
     /*
     NAME
         public final int GetColumn();
@@ -167,7 +185,7 @@ public final class Tile{
         This method returns the tile's column.
         
     RETURNS
-        int m_row: The tile's column.
+        int m_column: The tile's column.
     
     AUTHOR
         Ryan King
@@ -176,6 +194,7 @@ public final class Tile{
         return m_column;
     }
     
+    /**/
     /*
     NAME
         public final ChessColor GetColor();
@@ -198,6 +217,7 @@ public final class Tile{
         return m_color;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsOccupied();
@@ -211,7 +231,7 @@ public final class Tile{
         This method returns if the tile is occupied.
         
     RETURNS
-        True if the tile is occupied, and false otherwise.
+        boolean: true if the tile is occupied, and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
@@ -221,6 +241,7 @@ public final class Tile{
         return m_piece != null;
     }
     
+    /**/
     /*
     NAME
         public final boolean IsEmpty();
@@ -234,7 +255,7 @@ public final class Tile{
         This method returns if the tile is empty.
         
     RETURNS
-        True if the tile is empty, and false otherwise.
+        boolean: true if the tile is empty, and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
@@ -244,6 +265,7 @@ public final class Tile{
         return m_piece == null;
     }
     
+    /**/
     /*
     NAME
         public final String toString();
@@ -257,7 +279,7 @@ public final class Tile{
         This method returns a String of the tile's letter and number in algebraic notation.
         
     RETURNS
-        String algebraic: The tile's letter and number in algebraic notation.
+        String: The tile's letter and number in algebraic notation.
     
     AUTHOR
         Ryan King
@@ -267,8 +289,28 @@ public final class Tile{
         return BoardUtilities.ToAlgebraic(this.m_row, this.m_column);
     }
 
+    /**/
+    /*
+    NAME
+        public final boolean Equals(final Tile a_tile);
     
-    public final boolean Equals(final Tile a_tile) {
+    SYNOPSIS
+        public final boolean Equals(final Tile a_tile);
+    
+        Tile a_tile ---------> The tile to compare this to.
+    
+    DESCRIPTION
+        This method returns if this tile is equal to the given tile by checking
+        piece equivalence, row, column, and color.
+        
+    RETURNS
+        True if the two tiles are considered equal and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public final boolean Equals(final Tile a_tile){
         return this.GetPiece().Equals(a_tile.GetPiece())
                 && this.GetColor() == a_tile.GetColor()
                 && this.GetRow() == a_tile.GetRow()

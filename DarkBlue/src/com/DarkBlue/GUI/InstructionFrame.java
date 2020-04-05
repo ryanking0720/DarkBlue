@@ -11,6 +11,10 @@ import javax.swing.JTextArea;
 
 import com.DarkBlue.Utilities.Utilities;
 
+/*
+ * This contains a list of instructions for using this engine.
+ * You can view this at any time from the Help menu.
+ */
 // Source for WindowListener: https://stackoverflow.com/questions/4265159/javas-do-nothing-on-close
 public final class InstructionFrame extends JFrame implements WindowListener{
 

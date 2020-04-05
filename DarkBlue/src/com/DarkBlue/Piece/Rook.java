@@ -93,7 +93,7 @@ public final class Rook extends Piece{
     */
     public Rook(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         super(a_piece, a_newRow, a_newColumn, a_moves);    
-        Rook candidate = (Rook) a_piece;
+        final Rook CANDIDATE = (Rook) a_piece;
         
         // Initialize ArrayLists
         this.m_currentDownMoves = new ArrayList<>();
@@ -102,10 +102,10 @@ public final class Rook extends Piece{
         this.m_currentLeftMoves = new ArrayList<>();
         
         // Add the moves from the original piece
-        this.m_currentDownMoves.addAll(candidate.GetCurrentDownMoves());
-        this.m_currentUpMoves.addAll(candidate.GetCurrentUpMoves());
-        this.m_currentRightMoves.addAll(candidate.GetCurrentRightMoves());
-        this.m_currentLeftMoves.addAll(candidate.GetCurrentLeftMoves());
+        this.m_currentDownMoves.addAll(CANDIDATE.GetCurrentDownMoves());
+        this.m_currentUpMoves.addAll(CANDIDATE.GetCurrentUpMoves());
+        this.m_currentRightMoves.addAll(CANDIDATE.GetCurrentRightMoves());
+        this.m_currentLeftMoves.addAll(CANDIDATE.GetCurrentLeftMoves());
     }
     
     /**/

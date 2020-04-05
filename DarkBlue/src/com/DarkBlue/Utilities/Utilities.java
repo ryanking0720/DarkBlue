@@ -96,6 +96,7 @@ public interface Utilities{
     public static final int EIGHT = 8;
     public static final int NINE = 9;
     public static final int TEN = 10;
+    public static final int SIXTEEN = 16;
     public static final int FORTY = 40;
     public static final int FIFTY = 50;
     public static final int FIFTY_ONE = 51;
@@ -141,8 +142,8 @@ public interface Utilities{
         Ryan King
     */
     public static boolean IsLegal(final Piece a_piece, final int a_destinationRow, final int a_destinationColumn){        
-        for(final Move move : a_piece.GetCurrentLegalMoves()){
-            if(move.GetNewRow() == a_destinationRow && move.GetNewColumn() == a_destinationColumn){
+        for(final Move MOVE : a_piece.GetCurrentLegalMoves()){
+            if(MOVE.GetNewRow() == a_destinationRow && MOVE.GetNewColumn() == a_destinationColumn){
                 return true;
             }
         }
@@ -171,8 +172,8 @@ public interface Utilities{
         with additional modifications made by Ryan King
     */
     public static void EnlargeFont(final JComponent a_object){
-        final Font font = a_object.getFont();
-        final float size = font.getSize() + FIVE_FLOAT;
-        a_object.setFont(font.deriveFont(size));
+        final Font FONT = a_object.getFont();
+        final float SIZE = FONT.getSize() + FIVE_FLOAT;
+        a_object.setFont(FONT.deriveFont(SIZE));
     }
 }

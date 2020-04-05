@@ -42,7 +42,7 @@ public final class RegularMove extends Move{
         Ryan King
     */
     public RegularMove(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board){
-        super(a_piece, a_newRow, a_newColumn, null, a_board);
+        super(a_piece, a_newRow, a_newColumn, a_board);
     }
 
     /**/

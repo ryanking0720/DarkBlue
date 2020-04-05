@@ -27,35 +27,6 @@ public interface Factory{
 	/**/
     /*
     NAME
-        public static Tile TileFactory(final Tile a_tile);
-    
-    SYNOPSIS
-        public static Tile TileFactory(final Tile a_tile);
-        
-        Tile a_tile ---------------> The tile to be duplicated.
-    
-    DESCRIPTION
-        This method duplicates the given tile and the piece occupying it, if any.
-        Returns null if the argument given is null.
-    
-    RETURNS
-        Tile: A deep copy of a_tile complete with another deep copy of its occupant, or null on error.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-	public static Tile TileFactory(final Tile a_tile){
-		if(a_tile == null){
-			return null;
-		}else{
-			return new Tile(a_tile);
-		}
-	}
-
-	/**/
-    /*
-    NAME
         public static Piece PieceFactory(final Piece a_candidate);
     
     SYNOPSIS
@@ -205,22 +176,14 @@ public interface Factory{
         Ryan King
     */
     public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt){
-    	final Piece newPiece;
     	// Instantiate the chosen piece
     	switch(a_buttonInt){
-        	case Utilities.ZERO: newPiece = new Queen(a_color, a_row, a_column);
-        	break;
-        	case Utilities.ONE: newPiece = new Rook(a_color, a_row, a_column);
-        	break;
-        	case Utilities.TWO: newPiece = new Bishop(a_color, a_row, a_column);
-        	break;
-        	case Utilities.THREE: newPiece = new Knight(a_color, a_row, a_column);
-        	break;
-        	default: newPiece = null;
-        	break;
+        	case Utilities.ZERO: return new Queen(a_color, a_row, a_column);
+        	case Utilities.ONE: return new Rook(a_color, a_row, a_column);
+        	case Utilities.TWO: return new Bishop(a_color, a_row, a_column);
+        	case Utilities.THREE: return new Knight(a_color, a_row, a_column);
+        	default: return null;
     	}
-    	
-    	return newPiece;
     }
     
     /**/
@@ -279,23 +242,23 @@ public interface Factory{
         }
         
         // Get the coordinates of the piece
-    	final int sourceRow = a_candidate.GetCurrentRow();
-    	final int sourceColumn = a_candidate.GetCurrentColumn();
+    	final int SOURCE_ROW = a_candidate.GetCurrentRow();
+    	final int SOURCE_COLUMN = a_candidate.GetCurrentColumn();
     	
         if(!a_candidate.IsKing() && !a_candidate.IsPawn()){// This is definitely not a castling or en passant move
             if(a_victim != null){
-                return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
+                return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
             }else{
                 return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
             }
         }else{
             if(a_candidate.IsKing()){// This could be a castling move
-                if(MoveEvaluation.IsCastlingMove(a_candidate, sourceRow, sourceColumn, a_destinationRow, a_destinationColumn)){
+                if(MoveEvaluation.IsCastlingMove(a_candidate, SOURCE_ROW, SOURCE_COLUMN, a_destinationRow, a_destinationColumn)){
                     // This is a castling move
                     return new CastlingMove((King)a_candidate, a_destinationRow, a_destinationColumn, a_board);               
                 }else{// This is a regular or attacking move
                     if(a_victim != null){
-                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
+                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
                     }else{
                         return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
                     }
@@ -303,20 +266,20 @@ public interface Factory{
             }else{// This could be a regular move, an attacking move, or an en passant move
                 if(MoveEvaluation.IsEnPassantMove(a_candidate, a_destinationRow, a_destinationColumn, a_board)){
                     // This is an en passant move
-                    final Pawn victim;
+                    final Pawn VICTIM;
                     
                     if(BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE)
                             && a_board.GetTile(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn() + Utilities.ONE).IsOccupied()){
-                        victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn + Utilities.ONE).GetPiece();
+                        VICTIM = (Pawn) a_board.GetTile(SOURCE_ROW, SOURCE_COLUMN + Utilities.ONE).GetPiece();
                     }else{
-                        victim = (Pawn) a_board.GetTile(sourceRow, sourceColumn - Utilities.ONE).GetPiece();
+                        VICTIM = (Pawn) a_board.GetTile(SOURCE_ROW, SOURCE_COLUMN - Utilities.ONE).GetPiece();
                     }
                     
-                    return new EnPassantMove((Pawn)a_candidate, a_destinationRow, a_destinationColumn, victim, a_board);
+                    return new EnPassantMove((Pawn)a_candidate, a_destinationRow, a_destinationColumn, VICTIM, a_board);
                 }else{// This isn't an en passant move
                     // This is a regular or attacking move
                     if(a_victim != null){
-                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_victim, a_board);
+                        return new AttackingMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
                     }else{
                         return new RegularMove(a_candidate, a_destinationRow, a_destinationColumn, a_board);
                     }

@@ -106,15 +106,15 @@ public final class Pawn extends Piece{
     */
     public Pawn(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
         super(a_piece, a_newRow, a_newColumn, a_moves);
-        final Pawn candidate = (Pawn) a_piece;
+        final Pawn CANDIDATE = (Pawn) a_piece;
         
         this.m_currentRegularMoves = new ArrayList<>();        
         this.m_currentAttackingMoves = new ArrayList<>();
         this.m_currentEnPassantMoves = new ArrayList<>();
         
-        this.m_currentRegularMoves.addAll(candidate.GetCurrentRegularMoves());
-        this.m_currentAttackingMoves.addAll(candidate.GetCurrentAttackingMoves());
-        this.m_currentEnPassantMoves.addAll(candidate.GetCurrentEnPassantMoves());
+        this.m_currentRegularMoves.addAll(CANDIDATE.GetCurrentRegularMoves());
+        this.m_currentAttackingMoves.addAll(CANDIDATE.GetCurrentAttackingMoves());
+        this.m_currentEnPassantMoves.addAll(CANDIDATE.GetCurrentEnPassantMoves());
     }
     
     /**/
@@ -149,21 +149,21 @@ public final class Pawn extends Piece{
         this.m_currentEnPassantMoves.clear();
 
         // Instantiate aliases for Delta arrays for regular and attacking move checking
-        final Delta[] regularMoves, attackingMoves;
+        final Delta[] REGULAR_MOVES, ATTACKING_MOVES;
         
         // Determine the proper arrays to check,
         // since a pawn's direction is based on its color
         if(this.GetColor().IsWhite()){
-            regularMoves = MoveEvaluation.m_allWhiteRegularMoves;
-            attackingMoves = MoveEvaluation.m_allWhiteAttackingMoves;
+            REGULAR_MOVES = MoveEvaluation.m_allWhiteRegularMoves;
+            ATTACKING_MOVES = MoveEvaluation.m_allWhiteAttackingMoves;
         }else{
-            regularMoves = MoveEvaluation.m_allBlackRegularMoves;
-            attackingMoves = MoveEvaluation.m_allBlackAttackingMoves;
+            REGULAR_MOVES = MoveEvaluation.m_allBlackRegularMoves;
+            ATTACKING_MOVES = MoveEvaluation.m_allBlackAttackingMoves;
         }
         
         // Add the pawn's regular and attacking moves, if any
-        this.m_currentRegularMoves.addAll(MoveEvaluation.AddCurrentRegularMoves(this, a_board, regularMoves));
-        this.m_currentAttackingMoves.addAll(MoveEvaluation.AddCurrentAttackingMoves(this, a_board, attackingMoves));
+        this.m_currentRegularMoves.addAll(MoveEvaluation.AddCurrentRegularMoves(this, a_board, REGULAR_MOVES));
+        this.m_currentAttackingMoves.addAll(MoveEvaluation.AddCurrentAttackingMoves(this, a_board, ATTACKING_MOVES));
         
         // Determine if the pawn is on its fifth rank to add en passant moves
         if((this.IsWhite() && this.GetCurrentRow() == Utilities.THREE) 
