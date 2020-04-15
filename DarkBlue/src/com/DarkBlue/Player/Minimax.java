@@ -237,10 +237,10 @@ public interface Minimax{
 				WHITE.Refresh(RESULT);
 				BLACK.Refresh(RESULT);
 				
-				// currentPlayer will be an alias to whoever is playing next
+				// CURRENT_PLAYER will be an alias to whoever is playing next
 				final Player CURRENT_PLAYER = (RESULT.WhoseTurnIsIt().IsWhite() ? WHITE : BLACK);
 				
-				// promotedPawn will contain a pawn that can be promoted if the player has one
+				// PROMOTED_PAWN will contain a pawn that can be promoted if the player has one
 				final Pawn PROMOTED_PAWN = CURRENT_PLAYER.GetPromotedPawn(RESULT);
 				
 				// Evaluate the move as normal if no promotion can be made

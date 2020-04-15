@@ -1,7 +1,8 @@
 package com.DarkBlue.Move;
 
 import com.DarkBlue.Utilities.Utilities;
-/*
+
+/**
  * This class represents a vector that can send any piece
  * from anywhere on the board to anywhere on the board.
  * 

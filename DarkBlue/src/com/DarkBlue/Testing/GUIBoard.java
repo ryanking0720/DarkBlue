@@ -13,7 +13,7 @@ import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Utilities;
 
-/*
+/**
  * This is a copy of the GUIBoard class found in DarkBlue.java.
  * It is not functional and is only meant for testing purposes. 
  */
@@ -61,19 +61,7 @@ public final class GUIBoard extends JPanel{
         // Allocate the space for the tiles
         m_tiles = new GUITile[Utilities.TEN][Utilities.TEN];
 
-        // Remove everything
-        this.removeAll();
-        
-        // Build the type of board the human needs to see
-        if(a_humanColor.IsWhite()){
-            BuildWhiteBoard();
-        }else{
-            BuildBlackBoard();
-        }
-        
-        // Revalidate and repaint
-        revalidate();
-        repaint();
+        DrawBoard();
     }       
            
     /**/
@@ -194,11 +182,11 @@ public final class GUIBoard extends JPanel{
                 this.add(m_tiles[ROW][COLUMN]);
             }else{
                 // Set a center-aligned border tile with the proper letter or number
-                final JPanel borderTile = new JPanel();
-                borderTile.setBackground(this.BORDER_RED);
-                borderTile.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-                borderTile.setAlignmentX(Component.CENTER_ALIGNMENT);
-                borderTile.setAlignmentY(Component.CENTER_ALIGNMENT);
+                final JPanel BORDER_TILE = new JPanel();
+                BORDER_TILE.setBackground(this.BORDER_RED);
+                BORDER_TILE.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+                BORDER_TILE.setAlignmentX(Component.CENTER_ALIGNMENT);
+                BORDER_TILE.setAlignmentY(Component.CENTER_ALIGNMENT);
                 
                 // Add a letter
                 if(ROW == Utilities.ZERO || ROW == Utilities.NINE){
@@ -211,7 +199,7 @@ public final class GUIBoard extends JPanel{
                         LETTER.setAlignmentX(Component.CENTER_ALIGNMENT);
                         LETTER.setAlignmentY(Component.CENTER_ALIGNMENT);
                         
-                        borderTile.add(LETTER);
+                        BORDER_TILE.add(LETTER);
                     }
                     // Add a number
                 }else if(COLUMN == Utilities.ZERO || COLUMN == Utilities.NINE){
@@ -225,10 +213,10 @@ public final class GUIBoard extends JPanel{
                         NUMBER.setAlignmentX(Component.CENTER_ALIGNMENT);
                         NUMBER.setAlignmentY(Component.CENTER_ALIGNMENT);
                         
-                        borderTile.add(NUMBER);
+                        BORDER_TILE.add(NUMBER);
                     }
                 }
-                this.add(borderTile);
+                this.add(BORDER_TILE);
             }
         }
     }

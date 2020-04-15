@@ -8,7 +8,7 @@ import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
 
-/*
+/**
  * This represents a chess piece that can move any number of tiles horizontally or vertically,
  * stopping either on a tile of a non-king enemy piece or the tile
  * before a friendly piece. The rook captures the same way it moves.

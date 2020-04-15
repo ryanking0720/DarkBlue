@@ -15,14 +15,13 @@ import javax.swing.JTextArea;
 import org.junit.Test;
 
 import com.DarkBlue.Board.*;
-import com.DarkBlue.Game.*;
 import com.DarkBlue.GUI.*;
 import com.DarkBlue.Move.*;
 import com.DarkBlue.Piece.*;
 import com.DarkBlue.Player.*;
 import com.DarkBlue.Utilities.*;
 
-/*
+/**
  * This contains a stripped-down version of the chess game.
  * 
  * It does not include support for threefold repetition, en passant, castling, or promotions, but
@@ -670,4 +669,9 @@ public class GameTest{
            // RefreshPlayers();
         }// End of while true game loop    
     }  
+    
+    @Override
+    public final String toString(){
+        return "Game Test Program";
+    }
 }

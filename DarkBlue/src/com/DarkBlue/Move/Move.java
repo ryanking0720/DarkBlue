@@ -7,7 +7,7 @@ import com.DarkBlue.Player.Minimax;
 import com.DarkBlue.Player.Player;
 import com.DarkBlue.Utilities.ChessColor;
 
-/*
+/**
  * This class represents a move, which can take on several different forms.
  * 
  * The fields that all moves have in common are the moving piece,

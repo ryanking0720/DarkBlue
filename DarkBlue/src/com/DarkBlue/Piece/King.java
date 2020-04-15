@@ -8,7 +8,7 @@ import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
-/*
+/**
  *  This class represents the king, which is the most important piece in the game of chess.
  *  Each player has one and only one king at all times.
  * 
@@ -137,6 +137,7 @@ public final class King extends Piece{
     DESCRIPTION
         This copy constructor constructs a new King object by passing in
         a Piece object and cloning most of its fields.
+        This is implied to instantiate a king that just moved, which is why both castling fields are set to false.
         
     RETURNS
         Nothing
@@ -152,8 +153,8 @@ public final class King extends Piece{
         
         this.m_currentCastlingMoves.addAll(candidate.GetCurrentCastlingMoves());
         
-        this.m_canKingsideCastle = (!candidate.HasMoved() && candidate.CanKingsideCastle());
-        this.m_canQueensideCastle = (!candidate.HasMoved() && candidate.CanQueensideCastle());
+        this.m_canKingsideCastle = false;
+        this.m_canQueensideCastle = false;
     }
     
     /**/
@@ -548,7 +549,7 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean CanKingsideCastleOnThisTurn(final Board a_board){
-        if(!this.CanKingsideCastle()){
+        if(!this.CanKingsideCastle() || this.HasMoved() || !this.IsInOriginalSpot()){
             return false;
         }
         
@@ -635,7 +636,7 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean CanQueensideCastleOnThisTurn(final Board a_board){
-        if(!this.CanQueensideCastle()){
+        if(!this.CanQueensideCastle() || this.HasMoved() || !this.IsInOriginalSpot()){
             return false;
         }
         

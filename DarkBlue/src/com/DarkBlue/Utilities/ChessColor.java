@@ -1,7 +1,8 @@
 package com.DarkBlue.Utilities;
-/*
- * Adapted from the "Alliance"/"Allegiance" enum in Black Widow Chess by Amir Afghani,
- * though my color enum is also used for tiles.
+
+/**
+ * This enumeration was adapted from the "Alliance"/"Allegiance" enum in Black Widow Chess by Amir Afghani,
+ * though my version of this enum is also used for tile colors.
  * This is primarily used for readability and was named "ChessColor" to avoid
  * confusion with java.awt.Color.
  */

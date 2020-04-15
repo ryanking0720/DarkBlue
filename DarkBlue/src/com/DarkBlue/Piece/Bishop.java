@@ -8,7 +8,7 @@ import com.DarkBlue.Utilities.MoveEvaluation;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This represents a chess piece that can move any number of tiles diagonally,
  * stopping either on a tile of a non-king enemy piece or the tile
  * before a friendly piece. The bishop captures the same way it moves.
@@ -55,7 +55,6 @@ public class Bishop extends Piece{
         Ryan King
     */
     public Bishop(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-
         super(a_color, a_currentRow, a_currentColumn);
         
         m_currentDownAndRightMoves = new ArrayList<>();

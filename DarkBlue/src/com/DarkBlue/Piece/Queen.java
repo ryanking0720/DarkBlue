@@ -8,7 +8,7 @@ import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
 
-/*
+/**
  * This represents a chess piece that can move any number of tiles horizontally, vertically, or diagonally,
  * stopping either on a tile of a non-king enemy piece or the tile
  * before a friendly piece. The queen captures the same way she moves.

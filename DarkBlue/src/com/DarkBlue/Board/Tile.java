@@ -3,7 +3,7 @@ package com.DarkBlue.Board;
 import com.DarkBlue.Piece.*;
 import com.DarkBlue.Utilities.*;
 
-/*
+/**
  * This class represents a tile on the chessboard.
  * 
  * A tile has a set row, column, and color.
@@ -103,7 +103,7 @@ public final class Tile{
         this.m_row = a_tile.GetRow();
         this.m_column = a_tile.GetColumn();
         
-        if(a_tile.IsOccupied()){        
+        if(a_tile.IsOccupied()){
             switch(a_tile.GetPiece().GetPieceType()){
                 case PAWN: this.m_piece = new Pawn(a_tile.GetPiece(), a_tile.GetPiece().GetCurrentRow(), a_tile.GetPiece().GetCurrentColumn(), a_tile.GetPiece().HowManyMoves());
                 break;

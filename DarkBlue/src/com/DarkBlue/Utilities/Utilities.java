@@ -7,10 +7,12 @@ import javax.swing.JComponent;
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.Piece.Piece;
 
-/*
+/**
  * This interface contains symbolic constants for
  * commonly used numbers such as 0, 1, 2, etc.
- * as well as algebraic and Unicode icons for all chess pieces.
+ * as well as letters and numbers used in notation.
+ * English-language algebraic, FEN, and Unicode icons
+ * for all types and colors of chess pieces exist here as well.
  * 
  * Fields and methods here are determined to be common enough
  * to be used anywhere regardless of the type of class.
@@ -70,13 +72,11 @@ public interface Utilities{
     public static final char SEVEN_CHAR = '7';
     public static final char EIGHT_CHAR = '8';
     
-    // Castling move strings
+    // Castling move strings for use in descriptive or algebraic notation, which uses the number zero ("0")
+    // This is not valid for use with PGN, which uses the capital letter "O" in place of the number zero
     public static final String KINGSIDE_CASTLE = "0-0";
     public static final String QUEENSIDE_CASTLE = "0-0-0";
-    
-    // Rules to display in the InstructionFrame
-    public static final String INSTRUCTIONS = "How to use this engine:\n\n1. Use your primary mouse button to select the piece you wish to move.\n\n2. Give that piece another primary click to deselect it and choose another piece.\n\n3. Click on any green tile to move the piece to that spot. Play alternates between both players until one loses, resigns, or a draw is reached.";
-    
+
     // Symbolic constants for piece values and initializations for immutability
     public static final int NEGATIVE_SEVEN = -7;
     public static final int NEGATIVE_SIX = -6;

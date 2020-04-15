@@ -1,5 +1,6 @@
 package com.DarkBlue.Move;
-/*
+
+/**
  * This represents the type of moves that exist in chess.
  * 
  * All names are self-explanatory.

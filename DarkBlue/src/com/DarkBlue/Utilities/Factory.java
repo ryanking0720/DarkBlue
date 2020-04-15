@@ -16,11 +16,10 @@ import com.DarkBlue.Move.EnPassantMove;
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.Move.RegularMove;
 
-/*
- * This interface contains factory methods that are used in multiple classes
+/**
+ * This interface contains constructor-like methods that are used in multiple classes
  * to instantiate objects in a controlled way. This is done in order to deny
- * the user control on instantiating an overpowered or otherwise invalid piece
- * or tile. 
+ * the user control of instantiating an overpowered or otherwise invalid piece or move. 
  */
 public interface Factory{
 	
@@ -125,11 +124,11 @@ public interface Factory{
         Ryan King
     */
     public static Piece MovedPieceFactory(final Piece a_candidate, final int a_newRow, final int a_newColumn){
-        // Idiot proofing for a null argument
-    	if(a_candidate == null){
+        // Idiot proofing for null or invalid arguments
+    	if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
     		return null;
     	}
-    	
+
     	// Make a deep copy of the piece that just moved
         switch(a_candidate.GetPieceType()){
             case PAWN: return new Pawn(a_candidate, a_newRow, a_newColumn, a_candidate.HowManyMoves() + Utilities.ONE);
@@ -176,6 +175,11 @@ public interface Factory{
         Ryan King
     */
     public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt){
+        // Idiot proofing for null or invalid arguments
+        if(a_color == null || !BoardUtilities.HasValidCoordinates(a_row, a_column) || !(a_buttonInt >= Utilities.ZERO && a_buttonInt <= Utilities.THREE)){
+            return null;
+        }
+        
     	// Instantiate the chosen piece
     	switch(a_buttonInt){
         	case Utilities.ZERO: return new Queen(a_color, a_row, a_column);
@@ -184,6 +188,115 @@ public interface Factory{
         	case Utilities.THREE: return new Knight(a_color, a_row, a_column);
         	default: return null;
     	}
+    }
+    
+    /**/
+    /*
+    NAME
+        public static King KingFactory(final ChessColor a_color, final int a_row, final int a_column, final boolean a_kingside, final boolean a_queenside);
+    
+    SYNOPSIS
+        public static King KingFactory(final ChessColor a_color, final int a_row, final int a_column, final boolean a_kingside, final boolean a_queenside);
+    
+        ChessColor a_color -----------> The king's color.
+        
+        int a_row --------------------> The king's row.
+        
+        int a_column -----------------> The king's column.
+        
+        boolean a_kingside -----------> If the king can perform a kingside castle.
+        
+        boolean a_queenside ----------> If the king can perform a queenside castle.
+
+    DESCRIPTION
+        This method creates a king with the given coordinates.
+        A king with the given castling rights and zero moves made is instantiated initially.
+        If he can't castle on either side given the input, a new King object
+        with one move already made and false castling flags for both sides will be 
+        created and returned so that there will be no ambiguities about this king not being able to castle. 
+        Otherwise, the initial king with the given rights will be returned instead.
+    
+    RETURNS
+        King: A king with the proper castling rights.
+    
+    AUTHOR
+        Ryan King
+    */
+    public static King KingFactory(final ChessColor a_color, final int a_row, final int a_column, final boolean a_kingside, final boolean a_queenside){
+        // Garbage in, garbage out
+        if(!BoardUtilities.HasValidCoordinates(a_row, a_column) || a_color == null){
+            return null;
+        }
+        
+        // Make a fresh king with the given rights and 0 moves
+        final King KING = new King(a_color, a_row, a_column, a_kingside, a_queenside);
+        
+        // Make a king that has at least 1 move if he can't castle on either side
+        // in order to make it unambiguous when the observer reassigns castling rights
+        // The constructor I'm using here automatically sets both castling rights to false
+        if(!a_kingside && !a_queenside){           
+            return new King(KING, a_row, a_column, Utilities.ONE);
+        }else{
+            return KING;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public static Rook RookFactory(final ChessColor a_color, final int a_row, final int a_column, final boolean a_kingside, final boolean a_queenside);
+    
+    SYNOPSIS
+        public static Rook RookFactory(final ChessColor a_color, final int a_row, final int a_column, final boolean a_kingside, final boolean a_queenside);
+    
+        ChessColor a_color -----------> The rook's color.
+        
+        int a_row --------------------> The rook's row.
+        
+        int a_column -----------------> The rook's column.
+        
+        boolean a_kingside -----------> If the king can perform a kingside castle.
+        
+        boolean a_queenside ----------> If the king can perform a queenside castle.
+
+    DESCRIPTION
+        This method creates a rook with the given coordinates.
+        This is used to instantiate a rook when castling rights may be
+        different on either side, say, when rights are represented Kkq
+        and white cannot queenside castle.
+    
+    RETURNS
+        Rook: A rook with the proper castling rights.
+    
+    AUTHOR
+        Ryan King
+    */
+    public static Rook RookFactory(final ChessColor a_color, final int a_row, final int a_column, final boolean a_kingside, final boolean a_queenside){
+        // Garbage in, garbage out
+        if(!BoardUtilities.HasValidCoordinates(a_row, a_column) || a_color == null){
+            return null;
+        }
+        
+        // Make a fresh rook with castling rights
+        final Rook ROOK = new Rook(a_color, a_row, a_column);
+        
+        // Make a rook that has at least 1 move so that it can't castle
+        // This makes it unambiguous when the observer reassigns castling rights
+        if(BoardUtilities.IsKingsRook(a_color, a_row, a_column) || BoardUtilities.IsQueensRook(a_color, a_row, a_column)){
+            if(BoardUtilities.IsKingsRook(a_color, a_row, a_column)){
+                if(!a_kingside){
+                    return new Rook(ROOK, a_row, a_column, Utilities.ONE);
+                }else{
+                    return ROOK;
+                }
+            }else if(BoardUtilities.IsQueensRook(a_color, a_row, a_column) && !a_queenside){
+                return new Rook(ROOK, a_row, a_column, Utilities.ONE);
+            }else{
+                return ROOK;
+            }
+        }else{
+            return ROOK;
+        }
     }
     
     /**/
@@ -237,7 +350,7 @@ public interface Factory{
         Ryan King
     */
     public static Move MoveFactory(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Piece a_victim, final Board a_board){
-        if(a_candidate == null || !BoardUtilities.HasValidValue(a_destinationRow) || !BoardUtilities.HasValidValue(a_destinationColumn) || a_board == null){
+        if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_destinationRow, a_destinationColumn) || a_board == null){
             return null;
         }
         

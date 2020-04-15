@@ -8,7 +8,7 @@ import com.DarkBlue.Utilities.MoveEvaluation;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This represents a move performed by a pawn on its fifth rank
  * capturing a pawn that just moved two tiles on its first move
  * the previous turn. The capturing pawn moves diagonally forward
@@ -91,7 +91,7 @@ public final class EnPassantMove extends Move{
     */
     @Override
     public final String toString(){    
-        return BoardUtilities.ToAlgebraicColumn(this.GetOldColumn()) + "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn) + " e.p.";
+        return BoardUtilities.ToAlgebraicColumn(this.GetOldColumn()) + "x" + BoardUtilities.ToAlgebraic(this.m_newRow, this.m_newColumn) + "e.p.";
     }
     
     /**/

@@ -18,7 +18,7 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 
-/*
+/**
  * This file is meant to test the stipped-down GUITile
  * and GUIBoard classes. 
  * 

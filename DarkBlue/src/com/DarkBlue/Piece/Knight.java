@@ -5,7 +5,7 @@ import com.DarkBlue.Utilities.MoveEvaluation;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This class represents a knight.
  * This type of piece resembles the head of a horse
  * and can move in an L-shape. This can be two tiles

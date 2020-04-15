@@ -1,0 +1,117 @@
+rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1// white moves pawn from e2 to e4
+rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1// black moves knight from g8 to f6
+rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 1 2// white moves knight from b1 to c3
+rnbqkb1r/pppppppp/5n2/8/4P3/2N5/PPPP1PPP/R1BQKBNR b KQkq - 2 2// black moves knight from b8 to c6
+r1bqkb1r/pppppppp/2n2n2/8/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 3 3// 
+r1bqkb1r/pppppppp/2n2n2/8/4P3/2N2N2/PPPP1PPP/R1BQKB1R b KQkq - 4 3
+r1bqkb1r/pppp1ppp/2n2n2/4p3/4P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq e6 0 4
+r1bqkb1r/pppp1ppp/2n2n2/4N3/4P3/2N5/PPPP1PPP/R1BQKB1R b KQkq - 0 4
+r1bqkb1r/pppp1ppp/5n2/4n3/4P3/2N5/PPPP1PPP/R1BQKB1R w KQkq - 0 5
+r1bqkb1r/pppp1ppp/5n2/4n3/4P3/2NB4/PPPP1PPP/R1BQK2R b KQkq - 1 5
+r1bqk2r/pppp1ppp/5n2/4n3/1b2P3/2NB4/PPPP1PPP/R1BQK2R w KQkq - 2 6// White castles kingside and loses both rights, as they should
+r1bqk2r/pppp1ppp/5n2/4n3/1b2P3/2NB4/PPPP1PPP/R1BQ1RK1 b kq - 3 6
+r1bqk2r/pp1p1ppp/5n2/2p1n3/1b2P3/2NB4/PPPP1PPP/R1BQ1RK1 w kq c6 0 7
+r1bqk2r/pp1p1ppp/5n2/2pNn3/1b2P3/3B4/PPPP1PPP/R1BQ1RK1 b kq - 1 7
+r1bqk2r/pp1p1ppp/5n2/2pN4/1b2P3/3n4/PPPP1PPP/R1BQ1RK1 w kq - 0 8
+r1bqk2r/pp1p1ppp/5n2/2pN4/1b2P3/3P4/PP1P1PPP/R1BQ1RK1 b kq - 0 8
+r1bqk2r/pp1p1ppp/5n2/2pN4/4P3/3P4/PP1b1PPP/R1BQ1RK1 w kq - 0 9
+r1bqk2r/pp1p1ppp/5n2/2pN4/4P3/3P4/PP1Q1PPP/R1B2RK1 b kq - 0 9
+r1bqk2r/pp1p1ppp/8/2pN4/4P1n1/3P4/PP1Q1PPP/R1B2RK1 w kq - 1 10
+r1bqk2r/pp1p1ppp/8/2pN4/4PQn1/3P4/PP3PPP/R1B2RK1 b kq - 2 10
+r1bqk2r/pp1p1pp1/8/2pN3p/4PQn1/3P4/PP3PPP/R1B2RK1 w kq h6 0 11
+r1bqk2r/pp1p1pp1/3Q4/2pN3p/4P1n1/3P4/PP3PPP/R1B2RK1 b kq - 1 11
+r1bqk2r/p2p1pp1/1p1Q4/2pN3p/4P1n1/3P4/PP3PPP/R1B2RK1 w kq - 0 12
+r1bqk2r/p2p1pp1/1p1Q4/2pN3p/4PBn1/3P4/PP3PPP/R4RK1 b kq - 1 12
+r2qk2r/pb1p1pp1/1p1Q4/2pN3p/4PBn1/3P4/PP3PPP/R4RK1 w kq - 2 13
+r2qk2r/pbNp1pp1/1p1Q4/2p4p/4PBn1/3P4/PP3PPP/R4RK1 b kq - 3 13
+r3k2r/pbqp1pp1/1p1Q4/2p4p/4PBn1/3P4/PP3PPP/R4RK1 w kq - 0 14
+r3k2r/pbQp1pp1/1p6/2p4p/4PBn1/3P4/PP3PPP/R4RK1 b kq - 0 14
+r3k2r/p1Qp1pp1/1pb5/2p4p/4PBn1/3P4/PP3PPP/R4RK1 w kq - 1 15
+r3k2r/p1Qp1pp1/1pb5/2p4p/4PBn1/3P1P2/PP4PP/R4RK1 b kq - 0 15
+r3k2r/p1Qp1pp1/1pb2n2/2p4p/4PB2/3P1P2/PP4PP/R4RK1 w kq - 1 16
+r3k2r/p2p1pp1/1pb2n2/2p1Q2p/4PB2/3P1P2/PP4PP/R4RK1 b kq - 2 16// black king moves from e8 to d8; deserialize this game, choose to play as White, and START HERE!
+r2k3r/p2p1pp1/1pb2n2/2p1Q2p/4PB2/3P1P2/PP4PP/R4RK1 w - - 3 17// white moves queen to c7
+r2k3r/p1Qp1pp1/1pb2n2/2p4p/4PB2/3P1P2/PP4PP/R4RK1 b - - 4 17// black moves king to 
+r6r/p1Qpkpp1/1pb2n2/2p4p/4PB2/3P1P2/PP4PP/R4RK1 w - - 5 18// white moves bishop to d6
+r6r/p1Qpkpp1/1pbB1n2/2p4p/4P3/3P1P2/PP4PP/R4RK1 b - - 6 18// black moves king to e8
+r3k2r/p1Qp1pp1/1pbB1n2/2p4p/4P3/3P1P2/PP4PP/R4RK1 w - - 7 19// white moves pawn to e5
+r3k2r/p1Qp1pp1/1pbB1n2/2p1P2p/8/3P1P2/PP4PP/R4RK1 b - - 0 19// black moves knight to d5
+r3k2r/p1Qp1pp1/1pbB4/2pnP2p/8/3P1P2/PP4PP/R4RK1 w - - 1 20// white moves queen to b8
+rQ2k2r/p2p1pp1/1pbB4/2pnP2p/8/3P1P2/PP4PP/R4RK1 b - - 2 20// black moves rook to b8, captures queen
+1r2k2r/p2p1pp1/1pbB4/2pnP2p/8/3P1P2/PP4PP/R4RK1 w - - 0 21// white moves bishop to b8
+1B2k2r/p2p1pp1/1pb5/2pnP2p/8/3P1P2/PP4PP/R4RK1 b k - 0 21// black moves king to e8 (and somehow regains kingside castling right? THIS SHOULD NOT OCCUR! Black king's move count was listed as 0?)
+1B2k2r/p2p1pp1/1pb5/2p1P2p/8/3PnP2/PP4PP/R4RK1 w k - 1 22
+1B2k2r/p2p1pp1/1pb5/2p1P2p/8/3PnP2/PP4PP/R3R1K1 b k - 2 22
+1B2k2r/p2p1pp1/1pb5/2p1P2p/8/3P1P2/PPn3PP/R3R1K1 w k - 3 23
+4k2r/B2p1pp1/1pb5/2p1P2p/8/3P1P2/PPn3PP/R3R1K1 b k - 0 23
+4k2r/B2p2p1/1pb5/2p1Pp1p/8/3P1P2/PPn3PP/R3R1K1 w k f6 0 24
+4k2r/3p2p1/1Bb5/2p1Pp1p/8/3P1P2/PPn3PP/R3R1K1 b k - 0 24
+4k2r/6p1/1Bb5/2ppPp1p/8/3P1P2/PPn3PP/R3R1K1 w k d6 0 25
+4k2r/6p1/2b5/2BpPp1p/8/3P1P2/PPn3PP/R3R1K1 b k - 0 25
+4k3/6p1/2b4r/2BpPp1p/8/3P1P2/PPn3PP/R3R1K1 w - - 1 26// Black's king's rook gets taken, castling rights are updated appropriately (but late!)
+4k3/6p1/2b4r/3pPp1p/8/3PBP2/PPn3PP/R3R1K1 b - - 2 26
+4k3/6pr/2b5/3pPp1p/8/3PBP2/PPn3PP/R3R1K1 w - - 3 27
+4k3/6pr/2b5/3pPp1p/8/3PBP2/PPn3PP/R1R3K1 b - - 4 27
+4k3/6pr/8/3pPp1p/b7/3PBP2/PPn3PP/R1R3K1 w - - 5 28
+4k3/6pr/8/3pPp1p/b7/1P1PBP2/P1n3PP/R1R3K1 b - - 0 28
+4k3/6pr/8/3pPp1p/b7/1P1PBP2/P5PP/n1R3K1 w - - 0 29
+4k3/6pr/8/3pPp1p/P7/3PBP2/P5PP/n1R3K1 b - - 0 29
+4k3/6pr/8/4Pp1p/P2p4/3PBP2/P5PP/n1R3K1 w - - 0 30
+4k3/6pr/8/4Pp1p/P2B4/3P1P2/P5PP/n1R3K1 b - - 0 30
+3k4/6pr/8/4Pp1p/P2B4/3P1P2/P5PP/n1R3K1 w - - 1 31
+3k4/6pr/8/4Pp1p/P2B4/3P1P2/P5PP/n1R4K b - - 2 31
+3k4/6pr/8/4Pp2/P2B3p/3P1P2/P5PP/n1R4K w - - 0 32
+3k4/6pr/8/4Pp2/P2B1P1p/3P4/P5PP/n1R4K b - - 0 32
+3k4/6pr/8/4Pp2/P2B1P2/3P3p/P5PP/n1R4K w - - 0 33
+3k4/6pr/8/4Pp2/P2B1P2/3P2Pp/P6P/n1R4K b - - 0 33
+3k4/7r/8/4Ppp1/P2B1P2/3P2Pp/P6P/n1R4K w - g6 0 34
+3k4/7r/8/4PpP1/P2B4/3P2Pp/P6P/n1R4K b - - 0 34
+3k4/3r4/8/4PpP1/P2B4/3P2Pp/P6P/n1R4K w - - 1 35
+3k4/3r4/1B6/4PpP1/P7/3P2Pp/P6P/n1R4K b - - 2 35
+4k3/3r4/1B6/4PpP1/P7/3P2Pp/P6P/n1R4K w - - 3 36
+4k3/3r4/1B6/4PpP1/P2P4/6Pp/P6P/n1R4K b - - 0 36
+4k3/1r6/1B6/4PpP1/P2P4/6Pp/P6P/n1R4K w - - 1 37
+4k3/1r6/8/2B1PpP1/P2P4/6Pp/P6P/n1R4K b - - 2 37
+4k3/2r5/8/2B1PpP1/P2P4/6Pp/P6P/n1R4K w - - 3 38
+4k3/2r5/8/2B1PpP1/P2P4/6Pp/P6P/R6K b - - 0 38
+4k3/2r5/8/2B1P1P1/P2P1p2/6Pp/P6P/R6K w - - 0 39
+4k3/2r5/8/2B1P1P1/P2P1P2/7p/P6P/R6K b - - 0 39
+4k3/3r4/8/2B1P1P1/P2P1P2/7p/P6P/R6K w - - 1 40
+4k3/3r4/8/2B1P1P1/P2P1P2/P6p/7P/R6K b - - 0 40
+4k3/8/8/2BrP1P1/P2P1P2/P6p/7P/R6K w - - 1 41
+4k3/8/8/2BrP1P1/P2P1P2/P6p/R6P/7K b - - 2 41
+8/3k4/8/2BrP1P1/P2P1P2/P6p/R6P/7K w - - 3 42
+8/3k4/8/2BrP1P1/P2P1P2/P6p/1R5P/7K b - - 4 42
+2k5/8/8/2BrP1P1/P2P1P2/P6p/1R5P/7K w - - 5 43
+2k5/8/8/2BrP1P1/P2P1P2/PR5p/7P/7K b - - 6 43
+8/2k5/8/2BrP1P1/P2P1P2/PR5p/7P/7K w - - 7 44
+8/2k5/6P1/2BrP3/P2P1P2/PR5p/7P/7K b - - 0 44
+2k5/8/6P1/2BrP3/P2P1P2/PR5p/7P/7K w - - 1 45
+2k5/8/6P1/2BrPP2/P2P4/PR5p/7P/7K b - - 0 45
+8/2k5/6P1/2BrPP2/P2P4/PR5p/7P/7K w - - 1 46
+8/2k5/6P1/P1BrPP2/3P4/PR5p/7P/7K b - - 0 46
+2k5/8/6P1/P1BrPP2/3P4/PR5p/7P/7K w - - 1 47
+2k5/8/6P1/P1BrPP2/P2P4/1R5p/7P/7K b - - 0 47
+8/2k5/6P1/P1BrPP2/P2P4/1R5p/7P/7K w - - 1 48
+8/2k5/P5P1/2BrPP2/P2P4/1R5p/7P/7K b - - 0 48
+2k5/8/P5P1/2BrPP2/P2P4/1R5p/7P/7K w - - 1 49
+2k5/8/P5P1/P1BrPP2/3P4/1R5p/7P/7K b - - 0 49
+2kr4/8/P5P1/P1B1PP2/3P4/1R5p/7P/7K w - - 1 50
+2kr4/6P1/P7/P1B1PP2/3P4/1R5p/7P/7K b - - 0 50
+2k5/6P1/P7/P1BrPP2/3P4/1R5p/7P/7K w - - 1 51
+2k3Q1/8/P7/P1BrPP2/3P4/1R5p/7P/7K b - - 0 51
+2kr2Q1/8/P7/P1B1PP2/3P4/1R5p/7P/7K w - - 1 52
+2kr4/8/P3Q3/P1B1PP2/3P4/1R5p/7P/7K b - - 2 52
+2k5/3r4/P3Q3/P1B1PP2/3P4/1R5p/7P/7K w - - 3 53
+2k5/3r4/P3Q3/P1B1PP2/3P4/7R/7P/7K b - - 0 53
+8/2kr4/P3Q3/P1B1PP2/3P4/7R/7P/7K w - - 1 54
+8/2kr4/PB2Q3/P3PP2/3P4/7R/7P/7K b - - 2 54
+1k6/3r4/PB2Q3/P3PP2/3P4/7R/7P/7K w - - 3 55
+1k6/3Q4/PB6/P3PP2/3P4/7R/7P/7K b - - 0 55
+k7/3Q4/PB6/P3PP2/3P4/7R/7P/7K w - - 1 56
+k7/B2Q4/P7/P3PP2/3P4/7R/7P/7K b - - 2 56
+With this the game ended in stalemate, but I was ahead in terms of material and position.
+
+3 alternatives would have allowed me to win with checkmate:
+Move the rook to h8
+Move the queen to either a7 or b7

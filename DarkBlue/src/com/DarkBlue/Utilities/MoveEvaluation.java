@@ -4,10 +4,18 @@ import java.util.ArrayList;
 
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.GUI.DarkBlue;
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Piece.*;
-import com.DarkBlue.Player.*;
-/* 
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Move.RegularMove;
+import com.DarkBlue.Move.AttackingMove;
+import com.DarkBlue.Move.CastlingMove;
+import com.DarkBlue.Move.EnPassantMove;
+import com.DarkBlue.Move.Delta;
+import com.DarkBlue.Piece.Piece;
+import com.DarkBlue.Piece.Pawn;
+import com.DarkBlue.Piece.King;
+import com.DarkBlue.Player.Player;
+import com.DarkBlue.Player.Human;
+/**
  * This interface is used to evaluate move legality
  * and determine king safety. It contains arrays of 
  * moves that can be made by all pieces. These are used
@@ -603,7 +611,7 @@ public interface MoveEvaluation{
             if(BoardUtilities.HasValidCoordinates(newRow, newColumn)){
                 RegularMove candidate = new RegularMove(a_piece, newRow, newColumn, a_board);
                                 
-                // Only proceed if this move does not capture another piece.
+                // Only proceed if this move goes to an empty tile
                 if(a_board.GetTile(candidate.GetNewRow(), candidate.GetNewColumn()).IsEmpty()){
                     
                     clone = candidate.GetTransitionalBoard();

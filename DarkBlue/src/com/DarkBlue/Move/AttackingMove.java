@@ -5,7 +5,7 @@ import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This represents a move with any piece moving anywhere and capturing a victim.
  * 
  * This does not apply to pawns capturing others en passant, which has its own separate class.

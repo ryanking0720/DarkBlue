@@ -2,6 +2,11 @@ package com.DarkBlue.Utilities;
 
 import java.awt.Color;
 
+/**
+ * This interface contains fields and methods that help with assembling the
+ * GUI board and helping with validation of board coordinates, assigning colors,
+ * and converting model board coordinates into algebraic notation and vice versa.
+ */
 public interface BoardUtilities{
 	
 	// Colors for GUITiles
@@ -39,6 +44,68 @@ public interface BoardUtilities{
             return HasValidValue(a_row) && HasValidValue(a_column);
         }catch(Exception e){
             return false;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public static boolean IsKingsRook(final ChessColor a_color, final int a_row, final int a_column);
+    
+    SYNOPSIS
+        public static boolean IsKingsRook(final ChessColor a_color, final int a_row, final int a_column);
+    
+        ChessColor a_color --> The piece's color.
+    
+        int a_row -----------> The row to validate.
+        
+        int a_column --------> The column to validate.
+    
+    DESCRIPTION
+        This method checks to see if the coordinates are those of a king's rook of either color.
+    
+    RETURNS
+        True if the coordinates are the ones specified, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    public static boolean IsKingsRook(final ChessColor a_color, final int a_row, final int a_column){
+        if(a_color.IsWhite()){
+            return a_row == Utilities.SEVEN && a_column == Utilities.SEVEN;
+        }else{
+            return a_row == Utilities.ZERO && a_column == Utilities.SEVEN;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        public static boolean IsQueensRook(final ChessColor a_color, final int a_row, final int a_column);
+    
+    SYNOPSIS
+        public static boolean IsQueensRook(final ChessColor a_color, final int a_row, final int a_column);
+    
+        ChessColor a_color --> The piece's color.
+    
+        int a_row -----------> The row to validate.
+        
+        int a_column --------> The column to validate.
+    
+    DESCRIPTION
+        This method checks to see if the coordinates are those of a king's rook of either color.
+    
+    RETURNS
+        True if the coordinates are the ones specified, and false otherwise.
+    
+    AUTHOR
+        Ryan King
+    */
+    public static boolean IsQueensRook(final ChessColor a_color, final int a_row, final int a_column){
+        if(a_color.IsWhite()){
+            return a_row == Utilities.SEVEN && a_column == Utilities.ZERO;
+        }else{
+            return a_row == Utilities.ZERO && a_column == Utilities.ZERO;
         }
     }
     
@@ -137,6 +204,7 @@ public interface BoardUtilities{
     */
     public static String ToAlgebraicRow(final int a_row){
         String algebraic = null;
+        
         try{
             if(HasValidValue(a_row)){
                 algebraic = Integer.toString(Utilities.EIGHT - a_row);
@@ -205,7 +273,7 @@ public interface BoardUtilities{
     */
     public static int ToBoardRow(final String a_algebraicSpot){
         // Idiot proofing for invalid arguments
-        if(a_algebraicSpot.length() != Utilities.TWO){
+        if(a_algebraicSpot.isBlank() || a_algebraicSpot.length() != Utilities.TWO){
             return Utilities.NEGATIVE_ONE;
         }
         
@@ -247,7 +315,7 @@ public interface BoardUtilities{
     */
     public static int ToBoardColumn(final String a_algebraicSpot){
         try{
-            if(a_algebraicSpot.length() != Utilities.TWO){
+            if(a_algebraicSpot.isBlank() || a_algebraicSpot.length() != Utilities.TWO){
                 return Utilities.NEGATIVE_ONE;
             }
             
@@ -371,7 +439,7 @@ public interface BoardUtilities{
     */
     public static boolean IsValidTile(final String a_string){
         // Idiot proofing for invalid arguments
-        if(a_string.length() != Utilities.TWO){
+        if(a_string.isBlank() || a_string.length() != Utilities.TWO){
             return false;
         }
         

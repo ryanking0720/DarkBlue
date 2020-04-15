@@ -18,7 +18,7 @@ import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Utilities.Factory;
 import com.DarkBlue.Utilities.Utilities;
 
-/*
+/**
  * This is a copy of the GUITile class found in DarkBlue.java.
  * It is not functional and is only meant for testing purposes. 
  */

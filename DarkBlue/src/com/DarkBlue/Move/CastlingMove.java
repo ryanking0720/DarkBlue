@@ -6,7 +6,7 @@ import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This class represents a castling move, which is a special type of move
  * that can only occur up to one time per side per game.
  * 

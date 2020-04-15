@@ -1,8 +1,6 @@
-package com.DarkBlue.Game;
+package com.DarkBlue.Utilities;
 
-/*
-    The GameState enum
-  
+/**
     This enumeration represents the possible states of the chessboard
     during a game of chess:
    
@@ -28,7 +26,7 @@ package com.DarkBlue.Game;
     are deemed legal again.
     
     It is illegal for either player to deliberately move his/her king into check.
-    Such moves will not be usable by the human player.
+    Such moves will not be usable by the players.
         
     GameState.STALEMATE: One player's king is in stalemate.
     This means that the player's king is not in check but has no legal moves.
@@ -77,7 +75,7 @@ package com.DarkBlue.Game;
         
     GameState.NORMAL: Neither king is threatened. The game proceeds as normal.
     
-    GameState.EMPTY: The program is initialized and the board is empty. Nothing happens.
+    GameState.EMPTY: The program is initialized or a game is saved to a file and the board is empty. Nothing happens.
  */
 public enum GameState{
     NORMAL,

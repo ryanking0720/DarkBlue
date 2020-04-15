@@ -15,7 +15,7 @@ import com.DarkBlue.Board.Board;
 
 import java.util.ArrayList;
 
-/*
+/**
  * This class represents a player. It contains a color,
  * a king, a list of active pieces, a list of captured pieces, and a list of all current legal moves.
  */

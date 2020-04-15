@@ -8,7 +8,7 @@ import com.DarkBlue.Board.Board;
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.GUI.DarkBlue;
 
-/*
+/**
  * This class represents a computer player. The computer player selects its move
  * by using a Minimax algorithm with alpha-beta pruning, which are provided in their
  * own interface.
@@ -138,5 +138,29 @@ public final class Computer extends Player{
     @Override
     public final PlayerType GetPlayerType(){
     	return PlayerType.COMPUTER;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final String toString();
+    
+    SYNOPSIS
+        public final String toString();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the player's color and type.
+    
+    RETURNS
+        String: A string description of the player.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final String toString(){
+        return this.GetColor().toString().toLowerCase() + " computer player";
     }
 }

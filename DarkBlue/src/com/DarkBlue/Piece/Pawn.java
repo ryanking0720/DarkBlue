@@ -13,7 +13,7 @@ import com.DarkBlue.Utilities.Factory;
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.GUI.DarkBlue;
 
-/*
+/**
  * This represents a chess piece that can move one tile in front if it is not blocked, 
  * or two tiles in front on its first move (given that second tile is not blocked either). 
  * It can only move one tile on its first move if the second tile ahead of it is blocked.

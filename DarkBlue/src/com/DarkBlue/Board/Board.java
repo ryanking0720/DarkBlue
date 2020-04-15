@@ -6,7 +6,7 @@ import com.DarkBlue.GUI.DarkBlue;
 import com.DarkBlue.Move.*;
 import com.DarkBlue.Utilities.*;
 
-/*
+/**
  * This class represents a chessboard.
  * It contains 64 Tile objects which are assigned by an internal
  * class called BoardBuilder. The internal class is responsible
@@ -466,16 +466,18 @@ public final class Board{
         
         // Set the white pieces
         BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
-        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.SEVEN));
-        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.SEVEN, Utilities.ZERO));
+        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.FIVE, Utilities.TWO));
+        BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.FIVE, Utilities.FOUR));
+        //BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.ONE, Utilities.ONE));
         
         // Set the black pieces
         BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
         BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
         BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
+        //BUILDER.SetPiece(new Queen(ChessColor.BLACK, Utilities.ZERO, Utilities.FIVE));
         
         // Set the turn to white
-        BUILDER.SetWhoseTurn(ChessColor.WHITE);
+        BUILDER.SetWhoseTurn(ChessColor.BLACK);
         
         // Return the newly-built board
         return BUILDER.Build();
@@ -547,12 +549,12 @@ public final class Board{
         
         // Set pieces for white
         BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.THREE, Utilities.FOUR));
-        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, false, false));
-        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.ONE));
+        BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SIX, Utilities.FOUR, false, false));
+        BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.SIX, Utilities.THREE));
         
         // Set pieces for black
         BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.ONE, Utilities.THREE));
-        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.ZERO));
+        BUILDER.SetPiece(new Pawn(ChessColor.BLACK, Utilities.FOUR, Utilities.TWO));
         BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, false, false));
         
         // Set who will go first in this test
@@ -922,17 +924,42 @@ public final class Board{
     DESCRIPTION
         This method returns an FEN string of the current board,
         excluding the number of halfmoves and fullmoves made during the game.
+        The move clocks will be added in later when parsing during the actual game.
     
     RETURNS
-        String serial: The FEN string of this board.
+        String serial: The FEN string of this board excluding the move clocks.
     
     AUTHOR
         Ryan King
     */
     @Override
-    public String toString(){
+    public final String toString(){
         // Initialize the serialization string
-        String serial = "";
+        String serial = SerializeBoardContents();
+
+        // Add a space as a delimiter
+        serial += " ";
+        
+        // Add the side who will play next when the game resumes
+        serial += SerializeTurn();
+        
+        // Add a space as a delimiter
+        serial += " ";
+
+        // Add which player(s) can castle and on what side
+        serial += SerializeCastlingRights();
+        
+        serial += " ";
+        
+        // Add the en passant tile, if any
+        serial += SerializeEnPassantTile();
+        
+        // Return the serialization string
+        return serial;
+    }
+    
+    private final String SerializeBoardContents(){
+        String board = "";
         
         // Initialize the counter that will hold 
         // the current number of empty tiles encountered in part of a row
@@ -950,21 +977,21 @@ public final class Board{
                 // Place the empty tile counter into the string once another occupied tile
                 // is found on the same row
                 if(emptyTiles > Utilities.ZERO){
-                    serial += Integer.toString(emptyTiles);
+                    board += Integer.toString(emptyTiles);
                     emptyTiles = Utilities.ZERO;
                 }
-                serial += m_boardObject[ROW][COLUMN].GetPiece().GetIcon();
+                board += m_boardObject[ROW][COLUMN].GetPiece().GetIcon();
             }
         
             // Add any empty tiles left over at the end
             if(COLUMN == Utilities.SEVEN){
                 if(emptyTiles > Utilities.ZERO){
-                    serial += Integer.toString(emptyTiles);
+                    board += Integer.toString(emptyTiles);
                 }
                 
                 // Add a row delimiter if necessary
                 if(ROW < Utilities.SEVEN){
-                    serial += "/";
+                    board += "/";
                 }
                 
                 // Reset the empty tile counter
@@ -972,91 +999,105 @@ public final class Board{
             }
         }
         
-        // Add a space as a delimiter
-        serial += " ";
-        
-        // Add the side who will play next when the game resumes
-        serial += Character.toLowerCase(this.WhoseTurnIsIt().toString().charAt(Utilities.ZERO));
-        
-        // Add a space as a delimiter
-        serial += " ";
-        
-        // Find both kings
-        final King WHITE_KING = this.GetKing(ChessColor.WHITE);
-        final King BLACK_KING = this.GetKing(ChessColor.BLACK);
-        
-        // Add which player(s) can castle and on what side
-        String castlingPrivileges = "";
+        return board;
+    }
     
-        if(WHITE_KING.CanKingsideCastle()){
-            castlingPrivileges += Utilities.WHITE_KING_ICON;
-        }
-        
-        if(WHITE_KING.CanQueensideCastle()){
-            castlingPrivileges += Utilities.WHITE_QUEEN_ICON;
-        }
-              
-        if(BLACK_KING.CanKingsideCastle()){
-            castlingPrivileges += Utilities.BLACK_KING_ICON;
-        }
-        
-        if(BLACK_KING.CanQueensideCastle()){
-            castlingPrivileges += Utilities.BLACK_QUEEN_ICON;
-        }
+    private final char SerializeTurn(){
+        return Character.toLowerCase(this.WhoseTurnIsIt().toString().charAt(Utilities.ZERO));
+    }
+    
+    private final String SerializeCastlingRights(){
+        final String WHITE_CASTLING_RIGHTS = SerializeCastlingRightsForOneSide(this.GetKing(ChessColor.WHITE));
+        final String BLACK_CASTLING_RIGHTS = SerializeCastlingRightsForOneSide(this.GetKing(ChessColor.BLACK));
         
         // Add the castling privileges, if any
-        if(!castlingPrivileges.isEmpty()){
-            serial += castlingPrivileges;
+        if(WHITE_CASTLING_RIGHTS.equals("-") && BLACK_CASTLING_RIGHTS.equals("-")){
+            return "-";
         }else{
-            serial += "-";
+            String rights = "";
+            
+            if(!WHITE_CASTLING_RIGHTS.equals("-")){
+                rights += WHITE_CASTLING_RIGHTS;
+            }
+            
+            if(!BLACK_CASTLING_RIGHTS.equals("-")){
+                rights += BLACK_CASTLING_RIGHTS;
+            }
+            
+            return rights;
+        }
+    }
+    
+    private final String SerializeCastlingRightsForOneSide(final King a_king){
+        String castlingRights = "";
+        
+        if(a_king == null){
+            return "";
         }
         
-        serial += " ";
+        // Assign helpful aliases to the required characters
+        final char KINGSIDE = (a_king.IsWhite() ? Utilities.WHITE_KING_ICON : Utilities.BLACK_KING_ICON);
+        final char QUEENSIDE = (a_king.IsWhite() ? Utilities.WHITE_QUEEN_ICON : Utilities.BLACK_QUEEN_ICON);
+
+        // Two checks to help get rid of erroneous castling rights
+        if(a_king.HasKingsideCastlingRook(this) && !a_king.HasMoved()){
+            castlingRights += KINGSIDE;
+        }
         
-        // Add the en passant tile, if any
+        if(a_king.HasQueensideCastlingRook(this) && !a_king.HasMoved()){
+            castlingRights += QUEENSIDE;
+        }
+        
+        if(!castlingRights.isBlank()){
+            return castlingRights;
+        }else{
+            return "-";
+        }
+    }
+    
+    private final String SerializeEnPassantTile(){
         if(this.GetEnPassantTile() != null){
-            serial += this.GetEnPassantTile().toString();
+            return this.GetEnPassantTile().toString();
         }else{
-            serial += "-";
+            return "-";
         }
-        
-        // Return the serialization string
-        return serial;
     }
     
     /**/
     /*
     NAME
-        private final void AdjustCastlingPrivileges(final Move a_candidate);
+        private final void AdjustRooks(final Move a_candidate);
     
     SYNOPSIS
-        private final void AdjustCastlingPrivileges(final Move a_candidate);
+        private final void AdjustRooks(final Move a_candidate);
     
         Move a_candidate -------> The move that may change castling privileges.
     
     DESCRIPTION
-        This method adjusts the castling privileges of both kings
-        after a move has been made.
+        This method adjusts the castling privileges of the king
+        after a move has been made. This is meant to be used when
+        a rook moves or is captured and the king hasn't moved and
+        may lose rights to one side.
     
     RETURNS
-        The ChessColor representing whose turn it is.
+        Nothing
     
     AUTHOR
         Ryan King
     */
-    private final void AdjustCastlingPrivileges(final Move a_candidate){
+    private final void AdjustRooks(final Move a_candidate){
         // Null values do not constitute valid moves
         if(a_candidate == null){
             return;
         }
         
-        // Get all information about the old piece
+        // Get information about the old piece
         final int OLD_ROW = a_candidate.GetPiece().GetCurrentRow();
         final int OLD_COLUMN = a_candidate.GetPiece().GetCurrentColumn();
         final ChessColor MOVER_COLOR = a_candidate.GetPiece().GetColor();
         
         // Find the affected king
-        final King KING = this.GetKing(a_candidate.GetPiece().GetColor());
+        final King KING = this.GetKing(MOVER_COLOR);
         final int KING_ROW = KING.GetCurrentRow();
         final int KING_COLUMN = KING.GetCurrentColumn();
         final ChessColor TILE_COLOR = m_boardObject[KING_ROW][KING_COLUMN].GetColor();
@@ -1064,8 +1105,8 @@ public final class Board{
         // Use Boolean fields for determining castling rights
         final boolean KINGSIDE, QUEENSIDE;
         
-        // Determine if white can castle
-        if(a_candidate.GetPiece().IsRook() && !a_candidate.GetPiece().HasMoved() && KING.IsInOriginalSpot()){
+        // Determine different castling rights if the mover is a rook on its first move and the corresponding king is in his original spot and hasn't moved
+        if((a_candidate.GetPiece().IsRook() && !a_candidate.GetPiece().HasMoved()) && (KING.IsInOriginalSpot() && !KING.HasMoved())){
             // Determine if white can kingside castle
             if(a_candidate.GetPiece().IsWhite() && OLD_ROW == Utilities.SEVEN && OLD_COLUMN == Utilities.ZERO){
                 KINGSIDE = KING.CanKingsideCastleOnThisTurn(this);
@@ -1087,7 +1128,8 @@ public final class Board{
                 QUEENSIDE = KING.CanQueensideCastleOnThisTurn(this);
             }
             
-            // Reset the king with new castling privileges
+            // If the king has not moved, reset the king with adjusted castling privileges and 0 moves made
+            // If the king has already moved, it does not matter if the rook has not moved because the king cannot castle
             m_boardObject[KING_ROW][KING_COLUMN] = new Tile(TILE_COLOR, KING_ROW, KING_COLUMN, new King(MOVER_COLOR, KING_ROW, KING_COLUMN, KINGSIDE, QUEENSIDE));
         }
     }
@@ -1130,7 +1172,7 @@ public final class Board{
         final Tile OLD_TILE = m_boardObject[OLD_ROW][OLD_COLUMN];
         
         // Change castling privileges if this scenario eliminates them
-        AdjustCastlingPrivileges(a_candidate);
+        AdjustRooks(a_candidate);
                 
         // Set the moved Piece to the new Tile
         m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
@@ -1180,7 +1222,7 @@ public final class Board{
         final Tile OLD_TILE = m_boardObject[OLD_ROW][OLD_COLUMN];
         
         // Adjust castling privileges for both sides
-        AdjustCastlingPrivileges(a_candidate);
+        AdjustRooks(a_candidate);
         
         // Set the moved Piece to the new Tile
         m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
@@ -1295,6 +1337,7 @@ public final class Board{
         // Get the coordinates where the moving pawn will move
         final int NEW_ROW = a_candidate.GetNewRow();
         final int NEW_COLUMN = a_candidate.GetNewColumn();
+        final int OLD_MOVES = a_candidate.GetPiece().HowManyMoves();
         
         // Get the coordinates of the captured pawn,
         // which are different from the destination
@@ -1407,10 +1450,11 @@ public final class Board{
         }
     }
 
-    /*
+    /**
      * The BoardBuilder class is responsible for generating any new moves 
      * made on the Board object and passing it into the Board at
      * the end of every turn. This is an internal class residing inside the Board.
+     * A blank BoardBuilder object is also used when deserializing a FEN string.
      * 
      * Adapted from the Builder class in Black Widow Chess by Amir Afghani
      * https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Board.java
@@ -1448,14 +1492,14 @@ public final class Board{
         /**/
         /*
         NAME
-            public BoardBuilder(final Tile[][] a_copy, final ChessColor a_color);
+            public BoardBuilder(final Tile[][] a_copy, final ChessColor a_turn);
         
         SYNOPSIS
-            public BoardBuilder();
+            public BoardBuilder(final Tile[][] a_copy, final ChessColor a_turn);
         
             Tile[][] a_copy ----------> The 8 by 8 Tile array to be copied.
             
-            ChessColor a_color -------> The color whose turn it is to move.
+            ChessColor a_turn --------> The color whose turn it is to move.
         
         DESCRIPTION
             This constructor initializes the space for the BoardBuilder object
@@ -1536,6 +1580,10 @@ public final class Board{
             Ryan King
         */
         private final ChessColor AssignTileColor(final int a_row, final int a_column){
+            if(!BoardUtilities.HasValidCoordinates(a_row, a_column)){
+                return null;
+            }
+            
             if(a_row % Utilities.TWO == Utilities.ONE){
                 if(a_column % Utilities.TWO == Utilities.ONE){
                     return ChessColor.WHITE;

@@ -11,7 +11,7 @@ import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.Board.Tile;
 
-/*
+/**
  * This class represents a generic chess piece.
  * 
  * No concrete assumptions are made about this piece.
@@ -280,9 +280,24 @@ public abstract class Piece{
         Ryan King
     */
     public Piece(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
-        this.m_color = a_color;
-        this.m_currentRow = a_currentRow;
-        this.m_currentColumn = a_currentColumn;
+        if(a_color != null){
+            this.m_color = a_color;
+        }else{
+            this.m_color = null;
+            System.err.println("Invalid color parameter: " + a_color);
+            System.exit(Utilities.ONE);
+        }
+        
+        if(BoardUtilities.HasValidCoordinates(a_currentRow, a_currentColumn)){
+            this.m_currentRow = a_currentRow;
+            this.m_currentColumn = a_currentColumn;
+        }else{
+            this.m_currentRow = Utilities.NEGATIVE_ONE;
+            this.m_currentColumn = Utilities.NEGATIVE_ONE;
+            System.err.println("Invalid row and/or column coordinates: Row is " + a_currentRow + " and Column is " + a_currentColumn);
+            System.exit(Utilities.ONE);
+        }
+        
         this.m_moves = Utilities.ZERO;
         this.m_currentLegalMoves = new ArrayList<>();
     }
@@ -316,9 +331,24 @@ public abstract class Piece{
         Ryan King
     */
     public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
-        this.m_color = a_piece.GetColor();
-        this.m_currentRow = a_newRow;
-        this.m_currentColumn = a_newColumn;
+        if(a_piece.GetColor() != null){
+            this.m_color = a_piece.GetColor();
+        }else{
+            this.m_color = null;
+            System.err.println("Invalid color parameter: " + a_piece.GetColor());
+            System.exit(Utilities.ONE);
+        }
+        
+        if(BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
+            this.m_currentRow = a_newRow;
+            this.m_currentColumn = a_newColumn;
+        }else{
+            this.m_currentRow = Utilities.NEGATIVE_ONE;
+            this.m_currentColumn = Utilities.NEGATIVE_ONE;
+            System.err.println("Invalid row and/or column coordinates: Row is " + a_newRow + " and Column is " + a_newColumn);
+            System.exit(Utilities.ONE);
+        }
+        
         this.m_moves = a_moves;
         this.m_currentLegalMoves = new ArrayList<>();
         this.m_currentLegalMoves.addAll(a_piece.GetCurrentLegalMoves());

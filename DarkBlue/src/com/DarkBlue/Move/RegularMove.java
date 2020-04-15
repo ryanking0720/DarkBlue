@@ -5,7 +5,7 @@ import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This represents any piece moving between two tiles
  * that does not involve any capture of any kind.
  * 

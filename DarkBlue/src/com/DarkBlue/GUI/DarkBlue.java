@@ -3,7 +3,6 @@ package com.DarkBlue.GUI;
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.Board.Tile;
 import com.DarkBlue.Board.Board.BoardBuilder;
-import com.DarkBlue.Game.GameState;
 import com.DarkBlue.Move.*;
 import com.DarkBlue.Piece.*;
 import com.DarkBlue.Player.*;
@@ -66,7 +65,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
-/*
+/**
  * This class is the driver class for the entire program.
  * 
  * It is the main class for the Dark Blue chess engine.
@@ -101,9 +100,11 @@ import java.io.OutputStreamWriter;
  */
 public final class DarkBlue extends JFrame{
     
+    /* All static fields (symbolic constants and fields that must be accessible outside the class) */
+    
     private static final long serialVersionUID = Utilities.ONE_LONG;
     
-    // Symbolic constants and messages
+    // Static symbolic constants and messages
     public static final String TITLE = "Dark Blue";
     public static final String GAME_OVER = "Game Over";
     public static final String PLAY_AS = "Play as:";
@@ -121,21 +122,53 @@ public final class DarkBlue extends JFrame{
     public static final Object WHITE = "White";
     public static final Object BLACK = "Black";
     
-    // Determines if legal moves should be highlighted on the human's turn
-    private static boolean m_shouldHighlightLegalMoves = false;
     
-    // Static fields for move evaluation and serialization
-    private static boolean m_isPreviouslySavedGame = false;
-    private static boolean m_canWhiteKingsideCastle = false;
-    private static boolean m_canWhiteQueensideCastle = false;
-    private static boolean m_canBlackKingsideCastle = false;
-    private static boolean m_canBlackQueensideCastle = false;
+    /* Housekeeping fields which may be used in multiple classes */
+    
+    // The colors of both players and fields used for preserving their values
+    private static ChessColor m_humanColor, m_computerColor, m_originalHuman, m_originalComputer;
+    
+    // The string representation of the en passant tile
     private static String m_enPassantTile = null;
-    private static String m_promotionString = null;
-    private static boolean m_isRestarted = false;
+    
+    // The original row and column used for determining en passant captures
+    private static int m_originalRow;
+    private static int m_originalColumn;
+    
+    // Search depth for the AI
+    private static int m_depth = Utilities.THREE;
+        
+    // The piece that was moved previously. Useful in determining en passant for pawns
+    private static Piece m_previouslyMoved;
+    
+    // The singleton instance of the engine
+    private static DarkBlue m_instance;
+    
+    
+    /* All non-static fields for general housekeeping */
+
+    // Determines if legal moves should be highlighted on the human's turn
+    private boolean m_shouldHighlightLegalMoves = false;
+    
+    /* Fields for move evaluation and serialization */
+    
+    // Tells if the observer can switch sides
+    private boolean m_isPreviouslySavedGame = false;
+    
+    // Tells if a serialized game can allow either king to castle on either side
+    private boolean m_canWhiteKingsideCastle = false;
+    private boolean m_canWhiteQueensideCastle = false;
+    private boolean m_canBlackKingsideCastle = false;
+    private boolean m_canBlackQueensideCastle = false;
+    
+    // This gets appended to a move text area when one player gets promoted
+    private String m_promotionString = null;
+
+    // Determines what error message to display when loading from a file
+    private boolean m_isParsable = false;
     
     // Represents the state of the game
-    private static GameState m_gameState = GameState.EMPTY;
+    private GameState m_gameState = GameState.EMPTY;
 
     // The visual representation of the board
     private GUIBoard m_board;
@@ -145,36 +178,27 @@ public final class DarkBlue extends JFrame{
     
     // The alias for the current player, used to reduce code
     private Player m_currentPlayer;
-        
-    // The history of the game from move to move
+    
+    // The history of the game from move to move in the form of FEN strings
     private Stack<String> m_gameHistory;
     
     // The number of times each board position has occurred during the game
     private HashMap<String, Integer> m_positions;
-
-    // The colors of both players
-    private static ChessColor m_humanColor, m_computerColor;
     
     // The players described by color
-    private static Player m_white, m_black;
+    private Player m_white, m_black;
     
     // The players described by type
-    private static Player m_humanPlayer, m_computerPlayer;
-    
-    // The original row and column used for determining en passant captures
-    private static int m_originalRow;
-    private static int m_originalColumn;
+    private Player m_humanPlayer, m_computerPlayer;
 
-    // The number of moves made since the last capture or pawn movement
+    // The number of single-sided moves made since the last capture or pawn movement
     private int m_currentHalfmoves = Utilities.ZERO;
     
     // The number of moves made by both white then black during the entire game
+    // (counts of two halfmoves that gets incremented once black makes its move)
     private int m_fullmoves = Utilities.ONE;
-        
-    // Search depth for the AI
-    private static int m_depth = Utilities.THREE;
        
-    // The integer that keeps track of the button
+    // The integer that keeps track of buttons on certain UI elements
     private int m_buttonInt;
         
     // The piece to be moved
@@ -187,22 +211,27 @@ public final class DarkBlue extends JFrame{
         
     // The victim of the move, if any
     private Piece m_victim;
-        
-    // The piece that was moved previously. Useful in determining en passant for pawns
-    private static Piece m_previouslyMoved;
-        
-    // The move to be made once evaluated
+    
+    // The move to be made once the tiles and legality are evaluated
     private Move m_nextMove;
     
-    // The singleton instance of the engine
-    private static DarkBlue m_instance;   
+    /* My custom extensions of Swing components */
     
-    /* My custom extensions of Swing components */    
+    // Gives a classic-looking menu bar on the top of the screen
     private DarkBlueMenuBar m_menuBar = new DarkBlueMenuBar();
+    
+    // Displays white's move history in algebraic notation
     private MoveTextArea m_whiteMoves;
+    
+    // Displays black's move history in algebraic notation
     private MoveTextArea m_blackMoves;
+    
+    // Allows the move history text areas to be scrollable
     private JScrollPane m_whiteScroll;
     private JScrollPane m_blackScroll;
+    
+    // Contains all captured pieces during a game
+    // in order like so: P P P P P P P P R R N N B B Q
     private CapturedPiecePanel m_whitePieces = new CapturedPiecePanel();
     private CapturedPiecePanel m_blackPieces = new CapturedPiecePanel();
     
@@ -217,17 +246,19 @@ public final class DarkBlue extends JFrame{
     private JPanel m_blackInner = new JPanel();
     
     // Components for the "Thinking..." dialog box
+    // shown when the computer moves or when the human gets help
     private JOptionPane m_optionPane;
-	private JDialog m_dialog;
+    private JDialog m_dialog;
 
     // Contains the GUIBoard object
     private JPanel m_boardPanel = new JPanel();
 
-    // Header labels for move history panes
+    // Header labels for move history panels
     private JLabel m_whiteLabel = new JLabel("White");
     private JLabel m_blackLabel = new JLabel("Black");
     
-    // Allows the computer to move without stopping the EDT
+    // Allows the computer to move or the 
+    // human to get help without stopping the EDT
     private SwingWorker<Move, Void> m_worker;
     
     // Bookkeeping field that makes sure an invalid file
@@ -275,25 +306,7 @@ public final class DarkBlue extends JFrame{
         m_whiteScroll = new JScrollPane(m_whiteMoves);
         m_blackScroll = new JScrollPane(m_blackMoves);
         
-        // Set sizes for the scroll panes
-        m_whiteScroll.setPreferredSize(new Dimension(80, 575));
-        m_blackScroll.setPreferredSize(new Dimension(80, 575));
-        
-        // Make sure the panes are dynamically scrollable
-        ///////////////////////////////////////////////////////////////
-        // Source: https://stackoverflow.com/questions/45558095/jscrollpane-not-scrolling-in-jtextarea
-        m_whiteScroll.setViewportView(m_whiteMoves);
-        m_whiteScroll.getPreferredSize();       
-        m_blackScroll.setViewportView(m_blackMoves);
-        m_blackScroll.getPreferredSize();
-        ///////////////////////////////////////////////////////////////
-        
-        // Set scrollbar policies based on an answer from Guillaume Poulet
-        // Source: https://stackoverflow.com/questions/10346449/scrolling-a-jpanel
-        m_whiteScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        m_blackScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        m_whiteScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        m_blackScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        SetUpScrollPanes();
         
         // Set up the menu
         this.m_menuBar.DisableLiveGameButtons();
@@ -308,8 +321,28 @@ public final class DarkBlue extends JFrame{
         this.CreateAndShowGUI();
     }
     
-    /* Overridden MouseListener and ActionListener events */
-    
+    private final void SetUpScrollPanes(){
+        // Set sizes for the scroll panes
+        this.m_whiteScroll.setPreferredSize(new Dimension(90, 575));
+        this.m_blackScroll.setPreferredSize(new Dimension(90, 575));
+        
+        // Make sure the panes are dynamically scrollable
+        ///////////////////////////////////////////////////////////////
+        // Source: https://stackoverflow.com/questions/45558095/jscrollpane-not-scrolling-in-jtextarea
+        this.m_whiteScroll.setViewportView(m_whiteMoves);
+        this.m_whiteScroll.getPreferredSize();       
+        this.m_blackScroll.setViewportView(m_blackMoves);
+        this.m_blackScroll.getPreferredSize();
+        ///////////////////////////////////////////////////////////////
+        
+        // Set scrollbar policies based on an answer from Guillaume Poulet
+        // Source: https://stackoverflow.com/questions/10346449/scrolling-a-jpanel
+        this.m_whiteScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        this.m_blackScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        this.m_whiteScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        this.m_blackScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    }
+
     /**/
     /*
     NAME
@@ -494,10 +527,7 @@ public final class DarkBlue extends JFrame{
         
         a_pane.add(m_board, BorderLayout.CENTER);
     }
-    
-    
-    
-    
+   
     /**/
     /*
     NAME
@@ -700,228 +730,6 @@ public final class DarkBlue extends JFrame{
     /**/
     /*
     NAME
-        private final GameState EvaluateGameState();
-    
-    SYNOPSIS
-        private final GameState EvaluateGameState();
-        
-        No parameters.
-    
-    DESCRIPTION
-        This method determines the state of the game.
-        It assigns the m_gameState variable to one of the following:
-        
-        GameState.CHECK: One player's king is in check. He must either move out of it,
-        capture the threatening piece himself, use a friendly piece to 
-        capture the threatening piece, or use a friendly piece to 
-        block the check, assuming the threatening piece moves linearly.
-        The game resumes as normal after the player removes the threat.
-        
-        GameState.STALEMATE: One player's king is not in check but has no legal moves.
-        None of the player's other pieces have any legal moves either. 
-        The game ends in a draw.
-        
-        GameState.CHECKMATE: One player's king is in check 
-        in his current position and wherever he moves.
-        He cannot escape, he cannot capture the piece(s) putting him into check,
-        no other friendly piece can capture the piece(s) putting him into check,
-        and no friendly piece can block the check if the threatening piece is not a knight or pawn. 
-        Any other friendly pieces with moves that would not help the king are not allowed to move.
-        The other player wins and the game is over.
-        
-        GameState.INSUFFICIENT_MATERIAL: The game can end this way due to a number of conditions:
-        
-            1. White and black have only bare kings left on the board.
-        
-            2. One player has a king and the other has a king and a bishop.
-        
-            3. One player has a king and the other has a king and a knight.
-        
-            4. Both players have a king and a bishop and both bishops 
-               move on the same tile color.
-                
-        GameState.FIFTY_MOVE_RULE: Fifty halfmoves have been made with no capture or pawn movement.
-        The game ends in a draw.
-        
-        GameState.THREEFOLD_REPETITION: The same configuration of the board has been repeated three times.
-        However many times this happens need not be consecutive. The game ends in a draw.
-
-        GameState.NORMAL: The game proceeds as normal.
-        
-        The special GameState.EMPTY status is not assigned here, as it is only used when the 
-        engine starts up initially or if the game is stopped when saved.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    private final GameState EvaluateGameState(final Player a_player){
-    	if(a_player.IsInCheckmate(m_board.GetBoard())){
-            return GameState.CHECKMATE;
-        }else if(a_player.IsInCheck(m_board.GetBoard())){
-            return GameState.CHECK;
-        }else if(a_player.IsInStalemate(m_board.GetBoard())){
-            return GameState.STALEMATE;
-        }else if(IsDrawByInsufficientMaterial()){
-            return GameState.INSUFFICIENT_MATERIAL;
-        }else if(IsDrawByFiftyMoveRule()){
-            return GameState.FIFTY_MOVE_RULE;
-        }else if(IsDrawByThreefoldRepetition()){
-            return GameState.THREEFOLD_REPETITION;
-        }else{
-            return GameState.NORMAL;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean IsDrawByInsufficientMaterial();
-    
-    SYNOPSIS
-        private final boolean IsDrawByInsufficientMaterial();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method checks to see if any draw condition by
-        insufficient material exists. 
-        This can occur in one of several ways:
-        
-        1. Both sides have bare kings. Since kings cannot be captured
-        nor give check, the game ends in a draw.
-        
-        2. One side has a bare king and the other has a king and a knight.
-        
-        3. One side has a bare king and the other has a king and a bishop.
-        
-        4. Both sides have a king and a bishop and the bishops are on tiles
-        of the same color.
-        
-        If any of these conditions are met, the method returns true.
-        If not, it returns false.
-    
-    RETURNS
-        True if the players have insufficient material and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsDrawByInsufficientMaterial(){
-        if(m_white.HasBareKing() && m_black.HasBareKing()){
-            return true;
-        }else if(m_white.HasBareKing() && m_black.HasKingAndBishop()){
-            return true;
-        }else if(m_white.HasBareKing() && m_black.HasKingAndKnight()){
-            return true;
-        }else if(m_black.HasBareKing() && m_white.HasKingAndBishop()){
-            return true;
-        }else if(m_black.HasBareKing() && m_white.HasKingAndKnight()){
-            return true;
-        }else if(m_white.HasKingAndBishop() && m_black.HasKingAndBishop()){
-            int whiteBishopRow = Utilities.NEGATIVE_ONE, whiteBishopColumn = Utilities.NEGATIVE_ONE, 
-                    blackBishopRow = Utilities.NEGATIVE_ONE, blackBishopColumn = Utilities.NEGATIVE_ONE;
-            
-            // Find both bishops
-            for(int index = Utilities.ZERO; index < Utilities.TWO; index++){
-                if(m_white.GetActivePieces().get(index).IsBishop()){
-                    whiteBishopRow = m_white.GetActivePieces().get(index).GetCurrentRow();
-                    whiteBishopColumn = m_white.GetActivePieces().get(index).GetCurrentColumn();
-                }
-                if(m_black.GetActivePieces().get(index).IsBishop()){
-                    blackBishopRow = m_black.GetActivePieces().get(index).GetCurrentRow();
-                    blackBishopColumn = m_black.GetActivePieces().get(index).GetCurrentColumn();
-                }
-            }
-            
-            // End the game if the bishops are on the same tile colors
-            if(m_board.GetBoard().GetTile(whiteBishopRow, whiteBishopColumn).GetColor() == m_board.GetBoard().GetTile(blackBishopRow, blackBishopColumn).GetColor()){
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean IsDrawByFiftyMoveRule();
-    
-    SYNOPSIS
-        private final boolean IsDrawByFiftyMoveRule();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method checks to see if any draw condition by
-        the fifty-move rule exists.
-        
-        This occurs when fifty moves have been made without a 
-        single pawn movement or capture of any kind.
-        
-        If this condition is met, the method returns true.
-        If not, it returns false.
-    
-    RETURNS
-        True if the halfmove clock is at least fifty and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsDrawByFiftyMoveRule(){
-        return m_currentHalfmoves >= Utilities.FIFTY;
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean IsDrawByThreefoldRepetition();
-    
-    SYNOPSIS
-        private final boolean IsDrawByThreefoldRepetition();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method checks to see if any draw condition by
-        threefold repetition exists.
-        
-        This occurs when the same three moves have occurred
-        consecutively; typically this happens when one player's
-        king is put into check many times.
-        
-        If this condition is met, the method returns true.
-        If not, it returns false.
-    
-    RETURNS
-        True if the same board configuration has occurred three times
-        and false otherwise. One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsDrawByThreefoldRepetition(){
-        // Make the hashmap iterable
-        final Iterator<String> POSITION_ITERATION = m_positions.keySet().iterator();
-        
-        // Look through every position in the hash
-        while(POSITION_ITERATION.hasNext()){
-        	final String CURRENT = POSITION_ITERATION.next();
-        	if(m_positions.get(CURRENT) == Utilities.THREE){
-        		return true;
-        	}
-        }
-        
-        return false;
-    }
-    
-    /**/
-    /*
-    NAME
         public static final Piece GetPreviouslyMoved();
     
     SYNOPSIS
@@ -997,6 +805,8 @@ public final class DarkBlue extends JFrame{
         
         3. Capital and/or lowercase letters indicating which sides either king can castle on, if any. 
         
+        This is only based on the existence of an unmoved king and an unmoved rook.
+        
         For example, in the starting postition, both white and black can theoretically castle, even though it is not legal for them to do so yet.
         This case would necessitate placing KQkq, which indicates both players can castle on either side.
         If both forms of castling are illegal for both players, a hyphen-minus ("-") is placed instead.
@@ -1004,10 +814,11 @@ public final class DarkBlue extends JFrame{
         in the form of threats or pieces sitting between the king and the rook. This is evaulated at the beginning of every turn.
         
         4. The space on which an en passant move can be performed if the piece that was most recently moved is a pawn.
+        This must be calculated regardless of whether any pawn can actually perform an en passant capture.
         
         For example, after the move 1. e4, which moves the white king's pawn from e2 to e4, this pawn could theoretically be captured en passant
         the next turn because it moved 2 spaces on its first move. Otherwise, a hyphen-minus is placed here instead.
-        This would generate "e4". The starting position, on the other hand, will generate "-".
+        This would generate "e3". The starting position, on the other hand, will generate "-".
         
         5. The number of halfmoves (either white or black moving individually, as opposed to an entire turn) since a pawn movement or capture. This starts at 0.
         
@@ -1045,27 +856,31 @@ public final class DarkBlue extends JFrame{
     /**/
     /*
     NAME
-        public final boolean Deserialize();
+        private final boolean Deserialize();
     
     SYNOPSIS
-        public final boolean Deserialize();
+        private final boolean Deserialize();
     
         No parameters.
     
     DESCRIPTION
         This method takes in a serialization string from
-        a text file and parses it into a valid chessboard.
+        a text file and parses it into a chessboard.
     
     RETURNS
-        Nothing
+        True if the parsing of the file was successful, and false otherwise.
+        One of these two options will always occur.
     
     AUTHOR
         Ryan King, with help about the FileNameExtensionFilter taken from:
         https://stackoverflow.com/questions/15771949/how-do-i-make-jfilechooser-only-accept-txt
         
     */
-    public final boolean Deserialize(){
-    	try{  			
+    private final boolean Deserialize(){
+    	try{
+    	    m_originalHuman = m_humanColor;
+            m_originalComputer = m_computerColor;
+    	    
     		final JFileChooser CHOOSER = new JFileChooser();
 
     		CHOOSER.setFileFilter(new FileNameExtensionFilter("FEN files", "fen"));
@@ -1085,21 +900,16 @@ public final class DarkBlue extends JFrame{
                     return false;
                 }
     		    
-    		    // Open and read the file
-    			final InputStreamReader IN = new InputStreamReader(new FileInputStream(CHOOSER.getSelectedFile()), "UTF-8");  			
-    			    	    		
-				final Scanner SCANNER = new Scanner(IN);
-    	    		
-    			final String line = SCANNER.nextLine();
-    	    			
-    			IN.close();
-    					
-    			SCANNER.close();
+    		    final String FEN = ReadFile(CHOOSER.getSelectedFile());
     	    	
     			// Determine if the file is valid before parsing it
-    			if(IsValidFEN(line)){
-    			    ParseFEN(line, true);
+    			if(GameUtilities.IsValidFEN(FEN.trim())){
+    			    m_isParsable = true;
+    			    if(!AttemptToParseFile(FEN)){
+    			        return false;
+    			    }
     			}else{
+    			    m_isParsable = false;
     			    return false;
     			}
 
@@ -1120,6 +930,145 @@ public final class DarkBlue extends JFrame{
     /**/
     /*
     NAME
+        private final String ReadFile(final File a_file);
+    
+    SYNOPSIS
+        private final String ReadFile(final File a_file);
+    
+        File a_file ----------> The file to be read.
+    
+    DESCRIPTION
+        This method takes in a File object and attempts
+        to read it. It will return the FEN string if successful
+        or null on failure.
+    
+    RETURNS
+        String: the FEN string if successful or null on failure.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King, with help about the InputStreamReader taken from:
+        
+        
+    */
+    private final String ReadFile(final File a_file){
+        // Open and read the file
+        try{
+            final InputStreamReader IN = new InputStreamReader(new FileInputStream(a_file), "UTF-8");            
+                            
+            final Scanner SCANNER = new Scanner(IN);
+            
+            final String FEN = SCANNER.nextLine();
+                
+            IN.close();
+                
+            SCANNER.close();
+            
+            return FEN;
+        }catch(Exception e){
+            return null;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void WriteFile(final String a_file, final String a_FEN);
+    
+    SYNOPSIS
+        private final void WriteFile(final String a_file, final String a_FEN);
+    
+        String a_file ----------> The filename that will be generated.
+        
+        String a_FEN -----------> The FEN string to write to the file.
+    
+    DESCRIPTION
+        This method takes in two strings representing the filename
+        and the FEN string to write to it and then writes a_FEN into
+        a file named a_file.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King, with help about the OutputStreamWriter taken from:
+        
+        
+    */
+    private final void WriteFile(final String a_file, final String a_FEN) throws Exception{
+        try{
+            final OutputStreamWriter OUT = new OutputStreamWriter(new FileOutputStream("src/com/DarkBlue/Serial/" + a_file), "UTF-8");
+        
+            OUT.write(a_FEN);
+        
+            OUT.flush();
+        
+            OUT.close();
+        }catch(Exception e){
+            throw e;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final boolean AttemptToParseFile(final String a_FEN);
+    
+    SYNOPSIS
+        private final boolean AttemptToParseFile(final String a_FEN);
+
+        String a_FEN -----------> The FEN string to ne parsed.
+    
+    DESCRIPTION
+        This method takes in the FEN string read from a file
+        or taken as custom input from the user and attempts to
+        validate and parse it.
+    
+    RETURNS
+        boolean: True if the parsing was successful and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King, with help about the OutputStreamWriter taken from:
+        
+        
+    */
+    private final boolean AttemptToParseFile(final String a_FEN){
+        // Discontinue parsing if either player is in checkmate or drawn,
+        // or if a player who is in check is not the next player to move
+        if(!GameUtilities.IsPlayable(a_FEN, m_humanColor)){
+            m_humanColor = m_originalHuman;
+            m_computerColor = m_originalComputer;
+            return false;
+        }
+
+        // This file is deemed to be playable
+        // so parse it
+        try{
+            ParseFEN(a_FEN, true);
+        }catch(Exception e){
+            return false;
+        }
+        
+        // This parse attempt has been successful
+        return true;
+    }
+    
+    private final void CheckStatusAndResume(){
+        // Determine if the next player to move is in check
+        final Player MOVER = (m_board.WhoseTurnIsIt().IsWhite() ? m_white : m_black);
+        final Player OPPONENT = (MOVER.IsWhite() ? m_black : m_white);
+        final GameState MOVER_STATE = GameUtilities.EvaluateGameState(MOVER, OPPONENT, m_board.GetBoard(), m_currentHalfmoves, null);
+        
+        // If the mover is in check and is a human, show a warning message
+        if(MOVER_STATE == GameState.CHECK && MOVER.IsHuman()){
+            JOptionPane.showMessageDialog(m_menuBar, CHECK_MESSAGE, TITLE, JOptionPane.WARNING_MESSAGE);
+        }
+    }
+    
+    /**/
+    /*
+    NAME
         private final void ParseFEN(final String a_FENString, final boolean a_isSerializedGame);
     
     SYNOPSIS
@@ -1130,7 +1079,8 @@ public final class DarkBlue extends JFrame{
         boolean a_isSerializedGame ---> If the game is being resumed from a serialization string, as opposed to being the result of an undone move.
     
     DESCRIPTION
-        This method parses a string in FEN format.
+        This method parses a string in FEN format
+        into the fields in the program.
         It throws an exception if it encounters a problem.
     
     RETURNS
@@ -1148,627 +1098,261 @@ public final class DarkBlue extends JFrame{
 		final BoardBuilder BUILDER = new BoardBuilder();
 		
 		// PARTS[0] represents the configuration of the board
-		final String[] BOARD = PARTS[Utilities.ZERO].split("/");	
-		
-		// Determine if both sides have one and only one king
-		boolean whiteKingFound = false, blackKingFound = false;
-		for(final String RANK : BOARD){
-			if(RANK.contains("K") && !whiteKingFound){
-				whiteKingFound = true;
-			}else if(whiteKingFound && RANK.contains("K")){
-				m_menuBar.DisableSave();
-				m_menuBar.DisableUndo();
-				throw new Exception("Duplicate white king found.");
-			}
-			if(RANK.contains("k") && !blackKingFound){
-				blackKingFound = true;
-			}else if(blackKingFound && RANK.contains("k")){
-				m_menuBar.DisableSave();
-				m_menuBar.DisableUndo();
-				throw new Exception("Duplicate black king found.");
-			}
-		}
-		
-		// Do not allow the game to progress if one side does not have a king
-		if(!whiteKingFound || !blackKingFound){
-			m_board.SetBoard(Board.GetEmptyBoard());
-			m_board.DrawBoard();
-			m_menuBar.DisableLiveGameButtons();
-			throw new Exception("Unplayable game: One or more king(s) not found.");
-		}
+		final String[] BOARD = PARTS[Utilities.ZERO].split("/");
 		
 		// PARTS[1] determines whose turn it is
-		if(PARTS[Utilities.ONE].equalsIgnoreCase("w")){
-			BUILDER.SetWhoseTurn(ChessColor.WHITE);
-		}else if(PARTS[Utilities.ONE].equalsIgnoreCase("b")){
-			BUILDER.SetWhoseTurn(ChessColor.BLACK);
-		}else{
-			throw new Exception("Improper file format.");
+		try{
+		    ParseTurn(PARTS[Utilities.ONE], BUILDER);
+		}catch(Exception e){
+		    throw e;
 		}
 		
-		// PARTS[2] determines which sides can castle and where,
-		// which need not be feasible on the current turn
-		if(PARTS[Utilities.TWO].equals("-")){
-			m_canWhiteKingsideCastle = false;
-			m_canWhiteQueensideCastle = false;
-			m_canBlackKingsideCastle = false;
-			m_canBlackQueensideCastle = false;
-		}else{
-			
-			if(PARTS[Utilities.TWO].contains("K")){
-				m_canWhiteKingsideCastle = true;
-			}else{
-				m_canWhiteKingsideCastle = false;
-			}
-		
-			if(PARTS[Utilities.TWO].contains("Q")){
-				m_canWhiteQueensideCastle = true;
-			}else{
-				m_canWhiteQueensideCastle = false;
-			}
-		
-			if(PARTS[Utilities.TWO].contains("k")){
-				m_canBlackKingsideCastle = true;
-			}else{
-				m_canBlackKingsideCastle = false;
-			}
-		
-			if(PARTS[Utilities.TWO].contains("q")){
-				m_canBlackQueensideCastle = true;
-			}else{
-				m_canBlackQueensideCastle = false;
-			}
-		}
+		// PARTS[2] determines which players have a king and rook that have not moved,
+		// but castling need not be feasible on the current turn
+		ParseCastlingRights(PARTS[Utilities.TWO]);
 		
 		// Set up the board
 		for(int i = Utilities.ZERO; i < BOARD.length; i++){
-			ParseRank(i, BOARD[i], BUILDER);
+			GameUtilities.ParseRank(i, BOARD[i], BUILDER);
 		}
 		
 		// PARTS[3] contains the destination tile of an en passant capture
-		if(!PARTS[Utilities.THREE].equals("-")){
-		    // There is a valid en passant tile
-			m_enPassantTile = PARTS[Utilities.THREE];
-			
-			// Determine the color of the pawn to find out where the pawn moved
-			final ChessColor pawnColor = (BUILDER.WhoseTurnIsIt().IsBlack() ? ChessColor.WHITE : ChessColor.BLACK);
-			m_originalRow = (pawnColor.IsWhite() ? BoardUtilities.ToBoardRow(m_enPassantTile) + Utilities.ONE : BoardUtilities.ToBoardRow(m_enPassantTile) - Utilities.ONE);
-			m_originalColumn = BoardUtilities.ToBoardColumn(m_enPassantTile);
-			
-			// Instantiate the pawn
-			m_previouslyMoved = new Pawn(pawnColor, m_originalRow, m_originalColumn);
-		}else{
-		    // There is no valid en passant tile
-			m_enPassantTile = null;
+		ParseEnPassantTile(PARTS[Utilities.THREE], BUILDER);
+		
+		// PARTS[4] contains the number of halfmoves made since the last capture or pawn movement
+		// PARTS[5] contains the fullmove clock accumulated throughout the entire game
+		try{
+		    ParseMoveClocks(PARTS[Utilities.FOUR], PARTS[Utilities.FIVE]);
+		}catch(Exception e){
+		    throw e;
 		}
-		
-		// PARTS[4] contains the number of halfmoves that have occurred since the last capture or pawn movement
-		m_currentHalfmoves = Integer.parseInt(PARTS[Utilities.FOUR]);
-		
-		// PARTS[5] contains the number of fullmoves (a set of two moves made by both white and black) made during the entire game
-		m_fullmoves = Integer.parseInt(PARTS[Utilities.FIVE]);
 		
 		// Set the board configuration
 		m_board.SetBoard(BUILDER.Build());
 		
-		// Initialize both players and their legal moves
+		// Initialize the pieces of both players and their legal moves
 		InitializePlayers(m_board.GetBoard());
 		
 		// Set the current player
 		m_currentPlayer = (m_board.WhoseTurnIsIt().IsWhite() ? m_white : m_black);
 		
-		// Add ellipses if this is being resumed
-		if(a_isSerializedGame){
-			m_whiteMoves.append("...\n");
-		
-			if(m_board.GetBoard().WhoseTurnIsIt().IsWhite()){
-				m_blackMoves.append("...\n");
-			}
-		}	
+		// Add ellipses in the text areas if necessary
+		SetUpTextAreas(a_isSerializedGame);
     }
     
     /**/
     /*
     NAME
-        private final boolean IsValidFEN(final String a_string);
+        private final void ParseTurn(final String a_turn, final BoardBuilder a_builder);
     
     SYNOPSIS
-        private final boolean IsValidFEN(final String a_string);
+        private final void ParseTurn(final String a_turn, final BoardBuilder a_builder);
     
-        String a_string -----------> The potential FEN string for the engine to read.
-
-    DESCRIPTION
-        This method attempts to parse a string that
-        could be an FEN string, but it checks for potential
-        problems. Any part of the string that is not considered
-        a valid part of a FEN string will be found and the method
-        will return false. If no problems were found, the method
-        will return true.
-    
-    RETURNS
-        boolean: True if this string is a valid FEN string and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King, with help taken from:
-        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/pgn/FenUtilities.java
-    */
-    private final boolean IsValidFEN(final String a_string){
-        // Idiot proofing for null or empty arguments
-        if(a_string == null || a_string.isBlank()){
-            return false;
-        }
+        String a_turn -----------> The string representing whose turn it is.
         
-        // Separate all parts
-        String[] PARTS = a_string.split(" ");
-        
-        // All FEN strings must have six distinct parts
-        if(PARTS.length != Utilities.SIX){
-            return false;
-        }
-        
-        // The first part contains the board configuration delimited by forward slashes
-        final String[] RANKS = PARTS[Utilities.ZERO].split("/");
-        
-        // All FEN boards must have exactly eight ranks
-        if(RANKS == null || RANKS.length != Utilities.EIGHT){
-            return false;
-        }
-        
-        // board will hold the board configuration as a single string with no delimiters
-        String board = "";
-
-        // Check if each rank is valid
-        for(final String RANK : RANKS){
-            if(!IsValidRank(RANK)){
-                return false;
-            }
-            board += RANK;
-        }
-
-        // Make sure both sides have the correct number of pieces
-        if(!HasValidPieces(board)){
-            return false;
-        }
-        
-        // The second part contains the side to move next
-        // Check if the side to move next is either a lowercase "w" or "b"
-        if(!(PARTS[Utilities.ONE].equals("w") || PARTS[Utilities.ONE].equals("b"))){
-            return false;
-        }
-        
-        // The third part contains the castling rights, if any
-        // Check if castling privileges have any of "KQkq" or is only "-"
-        if(!((PARTS[Utilities.TWO].contains("K") || PARTS[Utilities.TWO].contains("Q") || PARTS[Utilities.TWO].contains("k") || PARTS[Utilities.TWO].contains("q")) || PARTS[Utilities.TWO].equals("-"))){
-            return false;
-        }
-        
-        // The fourth part contains the en passant tile, if any
-        // Check if the en passant tile has a lowercase letter from a-h followed by 2 or 7, or is a "-"
-        if(!((BoardUtilities.IsValidTile(PARTS[Utilities.THREE]) && (Integer.parseInt(Character.toString(PARTS[Utilities.THREE].charAt(Utilities.ONE))) == Utilities.THREE || Integer.parseInt(Character.toString(PARTS[Utilities.THREE].charAt(Utilities.ONE))) == Utilities.SIX)) || PARTS[Utilities.THREE].equals("-"))){
-            return false;
-        }
-        
-        // The fifth part contains the number of halfmoves made since the last capture or pawn movement
-        // Check if the halfmove clock is a nonnegative integer (the value must be 0 or above)
-        if(!HasValidClock(PARTS[Utilities.FOUR], false)){
-            return false;
-        }
-        
-        // The sixth part contains the number of fullmoves made during the entire game, which starts at 1 before the first move is made
-        // Check if the fullmove clock is a positive integer (the value must be 1 or above)
-        if(!HasValidClock(PARTS[Utilities.FIVE], true)){
-            return false;
-        }
-        
-        // This is a valid FEN string
-        return true;
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean HasValidPieces(final String a_board);
-    
-    SYNOPSIS
-        private final boolean HasValidPieces(final String a_board);
-    
-        String a_board -----------> The string representing the board configuration.
-
-    DESCRIPTION
-        This method parses the FEN board string to determine if
-        both sides have the correct number of each piece.
-        Though the numbers placed on the rooks, bishops, knights, and
-        queens may seem unnaturally high, they are there to determine 
-        if any promotions were made. A player can have as many of these
-        pieces as possible, which means 9 queens or 10 knights, rooks, and
-        bishops if s/he promotes all of his/her pawns.
-    
-    RETURNS
-        boolean: True if this board has the correct amount of each piece for both sides and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean HasValidPieces(final String a_board){
-        if(a_board == null || a_board.isBlank()){
-            return false;
-        }
-        
-        // Both players must have between 1 to 16 pieces of their color       
-        final int WHITE_PIECES = Pieces(a_board, ChessColor.WHITE);
-        final int BLACK_PIECES = Pieces(a_board, ChessColor.BLACK);
-        
-        if(!((WHITE_PIECES >= Utilities.ONE && WHITE_PIECES <= Utilities.SIXTEEN) && (BLACK_PIECES >= Utilities.ONE && BLACK_PIECES <= Utilities.SIXTEEN))){
-            return false;
-        }
-        
-        // Both players must have 0 to 8 pawns
-        if(!(HasCorrectNumberOfPieces(a_board, PieceType.PAWN, ChessColor.WHITE) && HasCorrectNumberOfPieces(a_board, PieceType.PAWN, ChessColor.BLACK))){
-            return false;
-        }
-        
-        // Both players must have 0 to 10 rooks
-        if(!(HasCorrectNumberOfPieces(a_board, PieceType.ROOK, ChessColor.WHITE) && HasCorrectNumberOfPieces(a_board, PieceType.ROOK, ChessColor.BLACK))){
-            return false;
-        }
-        
-        // Both players must have 0 to 10 knights
-        if(!(HasCorrectNumberOfPieces(a_board, PieceType.KNIGHT, ChessColor.WHITE) && HasCorrectNumberOfPieces(a_board, PieceType.KNIGHT, ChessColor.BLACK))){
-            return false;
-        }
-        
-        // Both players must have 0 to 10 bishops
-        if(!(HasCorrectNumberOfPieces(a_board, PieceType.BISHOP, ChessColor.WHITE) && HasCorrectNumberOfPieces(a_board, PieceType.BISHOP, ChessColor.BLACK))){
-            return false;
-        }
-        
-        // Both players must have 0 to 9 queens
-        if(!(HasCorrectNumberOfPieces(a_board, PieceType.QUEEN, ChessColor.WHITE) && HasCorrectNumberOfPieces(a_board, PieceType.QUEEN, ChessColor.BLACK))){
-            return false;
-        }
-        
-        // Both players must have exactly one king
-        if(!(HasCorrectNumberOfPieces(a_board, PieceType.KING, ChessColor.WHITE) && HasCorrectNumberOfPieces(a_board, PieceType.KING, ChessColor.BLACK))){
-            return false;
-        }
-        
-        return true;
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean HasValidClock(final String a_clock, final boolean a_isFullmoveClock);
-    
-    SYNOPSIS
-        private final boolean HasValidClock(final String a_clock, final boolean a_isFullmoveClock);
-    
-        String a_clock -----------> The string representing the fullmove or halfmove clock.
-
-    DESCRIPTION
-        This method parses the clock string to see if it's either a nonnegative integer (halfmove),
-        or a positive integer (fullmove). A Boolean flag is passed in to determine which type of move clock
-        is being analyzed. 
-        
-        Passing true as the flag means the clock is the fullmove clock and the number must be positive.
-        Passing false as the flag means the clock is the halfmove clock and the number must be positive or zero.
-    
-    RETURNS
-        boolean: True if this clock is a valid integer that is either 0 or positive for a halfmove clock or positive for a fullmove clock and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean HasValidClock(final String a_clock, final boolean a_isFullmoveClock){
-        try{
-            // Attempt to parse the clock into an integer
-            final int CLOCK = Integer.parseInt(a_clock);
-            
-            // The halfmove clock must be zero or positive
-            // The fullmove clock must only be positive
-            final int LIMIT = (a_isFullmoveClock ? Utilities.ONE : Utilities.ZERO);
-            
-            // Any clock value that lies below the limit is invalid
-            if(CLOCK < LIMIT){
-                return false;
-            }
-            
-            return true;
-        }catch(NumberFormatException e){
-            // Non-numeric clocks are invalid
-            return false;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean IsValidRank(final String a_rank);
-    
-    SYNOPSIS
-        private final boolean IsValidRank(final String a_rank);
-    
-        String a_rank -----------> The FEN rank for the parser to read.
-
-    DESCRIPTION
-        This method attempts to parse a string that
-        could be an FEN rank, but it checks for potential
-        problems. These problems include invalid letters or
-        the number of pieces plus empty tiles not adding to
-        exactly 8, a null or empty string, or a string that
-        has a length higher than 8.
-    
-    RETURNS
-        boolean: True if this string is a valid FEN rank and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean IsValidRank(final String a_rank){
-        if(a_rank == null || a_rank.isBlank() || a_rank.length() > Utilities.EIGHT){
-            return false;
-        }
-        
-        // The only letters this string can contain are the following
-        final String PIECES = "PpRrNnBbQqKk";
-        
-        // sum will hold the sum of the number of empty tiles found, which when added to numPieces should not exceed 8
-        int sum = Utilities.ZERO;
-        
-        // numPieces will hold the number of valid pieces found, which when added to sum should not exceed 8
-        int numPieces = Utilities.ZERO;
-
-        // Iterate through every character of the string
-        for(int i = Utilities.ZERO; i < a_rank.length(); i++){
-            
-            // This is a block of empty tiles
-            if(Character.isDigit(a_rank.charAt(i))){
-                final int DIGIT = Integer.parseInt(Character.toString(a_rank.charAt(i)));
-                
-                if(DIGIT >= Utilities.NINE || DIGIT <= Utilities.ZERO){
-                    return false;
-                }
-                
-                sum += DIGIT;
-            }else{
-                // This is a piece
-                if(!PIECES.contains(Character.toString(a_rank.charAt(i)))){
-                    return false;
-                }else{
-                    numPieces++;
-                }
-            }
-        }       
-        
-        // Make sure there are eight and only eight pieces plus empty tiles
-        return ((sum + numPieces) == Utilities.EIGHT);
-    }
-    
-    /**/
-    /*
-    NAME
-        private final boolean HasCorrectNumberOfPieces(final String a_board, final PieceType a_type, final ChessColor a_color);
-    
-    SYNOPSIS
-        private final boolean HasCorrectNumberOfPieces(final String a_board, final PieceType a_type, final ChessColor a_color);
-    
-        String a_board -----------> The FEN board for the parser to read.
-        
-        PieceType a_type ---------> The type of piece to check.
-        
-        ChessColor a_color -------> The color to check.
-
-    DESCRIPTION
-        This method attempts to find if there is the correct number of
-        occurrences of a piece letter (capital if a_color is white or lowercase
-        if a_color is black). If there end up being the wrong amount of occurrences,
-        this method will fail and return false.
-    
-    RETURNS
-        boolean: True if there is the correct amount of pieces and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final boolean HasCorrectNumberOfPieces(final String a_board, final PieceType a_type, final ChessColor a_color){
-        // letters will hold the number of pieces found
-        int letters = Utilities.ZERO;
-
-        // LIMIT will hold the maximum number of occurrences the letter should have in a valid FEN file
-        // Both cases for capital (white) and lowercase (black) letters are evaluated separately
-        final int LIMIT = a_type.GetLimit();
-        
-        // letter will hold the actual letter of the piece depending on the color
-        char letter = a_type.ToCharacter();
-        
-        // ACTUAL will hold the piece character in the correct case
-        final char ACTUAL = (a_color.IsWhite() ? Character.toUpperCase(letter) : Character.toLowerCase(letter));
-        
-        // Find the number of occurrences of this character on the board string
-        for(int i = Utilities.ZERO; i < a_board.length(); i++){
-            if(ACTUAL == a_board.charAt(i)){
-                letters++;
-            }
-        }
-        
-        // Only return true if there was exactly one K or k found
-        // or if the number of other characters found did not exceed the prescribed limit
-        if(a_type == PieceType.KING){
-            return letters == LIMIT;
-        }else{
-            return letters <= LIMIT;
-        }
-    }
-    
-    /**/
-    /*
-    NAME
-        private final int Pieces(final String a_board, final ChessColor a_color);
-    
-    SYNOPSIS
-        private final int Pieces(final String a_board, final ChessColor a_color);
-    
-        String a_board -----------> The FEN board for the parser to read.
-
-        ChessColor a_color -------> The color to check.
-
-    DESCRIPTION
-        This method finds the number of pieces of a certain color.
-        This is used when determining if each side has pieces in the range [1, 16].
-    
-    RETURNS
-        int pieces: The number of black or white pieces, depending on the color passed in.
-    
-    AUTHOR
-        Ryan King
-    */
-    private final int Pieces(final String a_board, final ChessColor a_color){
-        int pieces = Utilities.ZERO;
-        
-        // Null or empty arguments do not return anything of value
-        if(a_board == null || a_board.isBlank() || a_color == null){
-            return pieces;
-        }
-        
-        // Iterate through every character on the board
-        for(int i = Utilities.ZERO; i < a_board.length(); i++){
-            if(a_color.IsWhite()){
-                if(Character.isUpperCase(a_board.charAt(i))){
-                    pieces++;
-                }
-            }else{
-                if(Character.isUpperCase(a_board.charAt(i))){
-                    pieces++;
-                }
-            }
-        }
-        
-        return pieces;
-    }
-    
-    /**/
-    /*
-    NAME
-        private final String ExpandRank(final String a_rank);
-    
-    SYNOPSIS
-        private final String ExpandRank(final String a_rank);
-    
-        String a_rank ----------> A rank in FEN notation to expand.
+        BoardBuilder a_builder --> The builder which contains information about the board.
     
     DESCRIPTION
-        This method expands a string that represents the rank of a chessboard
-        by replacing all of its numbers with that many hyphen-minuses.
-        For example, if the string is R5K2, it will expand to R-----K--,
-        which will be parsed by the next phase of deserialization.
-        All numbers are checked in descending order every time,
-        even if the given string does not have every number.
-    
-    RETURNS
-        String noNumbers: The rank string with all numbers replaced by hyphen-minuses
-        as described above.
-    
-    AUTHOR
-        Ryan King, with help taken from:
-        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/pgn/FenUtilities.java
-    */
-    private final String ExpandRank(final String a_rank){
-    	return a_rank.replaceAll("8", "--------").replaceAll("7", "-------").replaceAll("6", "------").replaceAll("5", "-----").replaceAll("4", "----").replaceAll("3", "---").replaceAll("2", "--").replaceAll("1", "-");
-    }
-    
-    /**/
-    /*
-    NAME
-        private final void ParseRank(final int a_row, final String a_rank, final BoardBuilder a_builder);
-    
-    SYNOPSIS
-        private final void ParseRank(final int a_row, final String a_rank, final BoardBuilder a_builder);
-    
-        int a_row ------------------> The row of the rank, 0 to 7.
-        
-        String a_rank --------------> The actual rank with numbers removed, as described above.
-        
-        BoardBuilder a_builder -----> The BoardBuilder which will contain the placement of all pieces found.
-    
-    DESCRIPTION
-        This method parses a rank string that has been stripped of its numbers
-        by checking each character individually. If it is a hyphen-minus, that
-        tile is considered empty and the parser moves on. If it is a capital letter,
-        it is a white piece and is instantiated as such. If it is a lowercase letter,
-        it is a black piece and is instantiated as such. If an invalid character is detected,
-        the method will throw an exception.
+        This method parses a string with the letter "w" or "b"
+        into a turn flag for the board.
+        It throws an exception if it encounters a problem.
     
     RETURNS
         Nothing
     
     AUTHOR
-        Ryan King, with help taken from:
-        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/pgn/FenUtilities.java
+        Ryan King
     */
-    private final void ParseRank(final int a_row, final String a_rank, final BoardBuilder a_builder) throws Exception{
-        if(!BoardUtilities.HasValidValue(a_row) || a_rank == null || a_rank.isBlank() || a_builder == null){
-            throw new Exception("Improper file format");
+    private final void ParseTurn(final String a_turn, final BoardBuilder a_builder) throws Exception{
+        if(a_turn.equalsIgnoreCase("w")){
+            a_builder.SetWhoseTurn(ChessColor.WHITE);
+        }else if(a_turn.equalsIgnoreCase("b")){
+            a_builder.SetWhoseTurn(ChessColor.BLACK);
+        }else{
+            throw new Exception("Invalid turn");
         }
-        
-    	// Remove the numbers representing empty tiles from the string
-    	// and replace them with hyphen-minuses.
-    	final String NO_NUMBERS = ExpandRank(a_rank);
-    	
-    	// Iterate through all 8 spots of the string
-    	for(int index = Utilities.ZERO; index < NO_NUMBERS.length(); index++){
-    		
-    		final char PIECE = NO_NUMBERS.charAt(index);
-    		if(PIECE == '-'){
-    			// The parser found an empty tile
-    			continue;
-    		}else if(Character.isLetter(PIECE)){
-    			// The parser found a piece
-    			switch(PIECE){
-    				case Utilities.WHITE_PAWN_ICON: a_builder.SetPiece(new Pawn(ChessColor.WHITE, a_row, index));
-    				break;
-    				case Utilities.WHITE_QUEEN_ICON: a_builder.SetPiece(new Queen(ChessColor.WHITE, a_row, index));
-    				break;
-    				case Utilities.WHITE_KING_ICON: a_builder.SetPiece(new King(ChessColor.WHITE, a_row, index, m_canWhiteKingsideCastle, m_canWhiteQueensideCastle));
-    				break;
-    				case Utilities.WHITE_BISHOP_ICON: a_builder.SetPiece(new Bishop(ChessColor.WHITE, a_row, index));
-    				break;
-    				case Utilities.WHITE_KNIGHT_ICON: a_builder.SetPiece(new Knight(ChessColor.WHITE, a_row, index));
-    				break;
-    				case Utilities.WHITE_ROOK_ICON: a_builder.SetPiece(new Rook(ChessColor.WHITE, a_row, index));
-    				break;
-					case Utilities.BLACK_PAWN_ICON: a_builder.SetPiece(new Pawn(ChessColor.BLACK, a_row, index));
-					break;
-					case Utilities.BLACK_QUEEN_ICON: a_builder.SetPiece(new Queen(ChessColor.BLACK, a_row, index));
-					break;
-					case Utilities.BLACK_KING_ICON: a_builder.SetPiece(new King(ChessColor.BLACK, a_row, index, m_canBlackKingsideCastle, m_canBlackQueensideCastle));
-					break;
-					case Utilities.BLACK_BISHOP_ICON: a_builder.SetPiece(new Bishop(ChessColor.BLACK, a_row, index));
-					break;
-					case Utilities.BLACK_KNIGHT_ICON: a_builder.SetPiece(new Knight(ChessColor.BLACK, a_row, index));
-					break;
-					case Utilities.BLACK_ROOK_ICON: a_builder.SetPiece(new Rook(ChessColor.BLACK, a_row, index));
-					break;
-					default: throw new Exception("Improper file format");
-    			}
-    		}else{
-    			// The parser found an invalid character
-    			throw new Exception("Improper file format");
-    		}
-    	}
     }
     
     /**/
     /*
     NAME
-        public final void EvaluatePreviouslyMoved();
+        private final void ParseCastlingRights(final String a_rights);
     
     SYNOPSIS
-        public final void EvaluatePreviouslyMoved();
+        private final void ParseCastlingRights(final String a_rights);
+    
+        String a_rights -----------> The string representing castling rights.
+
+    DESCRIPTION
+        This method parses a string with the letters "KQkq"
+        to determine castling rights for both sides.
+        No input validation is performed because the rights
+        have already been validated previously in the program.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void ParseCastlingRights(final String a_rights){
+        // No castling rights
+        if(a_rights.equals("-")){
+            m_canWhiteKingsideCastle = false;
+            m_canWhiteQueensideCastle = false;
+            m_canBlackKingsideCastle = false;
+            m_canBlackQueensideCastle = false;
+        }else{        
+            // White kingside castling rights
+            if(a_rights.contains("K")){
+                m_canWhiteKingsideCastle = true;
+            }else{
+                m_canWhiteKingsideCastle = false;
+            }
+        
+            // White queenside castling rights
+            if(a_rights.contains("Q")){
+                m_canWhiteQueensideCastle = true;
+            }else{
+                m_canWhiteQueensideCastle = false;
+            }
+        
+            // Black kingside castling rights
+            if(a_rights.contains("k")){
+                m_canBlackKingsideCastle = true;
+            }else{
+                m_canBlackKingsideCastle = false;
+            }
+        
+            // Black queenside castling rights
+            if(a_rights.contains("q")){
+                m_canBlackQueensideCastle = true;
+            }else{
+                m_canBlackQueensideCastle = false;
+            }
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void ParseEnPassantTile(final String a_tile, final BoardBuilder a_builder);
+    
+    SYNOPSIS
+        private final void ParseEnPassantTile(final String a_tile, final BoardBuilder a_builder);
+    
+        String a_tile -----------> The string representing the tile.
+        
+        BoardBuilder a_builder --> The builder contaning information about the board.
+
+    DESCRIPTION
+        This method parses a string with the letter a-h
+        followed by 3 or 6 as the en passant tile,
+        regardless of whether any pawn can perform
+        such a capture. If no such tile exists, this string
+        will be a hyphen-minus ("-") and no tile will be assigned.
+        No input validation is performed because this
+        has already been validated previously in the program.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void ParseEnPassantTile(final String a_tile, final BoardBuilder a_builder){
+        if(!a_tile.equals("-")){
+            // There is a valid en passant tile
+            m_enPassantTile = a_tile;
+            
+            // Determine the color of the pawn to find out where the pawn moved
+            final ChessColor PAWN_COLOR = (a_builder.WhoseTurnIsIt().IsBlack() ? ChessColor.WHITE : ChessColor.BLACK);
+            m_originalRow = (PAWN_COLOR.IsWhite() ? BoardUtilities.ToBoardRow(m_enPassantTile) + Utilities.ONE : BoardUtilities.ToBoardRow(m_enPassantTile) - Utilities.ONE);
+            m_originalColumn = BoardUtilities.ToBoardColumn(m_enPassantTile);
+            
+            // Instantiate the pawn
+            m_previouslyMoved = new Pawn(PAWN_COLOR, m_originalRow, m_originalColumn);
+        }else{
+            // There is no valid en passant tile
+            m_enPassantTile = null;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void ParseMoveClocks(final String a_halfmoves, final String a_fullmoves);
+    
+    SYNOPSIS
+        private final void ParseMoveClocks(final String a_halfmoves, final String a_fullmoves);
+    
+        String a_halfmoves -----------> The string representing the number of halfmoves made since the last capture or pawn movement.
+        
+        String a_fullmoves -----------> The string representing the number of times both white and black have moved during the entire game.
+
+    DESCRIPTION
+        This method parses the halfmove and fullmove clocks
+        into their respective fields.
+        Both numbers have been validated so no range checking is performed.
+        However, this can throw an exception if something goes wrong.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void ParseMoveClocks(final String a_halfmoves, final String a_fullmoves) throws Exception{
+        try{
+            // PARTS[4] contains the number of halfmoves that have occurred since the last capture or pawn movement
+            m_currentHalfmoves = Integer.parseInt(a_halfmoves);
+        
+            // PARTS[5] contains the number of fullmoves (a set of two moves made by both white and black) made during the entire game
+            m_fullmoves = Integer.parseInt(a_fullmoves);
+        }catch(Exception e){
+            throw e;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void SetUpTextAreas(final boolean a_isSerializedGame);
+    
+    SYNOPSIS
+        private final void SetUpTextAreas(final boolean a_isSerializedGame);
+    
+        boolean a_isSerializedGame --> If this game is being taken from a serialization string.
+
+    DESCRIPTION
+        This method appends dots to one or both text areas to signify
+        that this game is being resumed from the middle.
+        This will not occur if the boolean field is set to false.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void SetUpTextAreas(final boolean a_isSerializedGame){
+        // Add ellipses if this is being resumed
+        if(a_isSerializedGame){
+            m_whiteMoves.append("...\n");
+        
+            if(m_board.GetBoard().WhoseTurnIsIt().IsWhite()){
+                m_blackMoves.append("...\n");
+            }
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void EvaluatePreviouslyMoved();
+    
+    SYNOPSIS
+        private final void EvaluatePreviouslyMoved();
     
         No parameters.
     
@@ -1783,9 +1367,48 @@ public final class DarkBlue extends JFrame{
     AUTHOR
         Ryan King
     */
-    public final void EvaluatePreviouslyMoved(){
+    private final void EvaluatePreviouslyMoved(){
         // Make a deep copy of the piece that just moved
         m_previouslyMoved = Factory.PieceFactory(m_candidate);
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void SpawnThinkingDialog();
+    
+    SYNOPSIS
+        private final void SpawnThinkingDialog();
+    
+        No parameters.
+
+    DESCRIPTION
+        This method spawns a buttonless dialog box that
+        says "Thinking..." which is used to indicate the
+        computer is thinking about its move or the user 
+        has just asked for help.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King, with help taken from:
+        https://stackoverflow.com/questions/14126975/joptionpane-without-button
+        https://docs.oracle.com/javase/tutorial/uiswing/components/dialog.html
+        https://docs.oracle.com/javase/8/docs/api/javax/swing/JDialog.html
+    */
+    private final void SpawnThinkingDialog(){
+        // Spawn a dialog box to let the user know the computer is thinking
+        m_optionPane = new JOptionPane("Thinking...", JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
+
+        m_dialog = new JDialog(m_instance);
+        m_dialog.setTitle("");
+
+        m_dialog.setContentPane(m_optionPane);
+
+        m_dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        m_dialog.pack();
+        m_dialog.setVisible(true);
     }
     
     /**/
@@ -1806,25 +1429,11 @@ public final class DarkBlue extends JFrame{
         Nothing
     
     AUTHOR
-        Ryan King, with help from:
-        https://stackoverflow.com/questions/14126975/joptionpane-without-button
-        https://docs.oracle.com/javase/tutorial/uiswing/components/dialog.html
-        https://docs.oracle.com/javase/8/docs/api/javax/swing/JDialog.html
-        and Black Widow Chess by Amir Afghani
+        Ryan King, with help from Black Widow Chess by Amir Afghani
         https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
     */
     private final void ComputerPlay(){
-        // Spawn a dialog box to let the user know the computer is thinking
-    	m_optionPane = new JOptionPane("Thinking...", JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-
-		m_dialog = new JDialog(m_instance);
-		m_dialog.setTitle("");
-
-		m_dialog.setContentPane(m_optionPane);
-
-		m_dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		m_dialog.pack();
-		m_dialog.setVisible(true);
+        SpawnThinkingDialog();
 		
 		// Do not allow the user to interfere with the computer's move
 		m_menuBar.DisableTabs();
@@ -1848,25 +1457,8 @@ public final class DarkBlue extends JFrame{
     				// Re-enable the File and Help menus
     				m_menuBar.EnableTabs();
 
-    				// Assign all fields from the given move
-    				m_candidate = m_nextMove.GetPiece();
-    				
-    				m_victim = m_nextMove.GetVictim();
-    				
-    				if(m_victim != null){
-    				    m_computerPlayer.AddCapturedPiece(m_victim);
-    				    m_humanPlayer.RemoveActivePiece(m_victim);
-    				}
-    				
-    				if(m_computerPlayer.IsWhite()){
-    				    m_blackPieces.Refresh(m_computerPlayer);
-    				}else{
-    				    m_whitePieces.Refresh(m_computerPlayer);
-    				}
-    				
-    				m_sourceTile = m_board.GetBoard().GetTile(m_nextMove.GetOldRow(), m_nextMove.GetOldColumn());
-    	        
-    				m_destinationTile = m_board.GetBoard().GetTile(m_nextMove.GetNewRow(), m_nextMove.GetNewColumn());
+    				// Get the source tile, destination tile, mover, and victim
+    				AssignMovingFields();
     				
     				// Assign other important fields
     				AssignEnPassantTile();
@@ -1875,38 +1467,24 @@ public final class DarkBlue extends JFrame{
     				
     				// Reset the board for repainting
     				AssignBoard();
+    				
+    				// Redraw the board
+                    m_board.DrawBoard();
 
     				// Append the new move onto the correct textbox
-    				if(m_computerColor.IsWhite()){
-						m_whiteMoves.append(m_nextMove.toString());
-					}else{
-						m_blackMoves.append(m_nextMove.toString());
-					}
+    				AppendMove(m_computerPlayer.GetColor());
     				
     				// Evaluate the game state
-    				m_gameState = EvaluateGameState(m_humanPlayer);
+    				m_gameState = GameUtilities.EvaluateGameState(m_humanPlayer, m_computerPlayer, m_board.GetBoard(), m_currentHalfmoves, m_positions);
         
     				// Keep track of the move clocks
-    				if(m_candidate.IsPawn() || m_victim != null){
-    					m_currentHalfmoves = Utilities.ZERO;
-    				}else{
-    					m_currentHalfmoves++;
-    				}
+    				UpdateMoveClocks();
         
-    				if(m_computerPlayer.IsBlack()){
-    					m_fullmoves++;
-    				}
-    				
     				// Reset the move fields
-    				m_sourceTile = null;
-    				m_destinationTile = null;
-    				m_nextMove = null;
+    				ResetMoveFields();
     				
     				// Recalculate legal moves
     				RefreshPlayers();
-    				
-    				// Redraw the board
-    				m_board.DrawBoard();
     				
     				// Call the observer
     				m_watcher.Observe();
@@ -1919,6 +1497,142 @@ public final class DarkBlue extends JFrame{
     	// Run the above on a worker thread
     	m_worker.execute();
     	
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void AssignMovingFields();
+    
+    SYNOPSIS
+        private final void AssignMovingFields();
+    
+        No parameters.
+
+    DESCRIPTION
+        This method assigns all fields that are necessary
+        for the computer to make its move.
+        This is not used for the human because some of these
+        fields may be assigned and reassigned at different points
+        due to the human using mouse clicks and making mistakes.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void AssignMovingFields(){
+        // Assign all fields from the given move
+        m_candidate = m_nextMove.GetPiece();
+        
+        m_victim = m_nextMove.GetVictim();
+        
+        if(m_victim != null){
+            m_computerPlayer.AddCapturedPiece(m_victim);
+            m_humanPlayer.RemoveActivePiece(m_victim);
+        }
+        
+        if(m_computerPlayer.IsWhite()){
+            m_blackPieces.Refresh(m_computerPlayer);
+        }else{
+            m_whitePieces.Refresh(m_computerPlayer);
+        }
+        
+        m_sourceTile = m_board.GetBoard().GetTile(m_nextMove.GetOldRow(), m_nextMove.GetOldColumn());
+    
+        m_destinationTile = m_board.GetBoard().GetTile(m_nextMove.GetNewRow(), m_nextMove.GetNewColumn());
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void AppendMove(final ChessColor a_color);
+    
+    SYNOPSIS
+        private final void AppendMove(final ChessColor a_color);
+    
+        ChessColor a_color -----------> The color whose box this move should be appended to.
+
+    DESCRIPTION
+        This method appends the given move string to
+        the appropriate move history box.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void AppendMove(final ChessColor a_color){
+        if(a_color == null){
+            return;
+        }
+        
+        if(a_color.IsWhite()){
+            m_whiteMoves.append(m_nextMove.toString());
+        }else{
+            m_blackMoves.append(m_nextMove.toString());
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void UpdateMoveClocks();
+    
+    SYNOPSIS
+        private final void UpdateMoveClocks();
+    
+        No parameters.
+
+    DESCRIPTION
+        This method updates the halfmove and fullmove clocks.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void UpdateMoveClocks(){
+        // Update the halfmove clock
+        if(m_candidate.IsPawn() || m_victim != null){
+            m_currentHalfmoves = Utilities.ZERO;
+        }else{
+            m_currentHalfmoves++;
+        }
+        
+        // Update the fullmove clock
+        if(m_previouslyMoved.IsBlack()){
+            m_fullmoves++;
+        }
+    }
+    
+    /**/
+    /*
+    NAME
+        private final void ResetMoveFields();
+    
+    SYNOPSIS
+        private final void ResetMoveFields();
+    
+        No parameters.
+
+    DESCRIPTION
+        This method resets the source tile,
+        destination tile, and next move to null.
+    
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    private final void ResetMoveFields(){
+        m_sourceTile = null;
+        m_destinationTile = null;
+        m_nextMove = null;
     }
     
     /**/
@@ -1990,7 +1704,7 @@ public final class DarkBlue extends JFrame{
         two tiles on its first move.
     
     RETURNS
-        True if a pawn moved two squares and false otherwise.
+        True if a pawn moved two tiles and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
@@ -2076,13 +1790,13 @@ public final class DarkBlue extends JFrame{
     private final void InitializePlayers(final Board a_board){
         // Determine which subtype is needed
         if(m_humanColor.IsWhite()){
-            m_white = new Human(ChessColor.WHITE, a_board);// Originally a human
-            m_black = new Computer(ChessColor.BLACK, a_board);// Originally a computer
+            m_white = new Human(ChessColor.WHITE, a_board);// White is supposed to be a human
+            m_black = new Computer(ChessColor.BLACK, a_board);// Black is supposed to be a computer
             m_humanPlayer = m_white;
             m_computerPlayer = m_black;
         }else{
-            m_white = new Computer(ChessColor.WHITE, a_board);// Originally a computer
-            m_black = new Human(ChessColor.BLACK, a_board);// Originally a human
+            m_white = new Computer(ChessColor.WHITE, a_board);// White is supposed to be a computer
+            m_black = new Human(ChessColor.BLACK, a_board);// Black is supposed to be a human
             m_humanPlayer = m_black;
             m_computerPlayer = m_white;
         }
@@ -2268,11 +1982,14 @@ public final class DarkBlue extends JFrame{
     */
     @Test
     public static final void ScrollTest(){
+        // Make a new JFrame, JScrollPane, and JTextArea
+        // with a JButton to add text
         JFrame frame = new JFrame();
         JScrollPane scroll = new JScrollPane();
         JTextArea area = new JTextArea();
         JButton button = new JButton("Add More Text");
         
+        // Place the text of the Gettysburg Address into the textbox on a button click
         button.addActionListener(new ActionListener(){
             @Override
             public final void actionPerformed(final ActionEvent e){
@@ -2280,29 +1997,38 @@ public final class DarkBlue extends JFrame{
             }
         });
         
+        // Do not allow the area to be edited by the user
         area.setEditable(false);
         
+        // Set the preferred size so the JScrollPane will be forced to adapt with scroll bars
         scroll.setPreferredSize(new Dimension(200, 200));
         scroll.add(area);
         scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         
+        // Set the viewport area to know where to scroll
         scroll.setViewportView(area);
         scroll.getPreferredSize();
         
+        // Add all elements to the frame and pack it
         frame.getContentPane().add(scroll, BorderLayout.CENTER);
         frame.getContentPane().add(button, BorderLayout.SOUTH);
         frame.pack();
+        
+        // Make the frame end the program when closed
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Start the program by making the frame visible
         frame.setVisible(true);
     }
     
     /**/
     /*
     NAME
-        private final int NthLastIndexOf(final int a_nth, final char a_char, final String a_string);
+        private final int NthLastIndexOf(int a_nth, final char a_char, String a_string);
     
     SYNOPSIS
-        private final int NthLastIndexOf(final int a_nth, final char a_char, final String a_string);
+        private final int NthLastIndexOf(int a_nth, final char a_char, String a_string);
     
         int a_nth -------------> The nth desired index.
         
@@ -2320,16 +2046,28 @@ public final class DarkBlue extends JFrame{
         int: The index of the nth-to-last occurrence of a_char.
     
     AUTHOR
-        Help taken from Stack Overflow:
+        Help inspired by an answer I found on Stack Overflow:
         https://stackoverflow.com/questions/54141716/java-second-last-occurrence-of-char-in-string
+        and from Baeldung:
+        https://www.baeldung.com/java-count-chars       
     */
-    private final int NthLastIndexOf(final int a_nth, final char a_char, final String a_string){
-        if(a_nth <= Utilities.ZERO){
-        	return a_string.length();
-        }else{
-        	final int NEXT_NTH = a_nth - Utilities.ONE;
-        	return NthLastIndexOf(NEXT_NTH, a_char, a_string.substring(Utilities.ZERO, a_string.lastIndexOf(a_char)));
+    private final int NthLastIndexOf(int a_nth, final char a_char, String a_string){
+        ////////////////////////////////////////////////////
+        // Source: https://www.baeldung.com/java-count-chars
+        final long COUNT = a_string.chars().filter(ch -> ch == a_char).count();
+        ////////////////////////////////////////////////////
+        
+        if(a_nth <= Utilities.ZERO || a_nth > COUNT){
+            return a_string.length();
         }
+        
+        while(a_nth > Utilities.ZERO){
+            a_string = a_string.substring(Utilities.ZERO, a_string.lastIndexOf(a_char));
+            
+            a_nth--;
+        }
+        
+        return a_string.length();
     }
     
     /**/
@@ -2386,7 +2124,7 @@ public final class DarkBlue extends JFrame{
     
     DESCRIPTION
         This method removes a captured piece icon from a captured piece panel after
-        undoing a move. Sorted order is still maintained as described in the class.
+        undoing a move if necessary. Sorted order is still maintained as described in the class.
 
     RETURNS
         Nothing
@@ -2395,15 +2133,19 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
     private final void AdjustCapturedPieces(final String a_cutoff, final Player a_player){
+        // Find the last made move, if any
         final String LAST_MOVE = (NumberOfNewlines(a_cutoff) >= Utilities.TWO ? a_cutoff.substring(NthLastIndexOf(Utilities.TWO, '\n', a_cutoff)) : a_cutoff);               
         
+        // Determine if it was an attacking or en passant move
         if(LAST_MOVE.contains("x")){
+            // Find the piece that was captured on the tile
             final int LIMIT = LAST_MOVE.indexOf('x');
             final String TILE = LAST_MOVE.substring(LIMIT + Utilities.ONE, LIMIT + Utilities.THREE);
                 
             final int ROW = BoardUtilities.ToBoardRow(TILE);
             final int COLUMN = BoardUtilities.ToBoardColumn(TILE);
                 
+            // Find that piece in the player's captured pieces and remove it
             for(final Piece PIECE : a_player.GetCapturedPieces()){
                 if(PIECE.GetCurrentRow() == ROW && PIECE.GetCurrentColumn() == COLUMN){
                     a_player.RemoveCapturedPiece(PIECE);
@@ -2458,6 +2200,7 @@ public final class DarkBlue extends JFrame{
     			// Build the old board
     			ParseFEN(OLD_BOARD, false);
     			
+    			// Draw the old board
     			m_board.DrawBoard();
 
     			// Get rid of the old board
@@ -2481,7 +2224,7 @@ public final class DarkBlue extends JFrame{
     				final int WHITE_INDEX = NthLastIndexOf(Utilities.TWO, '\n', WHITE_MOVES);
     				
     				// Do not display the move that was just made on either side
-    				NEW_WHITE = WHITE_MOVES.substring(Utilities.ZERO, WHITE_INDEX);
+    				NEW_WHITE = WHITE_MOVES.substring(Utilities.ZERO, WHITE_INDEX) + "\n";
     				WHITE_CUTOFF = WHITE_MOVES.substring(WHITE_INDEX);
     			}else{
     				// If only one \n exists, clear the entire history
@@ -2494,7 +2237,7 @@ public final class DarkBlue extends JFrame{
     				final int BLACK_INDEX = NthLastIndexOf(Utilities.TWO, '\n', BLACK_MOVES);
     				
     				// Do not display the move that was just made on either side
-    				NEW_BLACK = BLACK_MOVES.substring(Utilities.ZERO, BLACK_INDEX);
+    				NEW_BLACK = BLACK_MOVES.substring(Utilities.ZERO, BLACK_INDEX) + "\n";
     				BLACK_CUTOFF = BLACK_MOVES.substring(BLACK_INDEX);
     			}else{
     				// If only one \n exists, clear the entire history
@@ -2506,18 +2249,23 @@ public final class DarkBlue extends JFrame{
     			m_whiteMoves.setText(NEW_WHITE);
     			m_blackMoves.setText(NEW_BLACK);
     			
+    			
+    			// Remove any captured pieces taken on the previous turn
     			String LAST_WHITE = (!BLACK_CUTOFF.equals(BLACK_MOVES) ? BLACK_CUTOFF.substring(NthLastIndexOf(Utilities.TWO, '\n', BLACK_CUTOFF)) : BLACK_CUTOFF);
-    			    
+    			
     			AdjustCapturedPieces(LAST_WHITE, m_black);
     			
     			String LAST_BLACK = (!WHITE_CUTOFF.equals(WHITE_MOVES) ? WHITE_CUTOFF.substring(NthLastIndexOf(Utilities.TWO, '\n', WHITE_CUTOFF)) : WHITE_CUTOFF);
                     
                 AdjustCapturedPieces(LAST_BLACK, m_white);
     			
+                // Refresh the panels accordingly
     			m_blackPieces.Refresh(m_white);
     			m_whitePieces.Refresh(m_black);
     			
+    			// Get only the configuration of the old board
     			final String OLD = OLD_BOARD.split(" ")[Utilities.ZERO];
+    			
     			// Remove one copy of the board from the hash to prevent accidents regarding threefold repetition
     			if(m_positions.containsKey(OLD)){
     				if(m_positions.get(OLD) <= Utilities.ONE){
@@ -2535,9 +2283,9 @@ public final class DarkBlue extends JFrame{
     	}else{
     		JOptionPane.showMessageDialog(m_menuBar, "No previous history available.", TITLE, JOptionPane.ERROR_MESSAGE);
     	}
-    }
+    }// End of DarkBlueMenuBar class
     
-    /*
+    /**
      * This class represents a GUI depiction of a Tile object.
      * 
      * It contains a model Tile and can also contain a PNG image of a 
@@ -2808,10 +2556,10 @@ public final class DarkBlue extends JFrame{
         /**/
         /*
         NAME
-            public final void Respond(final String a_eventSource);
+            private final void Respond(final String a_eventSource);
         
         SYNOPSIS
-            public final void Respond(final String a_eventSource);
+            private final void Respond(final String a_eventSource);
         
             String a_eventSource -----> The algebraic string representation of the tile the user clicked.
         
@@ -2829,10 +2577,10 @@ public final class DarkBlue extends JFrame{
         
         AUTHOR
             Amir Afghani, Black Widow Chess
-            with changes made specifically for this engine by Ryan King
             https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
+            with changes made specifically for this engine by Ryan King
         */
-        public final void Respond(final String a_eventSource){
+        private final void Respond(final String a_eventSource){
             // The player has not selected a tile
             if(m_sourceTile == null){
             	// Find the tile that was clicked
@@ -2845,13 +2593,8 @@ public final class DarkBlue extends JFrame{
                 if(m_sourceTile.IsOccupied() && m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && m_candidate.CanMove()){
                     m_shouldHighlightLegalMoves = true;
                 }else{
-                    if(m_sourceTile.IsEmpty()){
-                        JOptionPane.showMessageDialog(m_menuBar, "That tile is empty.", "Empty Tile", JOptionPane.PLAIN_MESSAGE);
-                    }else if(m_sourceTile.IsOccupied() && m_candidate.GetColor().IsEnemy(m_currentPlayer.GetColor())){
-                        JOptionPane.showMessageDialog(m_menuBar, "That piece is not your color.", "Wrong Color", JOptionPane.PLAIN_MESSAGE);
-                    }else if(m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && !m_candidate.CanMove()){
-                        JOptionPane.showMessageDialog(m_menuBar, "That piece has no legal moves.", "No Moves", JOptionPane.PLAIN_MESSAGE);
-                    }
+                    // Show dialog boxes to report specific types of errors
+                    ShowSourceErrorMessage();
                     m_sourceTile = null;
                 }
             }else{ 
@@ -2867,64 +2610,188 @@ public final class DarkBlue extends JFrame{
               
                 // The player deselected his/her current piece
                 if(m_sourceTile.GetRow() == m_destinationTile.GetRow() && m_sourceTile.GetColumn() == m_destinationTile.GetColumn()){
-                    m_shouldHighlightLegalMoves = false;
-                    m_sourceTile = null;
-                    m_destinationTile = null;
+                    ResetHumanFields();
                 }else{
                 	// The player chose a place to move                	 
                     if(Utilities.IsLegal(m_candidate, m_destinationTile.GetRow(), m_destinationTile.GetColumn())){
-                    	m_shouldHighlightLegalMoves = false;
-                    	
-                    	// Generate a copy of the victim
-                        m_victim = m_destinationTile.GetPiece();                                                                                
-                        
-                        // Make a copy of the next move
-                        m_nextMove = Factory.MoveFactory(m_candidate, m_destinationTile.GetRow(), m_destinationTile.GetColumn(), m_victim, m_board.GetBoard());
-                        
-                        // Make a copy of the piece that just got moved
-                        EvaluatePreviouslyMoved();
-                        
-                        // Assign the en passant tile, if any
-                        AssignEnPassantTile();
-                        
-                        // Reset the board for repainting
-                        AssignBoard();
-                        
-                        if(m_nextMove.GetVictim() != null){
-                            m_humanPlayer.AddCapturedPiece(m_nextMove.GetVictim());
-                            m_computerPlayer.RemoveActivePiece(m_nextMove.GetVictim());
-                        } 
-                        
-                        // Update the captured piece panel if necessary
-                        if(m_currentPlayer.IsWhite()){
-                            m_blackPieces.Refresh(m_humanPlayer);
-                        }else{
-                            m_whitePieces.Refresh(m_humanPlayer);
-                        } 
-                        
-                        // Record the new move in the correct text field
-                        final MoveTextArea AREA = (m_currentPlayer.IsWhite() ? m_whiteMoves : m_blackMoves);
-                        
-                        AREA.append(m_nextMove.toString());
-                        
-                        // Determine whether to reset the halfmove clock
-                        if(m_candidate.IsPawn() || m_victim != null){
-                            m_currentHalfmoves = Utilities.ZERO;
-                        }else{
-                            m_currentHalfmoves++;
-                        }
-                        
-                        // Increment the fullmove clock if needed
-                        if(m_previouslyMoved.IsBlack()){
-                        	m_fullmoves++;
-                        }                    
+                        PlayThrough();
                     }else{
+                        // Report if the move attempted to be made was illegal
                         JOptionPane.showMessageDialog(m_menuBar, "That move is illegal.", "Illegal Move", JOptionPane.PLAIN_MESSAGE);
+                        
+                        // Reset the necessary fields
                         m_destinationTile = null;
                         m_originalRow = ROW;
                         m_originalColumn = COLUMN;
                     }
                 }
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void ShowSourceErrorMessage();
+        
+        SYNOPSIS
+            private final void ShowSourceErrorMessage();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method shows a popup error message that differs depending on
+            what the human player did wrong.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void ShowSourceErrorMessage(){
+            if(m_sourceTile.IsEmpty()){
+                JOptionPane.showMessageDialog(m_menuBar, "That tile is empty.", "Empty Tile", JOptionPane.PLAIN_MESSAGE);
+            }else if(m_sourceTile.IsOccupied() && m_candidate.GetColor().IsEnemy(m_currentPlayer.GetColor())){
+                JOptionPane.showMessageDialog(m_menuBar, "That piece is not your color.", "Wrong Color", JOptionPane.PLAIN_MESSAGE);
+            }else if(m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && !m_candidate.CanMove()){
+                JOptionPane.showMessageDialog(m_menuBar, "That piece has no legal moves.", "No Moves", JOptionPane.PLAIN_MESSAGE);
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void ResetHumanFields();
+        
+        SYNOPSIS
+            private final void ResetHumanFields();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method resets the source and destination tiles
+            as well as the legal move highlighting flag.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void ResetHumanFields(){
+            m_shouldHighlightLegalMoves = false;
+            m_sourceTile = null;
+            m_destinationTile = null;
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void PlayThrough();
+        
+        SYNOPSIS
+            private final void PlayThrough();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method makes the human player's move,
+            updates the captured piece panels, and appends
+            the move to the appropriate text area.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void PlayThrough(){
+            m_shouldHighlightLegalMoves = false;
+            
+            // Generate a copy of the victim
+            m_victim = m_destinationTile.GetPiece();                                                                                
+            
+            // Make a copy of the next move
+            m_nextMove = Factory.MoveFactory(m_candidate, m_destinationTile.GetRow(), m_destinationTile.GetColumn(), m_victim, m_board.GetBoard());
+            
+            // Make a copy of the piece that just got moved
+            EvaluatePreviouslyMoved();
+            
+            // Assign the en passant tile, if any
+            AssignEnPassantTile();
+            
+            // Reset the board for repainting
+            AssignBoard();
+            
+            // Update captured pieces
+            final Player OPPONENT = (m_currentPlayer.IsWhite() ? m_black : m_white);
+            
+            UpdateCapturedPieces(OPPONENT);
+            
+            // Update the captured piece panel if necessary
+            UpdateCapturedPiecePanel();
+            
+            // Record the new move in the correct text field
+            final MoveTextArea AREA = (m_currentPlayer.IsWhite() ? m_whiteMoves : m_blackMoves);
+            
+            AREA.append(m_nextMove.toString());
+            
+            // Determine whether to reset the halfmove clock
+            UpdateMoveClocks();
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void UpdateCapturedPieces(final Player a_opponent);
+        
+        SYNOPSIS
+            private final void UpdateCapturedPieces(final Player a_opponent);
+        
+            Player a_opponent -----------> The opponent.
+        
+        DESCRIPTION
+            This method updates a piece the player captured
+            by adding it to their captured piece list and removing
+            it from the opponent's. This does nothing if the victim is null.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void UpdateCapturedPieces(final Player a_opponent){
+            if(m_nextMove.GetVictim() != null){
+                m_currentPlayer.AddCapturedPiece(m_nextMove.GetVictim());
+                a_opponent.RemoveActivePiece(m_nextMove.GetVictim());
+            }
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void UpdateCapturedPiecePanel();
+        
+        SYNOPSIS
+            private final void UpdateCapturedPiecePanel();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method updates the moving player's captured piece panel.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void UpdateCapturedPiecePanel(){
+            if(m_currentPlayer.IsWhite()){
+                m_blackPieces.Refresh(m_currentPlayer);
+            }else{
+                m_whitePieces.Refresh(m_currentPlayer);
             }
         }
         
@@ -3154,11 +3021,11 @@ public final class DarkBlue extends JFrame{
         */
         @Override
         public final String toString(){
-            return BoardUtilities.ToAlgebraic(this.GetRow(), this.GetColumn());
+            return this.GetTile().toString();
         }
     }// End of GUITile class
     
-    /*
+    /**
      * This class represents a GUI depiction of a Board object.
      * 
      * It contains a model Board object and has access to some
@@ -3304,7 +3171,7 @@ public final class DarkBlue extends JFrame{
         	This method returns the number of pieces on the current board.
         
         RETURNS
-        	m_board.PieceCount(): The number of pieces on the current board.
+        	int: m_board.PieceCount(): The number of pieces on the current board.
         
         AUTHOR
             Ryan King
@@ -3343,48 +3210,131 @@ public final class DarkBlue extends JFrame{
                 // Add a normal GUITile if it is within the boundaries of the board
                 if(BoardUtilities.HasValidCoordinates(ROW - Utilities.ONE, COLUMN - Utilities.ONE)){
                 	this.m_tiles[ROW][COLUMN] = new GUITile(m_board.GetTile(ROW - Utilities.ONE, COLUMN - Utilities.ONE));
-                	this.m_tiles[ROW][COLUMN].setAlignmentX(Component.CENTER_ALIGNMENT);
-                	this.m_tiles[ROW][COLUMN].setAlignmentY(Component.CENTER_ALIGNMENT);
                 	this.add(m_tiles[ROW][COLUMN]);
                 }else{
-                    // Set a center-aligned border tile with the proper letter or number
-                	final JPanel BORDER_TILE = new JPanel();
-                	BORDER_TILE.setBackground(this.BORDER_RED);
-                	BORDER_TILE.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-                	BORDER_TILE.setAlignmentX(Component.CENTER_ALIGNMENT);
-                	BORDER_TILE.setAlignmentY(Component.CENTER_ALIGNMENT);
-                	
-                	// Add a letter
-                	if(ROW == Utilities.ZERO || ROW == Utilities.NINE){
-                		if(COLUMN != Utilities.ZERO && COLUMN != Utilities.NINE){
-                			final JLabel LETTER = new JLabel();             			
-                			LETTER.setText(BoardUtilities.ToAlgebraicColumn(COLUMN - Utilities.ONE).toUpperCase());
-                			LETTER.setForeground(Color.WHITE);
-                			Utilities.EnlargeFont(LETTER);
-                    		
-                    		LETTER.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    		LETTER.setAlignmentY(Component.CENTER_ALIGNMENT);
-                    		
-                    		BORDER_TILE.add(LETTER);
-                		}
-                		// Add a number
-                	}else if(COLUMN == Utilities.ZERO || COLUMN == Utilities.NINE){
-                		if(ROW != Utilities.ZERO && ROW != Utilities.NINE){
-                			final JLabel NUMBER = new JLabel();
-                			NUMBER.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-                			NUMBER.setText(BoardUtilities.ToAlgebraicRow(ROW - Utilities.ONE));
-                			NUMBER.setForeground(Color.WHITE);
-                			Utilities.EnlargeFont(NUMBER);
-                    		
-                    		NUMBER.setAlignmentX(Component.CENTER_ALIGNMENT);
-                    		NUMBER.setAlignmentY(Component.CENTER_ALIGNMENT);
-                    		
-                    		BORDER_TILE.add(NUMBER);
-                		}
-                	}
-                	this.add(BORDER_TILE);
+                    AddWhiteBorderTile(ROW, COLUMN);
                 }
             }
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void AddWhiteBorderTile(final int a_row, final int a_column);
+        
+        SYNOPSIS
+            private final void AddWhiteBorderTile(final int a_row, final int a_column);
+        
+            int a_row --------------> The row of the grid.
+            
+            int a_column -----------> The column of the grid.
+        
+        DESCRIPTION
+            This method inserts a non-functional "border tile"
+            on the outside of the chessboard with algebraic notation
+            if it is not a corner. This varies depending upon which 
+            side the human player chose.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King, with additional help taken from:
+            https://stackoverflow.com/questions/8675038/increasing-decreasing-font-size-inside-textarea-using-jbutton
+        */
+        private final void AddWhiteBorderTile(final int a_row, final int a_column){
+            // Set a center-aligned border tile with the proper letter or number
+            final JPanel BORDER_TILE = new JPanel();
+            BORDER_TILE.setBackground(this.BORDER_RED);
+            BORDER_TILE.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+            BORDER_TILE.setAlignmentX(Component.CENTER_ALIGNMENT);
+            BORDER_TILE.setAlignmentY(Component.CENTER_ALIGNMENT);
+            
+            // Add a letter
+            if(a_row == Utilities.ZERO || a_row == Utilities.NINE){
+                if(a_column != Utilities.ZERO && a_column != Utilities.NINE){
+                    final JLabel LETTER = new JLabel();                         
+                    LETTER.setText(BoardUtilities.ToAlgebraicColumn(a_column - Utilities.ONE).toUpperCase());
+                    LETTER.setForeground(Color.WHITE);
+                    Utilities.EnlargeFont(LETTER);
+                    
+                    LETTER.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    LETTER.setAlignmentY(Component.CENTER_ALIGNMENT);
+                    
+                    BORDER_TILE.add(LETTER);
+                }
+                // Add a number
+            }else if(a_column == Utilities.ZERO || a_column == Utilities.NINE){
+                if(a_row != Utilities.ZERO && a_row != Utilities.NINE){
+                    final JLabel NUMBER = new JLabel();
+                    NUMBER.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+                    NUMBER.setText(BoardUtilities.ToAlgebraicRow(a_row - Utilities.ONE));
+                    NUMBER.setForeground(Color.WHITE);
+                    Utilities.EnlargeFont(NUMBER);
+                    
+                    NUMBER.setAlignmentX(Component.CENTER_ALIGNMENT);
+                    NUMBER.setAlignmentY(Component.CENTER_ALIGNMENT);
+                    
+                    BORDER_TILE.add(NUMBER);
+                }
+            }
+            this.add(BORDER_TILE);
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void AddBlackBorderTile(final int a_row, final int a_column);
+        
+        SYNOPSIS
+            private final void AddBlackBorderTile(final int a_row, final int a_column);
+        
+            int a_row --------------> The row of the grid.
+            
+            int a_column -----------> The column of the grid.
+        
+        DESCRIPTION
+            This method inserts a non-functional "border tile"
+            on the outside of the chessboard with algebraic notation
+            if it is not a corner. This varies depending upon which 
+            side the human player chose.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King, with additional help taken from:
+            https://stackoverflow.com/questions/8675038/increasing-decreasing-font-size-inside-textarea-using-jbutton
+        */
+        private final void AddBlackBorderTile(final int a_row, final int a_column){
+            final JPanel BORDER_TILE = new JPanel();
+            BORDER_TILE.setBackground(this.BORDER_RED);
+            BORDER_TILE.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+            BORDER_TILE.setAlignmentX(Component.CENTER_ALIGNMENT);
+            BORDER_TILE.setAlignmentY(Component.CENTER_ALIGNMENT);
+            
+            // Add a letter
+            if(a_row == Utilities.ZERO || a_row == Utilities.NINE){
+                if(a_column != Utilities.ZERO && a_column != Utilities.NINE){
+                    final JLabel LETTER = new JLabel();
+                    LETTER.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+                    LETTER.setText(BoardUtilities.ToAlgebraicColumn(a_column - Utilities.ONE).toUpperCase());
+                    LETTER.setForeground(Color.WHITE);
+                    Utilities.EnlargeFont(LETTER);
+                    BORDER_TILE.add(LETTER);
+                }
+                // Add a number
+            }else if(a_column == Utilities.ZERO || a_column == Utilities.NINE){
+                if(a_row != Utilities.ZERO && a_row != Utilities.NINE){
+                    final JLabel NUMBER = new JLabel();
+                    NUMBER.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+                    NUMBER.setText(Integer.toString(Utilities.EIGHT - (a_row - Utilities.ONE)));
+                    NUMBER.setForeground(Color.WHITE);
+                    Utilities.EnlargeFont(NUMBER);
+                    BORDER_TILE.add(NUMBER);
+                }
+            }
+            this.add(BORDER_TILE);
         }
         
         /**/
@@ -3417,31 +3367,7 @@ public final class DarkBlue extends JFrame{
                 	this.m_tiles[Utilities.SEVEN - (ROW - Utilities.ONE)][Utilities.SEVEN - (COLUMN - Utilities.ONE)] = new GUITile(m_board.GetTile(ROW - Utilities.ONE, COLUMN - Utilities.ONE));
                 	this.add(m_tiles[Utilities.SEVEN - (ROW - Utilities.ONE)][Utilities.SEVEN - (COLUMN - Utilities.ONE)]);
                 }else{
-                	final JPanel BORDER_TILE = new JPanel();
-                	BORDER_TILE.setBackground(this.BORDER_RED);
-                	
-                	// Add a letter
-                	if(ROW == Utilities.ZERO || ROW == Utilities.NINE){
-                		if(COLUMN != Utilities.ZERO && COLUMN != Utilities.NINE){
-                			final JLabel LETTER = new JLabel();
-                			LETTER.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-                			LETTER.setText(BoardUtilities.ToAlgebraicColumn(COLUMN - Utilities.ONE).toUpperCase());
-                			LETTER.setForeground(Color.WHITE);
-                			Utilities.EnlargeFont(LETTER);
-                			BORDER_TILE.add(LETTER);
-                		}
-                		// Add a number
-                	}else if(COLUMN == Utilities.ZERO || COLUMN == Utilities.NINE){
-                		if(ROW != Utilities.ZERO && ROW != Utilities.NINE){
-                			final JLabel NUMBER = new JLabel();
-                			NUMBER.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-                			NUMBER.setText(Integer.toString(Utilities.EIGHT - (ROW - Utilities.ONE)));
-                			NUMBER.setForeground(Color.WHITE);
-                			Utilities.EnlargeFont(NUMBER);
-                			BORDER_TILE.add(NUMBER);
-                		}
-                	}
-                	this.add(BORDER_TILE);
+                	AddBlackBorderTile(ROW, COLUMN);
                 }
             }
         }
@@ -3470,6 +3396,7 @@ public final class DarkBlue extends JFrame{
             return this.m_board;
         }
         
+        /**/
         /*
         NAME
             public final ChessColor WhoseTurnIsIt();
@@ -3493,7 +3420,7 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         public final ChessColor WhoseTurnIsIt(){
-            return m_board.WhoseTurnIsIt();
+            return this.m_board.WhoseTurnIsIt();
         }
         
         /**/
@@ -3522,14 +3449,14 @@ public final class DarkBlue extends JFrame{
         public final GUITile GetTile(final int a_row, final int a_column){
             // Only return a tile if the coordinates are valid
             if((a_row >= Utilities.ZERO && a_row < Utilities.TEN) && (a_column >= Utilities.ZERO && a_column < Utilities.TEN)){
-                return m_tiles[a_row][a_column];
+                return this.m_tiles[a_row][a_column];
             }else{
                 return null;
             }
         }
     }// End of GUIBoard class
     
-    /*
+    /**
      * This class is my custom extension of the JMenuBar made specifically for this engine.
      * 
      * It contains a File menu. This contains:
@@ -3566,13 +3493,14 @@ public final class DarkBlue extends JFrame{
     	private final JMenu m_file = new JMenu("File");
         private final JMenuItem m_newGame = new JMenuItem("New Game");
         private final JMenu m_loadGame = new JMenu("Load Game...");
-        private final JMenuItem m_save = new JMenuItem("Save");
-        private final JMenuItem m_quit = new JMenuItem("Quit");
+        private final JMenuItem m_save = new JMenuItem("Save Game");
+        private final JMenuItem m_stop = new JMenuItem("Stop Game");
+        private final JMenuItem m_quit = new JMenuItem("Quit Game");
         private final JMenuItem m_undo = new JMenuItem("Undo");
         
         // Load Game submenu
         private final JMenuItem m_fromFile = new JMenuItem("From File");
-        private final JMenuItem m_customFEN = new JMenuItem("From Custom FEN...");
+        private final JMenuItem m_customFEN = new JMenuItem("From Custom FEN");
         
         // Help menu and associated buttons
         private final JMenu m_help = new JMenu("Help");
@@ -3630,15 +3558,16 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         private final void AddMnemonics(){
-        	m_newGame.setMnemonic('N');
-        	m_save.setMnemonic('S');
-        	m_quit.setMnemonic('Q');
-        	m_helpMeMove.setMnemonic('H');
-        	m_instructions.setMnemonic('I');
-        	m_rules.setMnemonic('R');
-        	m_fromFile.setMnemonic('F');
-        	m_customFEN.setMnemonic('C');
-        	m_undo.setMnemonic('U');
+        	this.m_newGame.setMnemonic('N');
+        	this.m_save.setMnemonic('S');
+        	this.m_stop.setMnemonic('G');
+        	this.m_quit.setMnemonic('Q');
+        	this.m_helpMeMove.setMnemonic('H');
+        	this.m_instructions.setMnemonic('I');
+        	this.m_rules.setMnemonic('R');
+        	this.m_fromFile.setMnemonic('F');
+        	this.m_customFEN.setMnemonic('C');
+        	this.m_undo.setMnemonic('U');
         }
         
         /**/
@@ -3663,15 +3592,16 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         private final void AddActionListeners(){
-        	m_newGame.addActionListener(this);
-        	m_save.addActionListener(this);
-        	m_quit.addActionListener(this);
-        	m_helpMeMove.addActionListener(this);
-        	m_instructions.addActionListener(this);
-        	m_rules.addActionListener(this);
-        	m_fromFile.addActionListener(this);
-        	m_customFEN.addActionListener(this);
-        	m_undo.addActionListener(this);
+            this.m_newGame.addActionListener(this);
+            this.m_save.addActionListener(this);
+            this.m_stop.addActionListener(this);
+            this.m_quit.addActionListener(this);
+            this.m_helpMeMove.addActionListener(this);
+            this.m_instructions.addActionListener(this);
+            this.m_rules.addActionListener(this);
+            this.m_fromFile.addActionListener(this);
+            this.m_customFEN.addActionListener(this);
+            this.m_undo.addActionListener(this);
         }
         
         /**/
@@ -3695,20 +3625,21 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         private final void AddItemsToMenu(){
-        	m_file.add(m_newGame);
-        	m_file.add(m_loadGame);
-        	m_file.add(m_undo);
-        	m_file.add(m_save);
-        	m_file.add(m_quit);
-        	this.add(m_file);
+            this.m_file.add(this.m_newGame);
+            this.m_file.add(this.m_loadGame);
+            this.m_file.add(this.m_undo);
+            this.m_file.add(this.m_save);
+            this.m_file.add(this.m_stop);
+            this.m_file.add(this.m_quit);
+        	this.add(this.m_file);
         	
-        	m_loadGame.add(m_fromFile);
-        	m_loadGame.add(m_customFEN);
+        	this.m_loadGame.add(this.m_fromFile);
+        	this.m_loadGame.add(this.m_customFEN);
         	
-        	m_help.add(m_helpMeMove);
-        	m_help.add(m_instructions);
-        	m_help.add(m_rules);
-        	this.add(m_help);
+        	this.m_help.add(this.m_helpMeMove);
+        	this.m_help.add(this.m_instructions);
+        	this.m_help.add(this.m_rules);
+        	this.add(this.m_help);
         }
         
         /**/
@@ -3724,6 +3655,7 @@ public final class DarkBlue extends JFrame{
         DESCRIPTION
             This method starts a new game
             after the New Game button is clicked.
+            This can only work if no game is currently in progress.
             It resets all UI elements and serialization fields,
             lets the human choose a color, then 
             initializes and draws the board
@@ -3737,63 +3669,83 @@ public final class DarkBlue extends JFrame{
         */
         private final void NewGameClicked(){
         	// Confirm if the user really wants to quit a game in progress if such a game has not ended
-    		if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
-    			if(JOptionPane.showConfirmDialog(this, "Do you really want to quit this game?", TITLE, JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION){
-    				return;
-    			}
-    		}
+            if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
+                JOptionPane.showMessageDialog(m_menuBar, "Please save or stop the current game before starting a new one.", "Game In Progress", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
     		
+            // Reset fields
     		m_filename = null;
-    				
-    		// Reset serialization fields  				
-    		m_isPreviouslySavedGame = true;
-            m_canWhiteKingsideCastle = false;
-            m_canWhiteQueensideCastle = false;
-            m_canBlackKingsideCastle = false;
-            m_canBlackQueensideCastle = false;
-            m_enPassantTile = null;
+    		m_enPassantTile = null;
+ 				
+            ClearGameFields();
             		
-            // Reset UI elements
-            m_whiteMoves.setText("");
-            m_blackMoves.setText("");
-            m_whitePieces.Clear();
-            m_blackPieces.Clear();
-            		
-            // Game state must be normal at the start of a new game
+            // The game state must be normal at the start of a new game
             m_gameState = GameState.NORMAL;
-
-            // Reset mouse-driven fields
-    		m_sourceTile = null;
-    		m_destinationTile = null;
-
-    		m_candidate = null;
-    		m_victim = null;
-    		m_nextMove = null;
+          
+    		// Preserve the chosen colors
+            m_originalHuman = m_humanColor;
+            m_originalComputer = m_computerColor;
     		
-    		// Reset the move clocks
-    		m_currentHalfmoves = Utilities.ZERO;
-    		m_fullmoves = Utilities.ONE;
-
-    		// Reset the position history
-    		m_positions.clear();
-    		m_gameHistory.clear();
-    			   
-    		// Let the human player choose which side s/he wants to play as
-    		ChooseColor();
-    		
-    		// Initialize and draw the board
+    		// Initialize the board and players
     		m_board.SetBoard(Board.GetStartingPosition());
     		InitializePlayers(m_board.GetBoard());
+
+    		// Seralize the board
+    		final String BOARD = Serialize();
+    		
+    		// Stop the game from starting if it is unplayable
+    		if(!GameUtilities.IsPlayable(BOARD, ChessColor.WHITE) || !GameUtilities.IsPlayable(BOARD, ChessColor.BLACK)){
+    		    ResetAfterUnplayableGame();
+                
+                // Send the user an error message saying the game is unplayable
+    		    JOptionPane.showMessageDialog(m_menuBar, "This game is not playable.", "Unplayable Game", JOptionPane.ERROR_MESSAGE);
+    		    return;
+    		}
+    		
+    		// Let the human player choose which side s/he wants to play as
+            ChooseColor();
+    		
     		m_board.DrawBoard();
     		
-    		// White always goes first
-    		m_currentPlayer = m_white;
+    		// Set the current player
+    		m_currentPlayer = (m_board.WhoseTurnIsIt().IsWhite() ? m_white : m_black);
     		
     		// Enable these buttons on the menu
     		EnableLiveGameButtons();
     		
     		// Watch for any game-ending conditions (not relevant for starting a new game)
-    		m_watcher.Observe();
+       		m_watcher.Observe();
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void ResetAfterUnplayableGame();
+        
+        SYNOPSIS
+            private final void ResetAfterUnplayableGame();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method resets and clears all fields after
+            a game is considered to be unplayable.
+            Original color choices will be restored.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void ResetAfterUnplayableGame(){
+            // Clear the board
+            ClearGameFields();
+            
+            // Reset the chosen colors
+            m_humanColor = m_originalHuman;
+            m_computerColor = m_originalComputer;
         }
         
         /**/
@@ -3810,10 +3762,13 @@ public final class DarkBlue extends JFrame{
             This method opens up a JFileChooser
             to allow the user to open a FEN file
             after the Load Game... -> From File button is clicked.
+            This can only work if no game is currently in progress.
             It resets all UI elements and serialization fields,
-            lets the human choose a color, then 
-            initializes and draws the board
-            before calling the observer.
+            validates the FEN string in the file,
+            lets the human choose a color, 
+            then validates that the game is playable
+            before initializing and drawing the board
+            then calling the observer.
         
         RETURNS
             Nothing
@@ -3821,40 +3776,47 @@ public final class DarkBlue extends JFrame{
         AUTHOR
             Ryan King
         */
-        private final void FromFileClicked(){  		
+        private final void FromFileClicked(){ 
+            // Clear the UI elements and reset necessary fields
+            ClearGameFields();
+            
+            if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
+                JOptionPane.showMessageDialog(m_menuBar, "Please save or stop the current game before starting a new one.", "Game In Progress", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
     		// Parse the board
        		if(!Deserialize() && m_filename != null){ 
-       		    JOptionPane.showMessageDialog(m_menuBar, "The file could not be parsed.", "Parser Error", JOptionPane.ERROR_MESSAGE);
+       		    if(!m_isParsable){
+       		        JOptionPane.showMessageDialog(m_menuBar, "The chosen file could not be parsed.", "Parser Error", JOptionPane.ERROR_MESSAGE);
+       		    }else{
+       		        JOptionPane.showMessageDialog(m_menuBar, "This game is not playable.", "Unplayable Game", JOptionPane.ERROR_MESSAGE);
+       		    }
+       		    m_isParsable = false;
        		    m_filename = null;
        		    return;
        		}else if(m_filename == null){
        		    return;
        		}
-       		
-       		// Clear the UI elements and reset necessary fields
-            m_whiteMoves.setText("");
-            m_blackMoves.setText("");
-            m_whitePieces.Clear();
-            m_blackPieces.Clear();
-            m_isPreviouslySavedGame = true;
-            
+
             m_filename = null;
-       		
-       		// See which color the human wants to be
-       		ChooseColor();
        		
        		// Initialize both players
        		InitializePlayers(m_board.GetBoard());
        		
        		// Enable these buttons because they will be needed
         	EnableLiveGameButtons();
-
-        	// Reset the history
-    		m_positions.clear();
-    		m_gameHistory.clear();
     		
+        	// Allow the human player to choose his/her color
+            ChooseColor();
+        	
     		// Assign the current player based on the turn information given
-    		m_currentPlayer = (m_board.GetBoard().WhoseTurnIsIt().IsWhite() ? m_white : m_black);
+    		m_currentPlayer = (m_board.WhoseTurnIsIt().IsWhite() ? m_white : m_black);
+    		
+    		m_board.DrawBoard();
+    		
+    		// Show a "Check!" message if necessary because the observer will not
+    		CheckStatusAndResume();
     		
     		// Observe any potential game-ending conditions
         	m_watcher.Observe();
@@ -3875,8 +3837,7 @@ public final class DarkBlue extends JFrame{
             after the Save button is clicked.
             It resets all UI elements and some serialization fields,
             clears the board, and tells the user what name the file is.
-            All files are saved in the "Serial" folder in the working directory
-            of this project.
+            All files are saved in the "Serial" folder located inside this project.
         
         RETURNS
             Nothing
@@ -3885,6 +3846,13 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         private final void SaveClicked(){
+            // Ask if the user wants to save the game
+            final int SAVE = JOptionPane.showConfirmDialog(this, "Would you like to save this game?", "Save Game", JOptionPane.YES_NO_OPTION);
+            
+            if(SAVE == JOptionPane.NO_OPTION){
+                return;
+            }
+            
         	// Turn the game information into a FEN string
         	final String FEN = Serialize();
         	
@@ -3893,42 +3861,77 @@ public final class DarkBlue extends JFrame{
         	
         	try{
         		// Write the FEN string to a file
-        		final OutputStreamWriter OUT = new OutputStreamWriter(new FileOutputStream("src/com/DarkBlue/Serial/" + FILE), "UTF-8");
-        		
-        		OUT.write(FEN);
-        		
-        		OUT.flush();
-        		
-        		OUT.close();
+        		WriteFile(FILE, FEN);
         		
         		// Disable these buttons as they are not usable when not playing a game
         		DisableLiveGameButtons();
         		
-        		// Clear the board
-        		m_board.SetBoard(Board.GetEmptyBoard());
-        		        		
-        		m_board.DrawBoard();
-        		
-        		// Clear the move history textboxes
-        		m_whiteMoves.setText("");
-        		m_blackMoves.setText("");
-        		
-        		// Reset the move clocks
-        		m_currentHalfmoves = Utilities.ZERO;
-        		m_fullmoves = Utilities.ONE;
-
-        		// Reset the game history
-        		m_positions.clear();
-        		m_gameHistory.clear();
-        		
-        		// Reset the game state
-        		m_gameState = GameState.EMPTY;
+        		// Reset all fields
+        		ClearGameFields();
         		
         		// Inform the user of the filename to find later
-        		JOptionPane.showMessageDialog(m_instance, "Game saved as \"" + FILE + "\".", TITLE, JOptionPane.PLAIN_MESSAGE);
+        		JOptionPane.showMessageDialog(m_instance, "Game saved as \"" + FILE + "\".", "Game Saved Successfully", JOptionPane.PLAIN_MESSAGE);
         	}catch(Exception e){
         		e.printStackTrace();
         	}
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void ClearGameFields();
+        
+        SYNOPSIS
+            private final void ClearGameFields();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method clears all the game fields
+            including text areas, captured piece panels,
+            the non-swapping Boolean field, the board,
+            the move clocks, the tile fields,
+            the piece fields, and the game state.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void ClearGameFields(){
+            // Clear the move history textboxes
+            m_whiteMoves.setText("");
+            m_blackMoves.setText("");
+            
+            // Clear the captured piece panels
+            m_whitePieces.Clear();
+            m_blackPieces.Clear();
+            
+            m_isPreviouslySavedGame = true;
+            
+            // Clear the board
+            m_board.SetBoard(Board.GetEmptyBoard());                           
+            m_board.DrawBoard();
+                
+            // Reset the move clocks
+            m_currentHalfmoves = Utilities.ZERO;
+            m_fullmoves = Utilities.ONE;
+
+            // Reset the game history
+            m_positions.clear();
+            m_gameHistory.clear();
+                
+            // Reset mouse-driven fields
+            m_sourceTile = null;
+            m_destinationTile = null;
+
+            m_candidate = null;
+            m_victim = null;
+            m_nextMove = null;
+            
+            // Reset the game state
+            m_gameState = GameState.EMPTY;
         }
         
         /**/
@@ -3943,12 +3946,15 @@ public final class DarkBlue extends JFrame{
         
         DESCRIPTION
             This method opens up a textbox
-            to allow the user to input a custom FEN file
+            to allow the user to input a custom FEN string
             after the Load Game... -> From Custom FEN... button is clicked.
+            This can only work if no game is currently in progress.
             It resets all UI elements and serialization fields,
-            lets the human choose a color, then 
-            initializes and draws the board
-            before calling the observer.
+            validates the FEN string,
+            lets the human choose a color, 
+            then validates that the game is playable
+            before initializing and drawing the board
+            then calling the observer.
         
         RETURNS
             Nothing
@@ -3957,7 +3963,15 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         private final void CustomFENClicked(){
+            if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
+                JOptionPane.showMessageDialog(m_menuBar, "Please save or stop the current game before starting a new one.", "Game In Progress", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
             boolean notNull = false;
+            
+            m_originalHuman = m_humanColor;
+            m_originalComputer = m_computerColor;
             
         	try{
         	    // Grab the FEN string from the user
@@ -3967,57 +3981,103 @@ public final class DarkBlue extends JFrame{
         		    notNull = true;
         		}
         		
-        		if(notNull && !IsValidFEN(FEN)){
+        		if(notNull && !GameUtilities.IsValidFEN(FEN.trim())){
         		    JOptionPane.showMessageDialog(m_menuBar, "The FEN string could not be parsed.", "Parser Error", JOptionPane.ERROR_MESSAGE);
         		    return;
         		}else if(!notNull){
         		    return;
         		}
-        		
-        		// Parse the string, trimming any trailing whitespace away
-        		ParseFEN(FEN.trim(), true);
-        		
-        		// Set the move textareas
-        		m_whiteMoves.setText("...\n");
-        		if(!m_board.GetBoard().WhoseTurnIsIt().IsBlack()){
-        			m_blackMoves.setText("...\n");
-        		}
-        		
-        		// Clear the captured piece panels
-        		m_whitePieces.Clear();
-                m_blackPieces.Clear();
-        		
-        		// Do not allow the observer to change sides on its first call
-        		m_isPreviouslySavedGame = true;
-        		
-        		// Allow the human player to choose his/her color
-        		ChooseColor();
-        		
-        		// Initialize both players
-           		InitializePlayers(m_board.GetBoard());
-           		
-           		// Draw the board
-           		m_board.DrawBoard();
-           		
-           		// Turn on the buttons that are only accessible during the game
-            	EnableLiveGameButtons();
-            	
-            	// Reset MouseListener fields
-            	m_sourceTile = null;
-            	m_destinationTile = null;
-            	
-            	// Reset game history fields
-        		m_positions.clear();
-        		m_gameHistory.clear();
-        		
-        		// Initialize the current player
-        		m_currentPlayer = (m_board.GetBoard().WhoseTurnIsIt().IsWhite() ? m_white : m_black);
+
+                // Stop if the game is unplayable
+                if(!GameUtilities.IsPlayable(FEN, m_humanColor)){
+                    JOptionPane.showMessageDialog(m_menuBar, "This game is not playable.", "Unplayable Game", JOptionPane.ERROR_MESSAGE);
+                    m_humanColor = m_originalHuman;
+                    m_computerColor = m_originalComputer;
+                    return;
+                }
+                
+                // Allow the human player to choose his/her color
+                ChooseColor();
+                
+                // Parse the string
+        		ParseCustomFEN(FEN);
+
+        		// Show a check message if the
+        		// next player is a human and is in check
+        		CheckStatusAndResume();
         		
         		// Call the observer
-            	m_watcher.Observe();
+                m_watcher.Observe();
         	}catch(Exception e){
         		e.printStackTrace();
         	}
+        }
+        
+        private final void ParseCustomFEN(final String a_FEN){ 
+            ClearGameFields();
+            
+            // Parse the string, trimming any trailing whitespace away
+            try{
+                ParseFEN(a_FEN.trim(), true);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            
+            // Set up the board
+            m_board.SetBoard(m_board.GetBoard());
+            m_board.DrawBoard();
+            
+            // Initialize both players
+            InitializePlayers(m_board.GetBoard());
+            
+            // Turn on the buttons that are only accessible during the game
+            EnableLiveGameButtons();
+            
+            // Initialize the current player
+            m_currentPlayer = (m_board.WhoseTurnIsIt().IsWhite() ? m_white : m_black);
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void StopClicked();
+        
+        SYNOPSIS
+            private final void StopClicked();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method terminates a game
+            after the Stop button is clicked.
+            It asks the player if they really
+            want to quit before clearing the board for a new game.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void StopClicked(){
+            if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
+                final int STOP = JOptionPane.showConfirmDialog(this, "Are you sure you want to stop this game without saving?", "Stop Game", JOptionPane.YES_NO_OPTION);
+                
+                // Quitting in the middle of a game is resigning and counts as a loss
+                if(STOP == JOptionPane.YES_OPTION){
+                    ClearGameFields();
+                    DisableLiveGameButtons();
+                    
+                    // This is resignation which counts as a loss
+                    if(m_humanColor.IsWhite()){
+                        JOptionPane.showMessageDialog(this, BLACK_RESIGNATION, "Game Over", JOptionPane.ERROR_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(this, WHITE_RESIGNATION, "Game Over", JOptionPane.ERROR_MESSAGE);
+                    }
+                }else{
+                    return;
+                }
+            }
         }
         
         /**/
@@ -4043,88 +4103,53 @@ public final class DarkBlue extends JFrame{
             Ryan King
         */
         private final void QuitClicked(){
+            final int QUIT;
+            
         	// Make sure the game is no longer playable, or show a warning message 
-            if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
-            	final int QUIT = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit without saving?", "Quit Game", JOptionPane.YES_NO_OPTION);
-                
-            	// Quitting in the middle of a game is resigning and counts as a loss
-            	if(QUIT == JOptionPane.YES_OPTION){
-            		if(m_humanColor.IsWhite()){
-            			JOptionPane.showMessageDialog(this, BLACK_RESIGNATION, "Game Over", JOptionPane.ERROR_MESSAGE);
-            		}else{
-            			JOptionPane.showMessageDialog(this, WHITE_RESIGNATION, "Game Over", JOptionPane.ERROR_MESSAGE);
-            		}
-            	}else{
-            	    return;
-            	}
+            if(CanGameContinue()){
+            	QUIT = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit without saving?", "Quit Game", JOptionPane.YES_NO_OPTION);
+            }else{
+                QUIT = JOptionPane.showConfirmDialog(this, "Are you sure you want to quit?", "Quit Game", JOptionPane.YES_NO_OPTION);
+            }    
+            	
+            // Quitting in the middle of a game is resigning and counts as a loss
+            if(QUIT == JOptionPane.YES_OPTION){
+                if(CanGameContinue()){
+                    if(m_humanColor.IsWhite()){
+            	        JOptionPane.showMessageDialog(this, BLACK_RESIGNATION, "Game Over", JOptionPane.ERROR_MESSAGE);
+            	    }else{
+            		    JOptionPane.showMessageDialog(this, WHITE_RESIGNATION, "Game Over", JOptionPane.ERROR_MESSAGE);
+            	    }
+                }
+            }else{
+                return;
             }
             
             // Terminate the program
             System.exit(Utilities.ZERO);
         }
         
-        /**/
-        /*
-        NAME
-            private final void InstructionsClicked();
-        
-        SYNOPSIS
-            private final void InstructionsClicked();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method shows the chess engine instruction manual
-            after the Instructions button is clicked.
-            It searches the project's working directory and
-            opens a PDF containing the instructions on how to use the
-            Dark Blue chess engine.           
-        
-        RETURNS
-            Nothing
-        
-        AUTHOR
-            MK Yong, "How to open a PDF File in Java",
-            https://mkyong.com/java/how-to-open-a-pdf-file-in-java/
-        */
-        private final void InstructionsClicked(){
-            try{            
-                // Attempt to find and open the instruction PDF file stored locally in the project
-                final File INSTRUCTIONS = new File("src/com/DarkBlue/Instructions.pdf");
-                if(INSTRUCTIONS.exists()){
-
-                    // Open the file with the AWT desktop utility if usable
-                    if(Desktop.isDesktopSupported()){
-                        Desktop.getDesktop().open(INSTRUCTIONS);
-                    }else{
-                        System.err.println("AWT Desktop is not supported!");
-                    }
-
-                }else{
-                    System.err.println("The instruction manual does not exist!");
-                }
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+        private final boolean CanGameContinue(){
+            return (m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK);
         }
         
         /**/
         /*
         NAME
-        	private final void RulesClicked();
+            private final void RulesOrInstructionsClicked(final boolean a_isRules);
         
         SYNOPSIS
-            private final void RulesClicked();
+            private final void RulesOrInstructionsClicked(final boolean a_isRules);
         
-            No parameters.
+            boolean a_isRules -------> If the user wants to see the rules of chess.
         
         DESCRIPTION
-            This method shows the official FIDE laws of chess
-            after the Rules button is clicked.
+            This method shows either the chess engine instruction manual
+            after the Instructions button is clicked or the FIDE
+            laws of chess after the Rules or Instructions button is clicked.
             It searches the project's working directory and
-            opens a PDF containing the rules of chess.
-            The rules about piece selection and draw by agreement 
-            do not apply to this engine.
+            opens a PDF containing either the FIDE laws of chess            
+            or the instructions on how to use the Dark Blue chess engine.    
         
         RETURNS
             Nothing
@@ -4132,26 +4157,36 @@ public final class DarkBlue extends JFrame{
         AUTHOR
             MK Yong, "How to open a PDF File in Java",
             https://mkyong.com/java/how-to-open-a-pdf-file-in-java/
+            with slight modifications by Ryan King
         */
-        private final void RulesClicked(){
-        	try{
-        	    // Attempt to find and open the laws of chess PDF file stored locally in the project
-        		final File LAWS_OF_CHESS = new File("src/com/DarkBlue/LawsOfChess.pdf");
-        		if(LAWS_OF_CHESS.exists()){
+        private final void RulesOrInstructionsClicked(final boolean a_isRules){
+            try{      
+                final File FILE;
+                final String WHICH;
+                
+                // Attempt to find and open the instruction PDF file stored locally in the project
+                if(a_isRules){
+                    FILE = new File("src/com/DarkBlue/LawsOfChess.pdf");
+                    WHICH = "FIDE laws of chess";
+                }else{
+                    FILE = new File("src/com/DarkBlue/Instructions.pdf");
+                    WHICH = "instruction manual";
+                }
+                
+                if(FILE.exists()){
+                    // Open the file with the AWT desktop utility if usable
+                    if(Desktop.isDesktopSupported()){
+                        Desktop.getDesktop().open(FILE);
+                    }else{
+                        System.err.println("AWT Desktop is not supported.");
+                    }
 
-        		    // Open the file with the AWT desktop utility if usable
-        			if(Desktop.isDesktopSupported()){
-        				Desktop.getDesktop().open(LAWS_OF_CHESS);
-        			}else{
-        				System.err.println("AWT Desktop is not supported!");
-        			}
-
-        		}else{
-        			System.err.println("The FIDE laws of chess document does not exist!");
-        		}
-        	}catch(Exception e){
-        		e.printStackTrace();
-        	}
+                }else{
+                    System.err.println("The document containing the " + WHICH + " does not exist.");
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
         
         /**/
@@ -4185,21 +4220,11 @@ public final class DarkBlue extends JFrame{
             https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         private final void HelpMeMoveClicked(){
-        	// Show an indicator that the utility is working
-        	m_optionPane = new JOptionPane("Thinking...", JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-
         	// Disable the File and Help menus
             DisableTabs();
         	
-        	// Construct a new dialog and set it up
-    		m_dialog = new JDialog(m_instance);
-    		m_dialog.setTitle("");
-
-    		m_dialog.setContentPane(m_optionPane);
-
-    		m_dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-    		m_dialog.pack();
-    		m_dialog.setVisible(true);
+        	// Construct a new "Thinking..." dialog and set it up
+    		SpawnThinkingDialog();
 
     		// Execute Minimax from the human player's perspective
         	m_worker = new SwingWorker<Move, Void>(){
@@ -4222,31 +4247,10 @@ public final class DarkBlue extends JFrame{
         				EnableTabs();
         			
         				// Construct a custom message to send to the user
-        				String message = "I recommend you ";
-            		
-        				if(BEST_MOVE.IsRegular()){
-        					message += "move your " + BEST_MOVE.GetPiece().GetPieceType().toString().toLowerCase() + " from " + BoardUtilities.ToAlgebraic(BEST_MOVE.GetOldRow(), BEST_MOVE.GetOldColumn());      			
-        					message += " to " + BoardUtilities.ToAlgebraic(BEST_MOVE.GetNewRow(), BEST_MOVE.GetNewColumn()) + ".";
-        				}else if(BEST_MOVE.IsAttacking()){
-        					message += "use your " + BEST_MOVE.GetPiece().GetPieceType().toString().toLowerCase() + " on " + BoardUtilities.ToAlgebraic(BEST_MOVE.GetOldRow(), BEST_MOVE.GetOldColumn());
-        					message += " to capture the " + BEST_MOVE.GetVictim().GetPieceType().toString().toLowerCase();
-        					message += " on " + BoardUtilities.ToAlgebraic(BEST_MOVE.GetNewRow(), BEST_MOVE.GetNewColumn()) + ".";
-        				}else if(BEST_MOVE.IsCastling()){
-        					message += "perform a ";
-            			
-        					if(BEST_MOVE.GetNewColumn() < BEST_MOVE.GetOldColumn()){
-        						message += "queen";
-        					}else{
-        						message += "king";
-        					}
-            			
-        					message += "side castle.";
-        				}else{
-        					message += "perform an en passant capture with your pawn on " + BoardUtilities.ToAlgebraic(BEST_MOVE.GetOldRow(), BEST_MOVE.GetOldColumn()) + ".";
-        				}
+        				final String MESSAGE = ConstructHelpMessage(BEST_MOVE);
             		
         				// Display the message
-        				JOptionPane.showMessageDialog(m_menuBar, message, TITLE, JOptionPane.INFORMATION_MESSAGE);
+        				JOptionPane.showMessageDialog(m_menuBar, MESSAGE, TITLE, JOptionPane.INFORMATION_MESSAGE);
         			}catch(Exception e){
         				e.printStackTrace();
         			}
@@ -4254,6 +4258,54 @@ public final class DarkBlue extends JFrame{
         	};
         	
         	m_worker.execute();
+        }
+        
+        /**/
+        /*
+        NAME
+            private final String ConstructHelpMessage(final Move a_bestMove);
+        
+        SYNOPSIS
+            private final String ConstructHelpMessage(final Move a_bestMove);
+        
+            Move a_bestMove ---------> The best move the computer found for the human.
+        
+        DESCRIPTION
+            This method constructs a dynamic string that contains
+            a message telling a player what move s/he should make
+            given the fields in the move that was passed in.
+        
+        RETURNS
+            String message: A message for the user suggesting an ideal move.
+        
+        AUTHOR
+            Ryan King
+        */
+        private final String ConstructHelpMessage(final Move a_bestMove){
+            String message = "I recommend you ";
+            
+            if(a_bestMove.IsRegular()){
+                message += "move your " + a_bestMove.GetPiece().GetPieceType().toString().toLowerCase() + " from " + BoardUtilities.ToAlgebraic(a_bestMove.GetOldRow(), a_bestMove.GetOldColumn());                
+                message += " to " + BoardUtilities.ToAlgebraic(a_bestMove.GetNewRow(), a_bestMove.GetNewColumn()) + ".";
+            }else if(a_bestMove.IsAttacking()){
+                message += "use your " + a_bestMove.GetPiece().GetPieceType().toString().toLowerCase() + " on " + BoardUtilities.ToAlgebraic(a_bestMove.GetOldRow(), a_bestMove.GetOldColumn());
+                message += " to capture the " + a_bestMove.GetVictim().GetPieceType().toString().toLowerCase();
+                message += " on " + BoardUtilities.ToAlgebraic(a_bestMove.GetNewRow(), a_bestMove.GetNewColumn()) + ".";
+            }else if(a_bestMove.IsCastling()){
+                message += "perform a ";
+            
+                if(a_bestMove.GetNewColumn() < a_bestMove.GetOldColumn()){
+                    message += "queen";
+                }else{
+                    message += "king";
+                }
+            
+                message += "side castle.";
+            }else{
+                message += "perform an en passant capture with your pawn on " + BoardUtilities.ToAlgebraic(a_bestMove.GetOldRow(), a_bestMove.GetOldColumn()) + ".";
+            }
+            
+            return message;
         }
         
         /**/
@@ -4336,24 +4388,27 @@ public final class DarkBlue extends JFrame{
         	}else if(a_event.getSource() == this.m_fromFile){
         		// Load a game from a file
         		FromFileClicked();
-            }else if(a_event.getSource() == this.m_save){
-            	// Save a game as a FEN file
-            	SaveClicked();
             }else if(a_event.getSource() == this.m_customFEN){
             	// Enter a custom FEN string that's not from a file
             	CustomFENClicked();
         	}else if(a_event.getSource() == this.m_quit){
         		// Quit a game without saving
             	QuitClicked();
-        	}else if(a_event.getSource() == this.m_helpMeMove){
+        	}else if(a_event.getSource() == this.m_save){
+                // Save a game as a FEN file
+                SaveClicked();
+            }else if(a_event.getSource() == this.m_helpMeMove){
         		// Ask the computer for help with moving
         		HelpMeMoveClicked();
             }else if(a_event.getSource() == this.m_instructions){
             	// Show instructions on how to use this engine
-            	InstructionsClicked();
+            	RulesOrInstructionsClicked(false);
             }else if(a_event.getSource() == this.m_rules){
             	// Show the rules of chess as per the regulations set forth by FIDE
-            	RulesClicked();
+                RulesOrInstructionsClicked(true);
+            }else if(a_event.getSource() == this.m_stop){
+                // Stop the current game in progress without saving or terminating the program
+                StopClicked();
             }else if(a_event.getSource() == this.m_undo){
             	// Undo a move if the human player thinks s/he made a mistake
             	UndoClicked();
@@ -4392,6 +4447,10 @@ public final class DarkBlue extends JFrame{
             m_menuBar.DisableSave();
             m_menuBar.DisableUndo();
             m_menuBar.DisableHelpMeMove();
+            m_menuBar.DisableStop();
+            
+            m_newGame.setEnabled(true);
+            m_loadGame.setEnabled(true);
         }
         
         /**/
@@ -4418,6 +4477,34 @@ public final class DarkBlue extends JFrame{
             m_menuBar.EnableSave();
             m_menuBar.EnableUndo();
             m_menuBar.EnableHelpMeMove();
+            m_menuBar.EnableStop();
+            
+            m_newGame.setEnabled(false);
+            m_loadGame.setEnabled(false);
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void EnableStop();
+        
+        SYNOPSIS
+            private final void EnableStop();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method enables the "Stop Game" option
+            found on the DarkBlueMenuBar.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void EnableStop(){
+            m_stop.setEnabled(true);
         }
         
         /**/
@@ -4490,6 +4577,30 @@ public final class DarkBlue extends JFrame{
         */
         private final void DisableSave(){
         	m_save.setEnabled(false);
+        }
+        
+        /**/
+        /*
+        NAME
+            private final void DisableStop();
+        
+        SYNOPSIS
+            private final void DisableStop();
+        
+            No parameters.
+        
+        DESCRIPTION
+            This method disables the "Stop Game" option
+            found on the DarkBlueMenuBar.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
+        private final void DisableStop(){
+            m_stop.setEnabled(false);
         }
         
         /**/
@@ -4711,23 +4822,28 @@ public final class DarkBlue extends JFrame{
 				return;
 			}
 			
+			// Refresh all moves for both players
+            RefreshPlayers();
+			
 			// Record the position of the board
 			RecordBoard();
-			
-			// Refresh all moves for both players
-			RefreshPlayers();
 				
 			// Determine who moved last
 			final ChessColor PREVIOUS = m_currentPlayer.GetColor();
 			final Player OTHER = (PREVIOUS.IsWhite() ? m_black : m_white);
-				
+			
 			// See if the player moved a pawn to get promoted
 			CheckForPromotions(m_currentPlayer);
 			
-			// Adjust the castling privileges of the other player if necessary
+			// Refresh the moves again if any pawns got promoted
+			RefreshPlayers();
+
+			// Adjust the castling privileges of both players if necessary
+			
+			AdjustCastlingRights(m_currentPlayer);
 			AdjustCastlingRights(OTHER);
 			
-			// Refresh the moves again if any pawns got promoted
+			// Refresh the moves again if castling rights have changed
 			RefreshPlayers();
 			
 			// Determine the right text area based on who moved
@@ -4740,42 +4856,14 @@ public final class DarkBlue extends JFrame{
 			m_gameHistory.push(SERIAL);
 			
 			// Determine the state of the game
-			m_gameState = EvaluateGameState(OTHER);
+			m_gameState = GameUtilities.EvaluateGameState(OTHER, m_currentPlayer, m_board.GetBoard(), m_currentHalfmoves, m_positions);
 			
 			// Determine if a =Q/=R/=B/=N needs to be appended
 			AppendPromotion(AREA);
 						
 			// See if the game is over
-			if(m_gameState == GameState.CHECKMATE && OTHER.IsBlack()){
-			    // White won by checkmate
-			    AnnounceWhiteCheckmate();
-				return;
-			}else if(m_gameState == GameState.CHECKMATE && OTHER.IsWhite()){
-			    // Black won by checkmate
-			    AnnounceBlackCheckmate();
-				return;
-			}else if(m_gameState == GameState.STALEMATE){
-			    // Draw by stalemate
-			    AnnounceStalemate(AREA);
-				return;
-			}else if(m_gameState == GameState.INSUFFICIENT_MATERIAL){
-			    // Draw by insufficient material
-			    AnnounceInsufficientMaterial(AREA);
-				return;
-			}else if(m_gameState == GameState.FIFTY_MOVE_RULE){
-			    // Draw by fifty-move rule
-			    AnnounceFiftyMoveRule(AREA);
-				return;
-			}else if(m_gameState == GameState.THREEFOLD_REPETITION){
-			    // Draw by threefold repetition
-			    AnnounceThreefoldRepetition(AREA);
-				return;
-			}else if(m_gameState == GameState.CHECK){
-			    // A player is in check
-			    AnnounceCheck(AREA, OTHER);
-			}else if(m_gameState == GameState.NORMAL && !m_isPreviouslySavedGame){
-			    // Nothing significant happened
-			    AREA.append("\n");
+			if(!CanContinue(OTHER, AREA)){
+			    return;
 			}
 			
 			// Swap the players
@@ -4785,22 +4873,25 @@ public final class DarkBlue extends JFrame{
 			if(m_currentPlayer.IsComputer()){
 				ComputerPlay();
 			}
+			
+			// Adjust the undo button dynamically based on the game history
+			AdjustUndoButton();
 		}
 	}
 	
 	/**/
     /*
     NAME
-        private final void AnnounceWhiteCheckmate();
+        private final void AdjustUndoButton();
     
     SYNOPSIS
-        private final void AnnounceWhiteCheckmate();
+        private final void AdjustUndoButton();
     
         No parameters.
     
     DESCRIPTION
-        This method appends a "#\n1-0" to white's text area
-        and announces that white has won by checkmate.
+        This method adjusts if the "Undo" menu button should be
+        enabled depending on how many moves there are in the game history.
     
     RETURNS
         Nothing
@@ -4808,28 +4899,93 @@ public final class DarkBlue extends JFrame{
     AUTHOR
         Ryan King
     */
-	private final void AnnounceWhiteCheckmate(){
-	    // White won by checkmate
-        m_menuBar.DisableLiveGameButtons();
-        m_whiteMoves.append("#\n1-0");
-        
-        // Announce the end of the game
-        JOptionPane.showMessageDialog(m_menuBar, WHITE_CHECKMATE_MESSAGE, GAME_OVER, JOptionPane.ERROR_MESSAGE);                    
+	private final void AdjustUndoButton(){
+	    // Check if the game is still playable
+	    if(m_gameState == GameState.NORMAL || m_gameState == GameState.CHECK){
+            if(m_gameHistory.size() < Utilities.THREE){
+                m_menuBar.DisableUndo();
+            }else{
+                m_menuBar.EnableUndo();
+            }
+        }
 	}
 	
 	/**/
     /*
     NAME
-        private final void AnnounceBlackCheckmate();
+        private final boolean CanContinue(final Player a_other, final MoveTextArea a_area);
     
     SYNOPSIS
-        private final void AnnounceBlackCheckmate();
+        private final boolean CanContinue(final Player a_other, final MoveTextArea a_area);
     
-        No parameters.
+        Player a_other -----------> The opponent.
+        
+        MoveTextArea a_area ------> The opponent's text area.
     
     DESCRIPTION
-        This method appends a "#\n0-1" to black's text area
-        and announces that black has won by checkmate.
+        This method announces any game conditions
+        that may result in the end of the game
+        and applies the correct suffixes and newline
+        characters to the proper text area.
+        The only announced condition that does not lead
+        to the game ending is check.
+        If the state is anything but check or normal gameplay,
+        the method returns false. Otherwise, it returns true.
+    
+    RETURNS
+        boolean: True if the game state is check or normal and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+	private final boolean CanContinue(final Player a_other, final MoveTextArea a_area){
+	    if(m_gameState == GameState.CHECKMATE){
+            // One side won by checkmate
+            AnnounceCheckmate(BoardUtilities.Reverse(a_other.GetColor()));
+            return false;
+        }else if(m_gameState == GameState.STALEMATE){
+            // Draw by stalemate
+            AnnounceStalemate(a_area);
+            return false;
+        }else if(m_gameState == GameState.INSUFFICIENT_MATERIAL){
+            // Draw by insufficient material
+            AnnounceInsufficientMaterial(a_area);
+            return false;
+        }else if(m_gameState == GameState.FIFTY_MOVE_RULE){
+            // Draw by fifty-move rule
+            AnnounceFiftyMoveRule(a_area);
+            return false;
+        }else if(m_gameState == GameState.THREEFOLD_REPETITION){
+            // Draw by threefold repetition
+            AnnounceThreefoldRepetition(a_area);
+            return false;
+        }else if(m_gameState == GameState.CHECK){
+            // A player is in check
+            AnnounceCheck(a_area, a_other);
+            return true;
+        }else if(m_gameState == GameState.NORMAL && !m_isPreviouslySavedGame){
+            // Nothing significant happened
+            a_area.append("\n");
+            return true;
+        }
+	    return true;
+	}
+	
+	/**/
+    /*
+    NAME
+        private final void AnnounceCheckmate(final ChessColor a_winner);
+    
+    SYNOPSIS
+        private final void AnnounceCheckmate(final ChessColor a_winner);
+    
+        ChessColor a_winner ----------> The winner of the game.
+    
+    DESCRIPTION
+        This method appends a "#\n1-0" to white's text area
+        or a "#\n0-1" to black's text area and announces 
+        that side has won by checkmate.
     
     RETURNS
         Nothing
@@ -4837,13 +4993,25 @@ public final class DarkBlue extends JFrame{
     AUTHOR
         Ryan King
     */
-	private final void AnnounceBlackCheckmate(){
-	    // Black won by checkmate
+	private final void AnnounceCheckmate(final ChessColor a_winner){
+	    // Idiot proofing
+	    if(a_winner == null){
+	        return;
+	    }
+	    
+	    // The winner won by checkmate
         m_menuBar.DisableLiveGameButtons();
-        m_blackMoves.append("#\n0-1");
-        
-        // Announce the end of the game
-        JOptionPane.showMessageDialog(m_menuBar, BLACK_CHECKMATE_MESSAGE, GAME_OVER, JOptionPane.ERROR_MESSAGE);
+        if(a_winner.IsWhite()){
+            if(!m_whiteMoves.getText().equals("")){
+                m_whiteMoves.append("#\n1-0");
+            }
+            JOptionPane.showMessageDialog(m_menuBar, WHITE_CHECKMATE_MESSAGE, GAME_OVER, JOptionPane.ERROR_MESSAGE);
+        }else{
+            if(!m_blackMoves.getText().equals("")){
+                m_blackMoves.append("#\n0-1");
+            }
+            JOptionPane.showMessageDialog(m_menuBar, BLACK_CHECKMATE_MESSAGE, GAME_OVER, JOptionPane.ERROR_MESSAGE);
+        }
 	}
 	
 	/**/
@@ -4867,9 +5035,16 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void AnnounceStalemate(final MoveTextArea a_area){
+	    // Idiot proofing
+	    if(a_area == null){
+            return;
+        }
+	    
 	    // Draw by stalemate
         m_menuBar.DisableLiveGameButtons();
-        a_area.append("\n½-½");
+        if(!a_area.getText().equals("")){
+            a_area.append("\n½-½");
+        }
         // Announce the end of the game
         JOptionPane.showMessageDialog(m_menuBar, STALEMATE_MESSAGE, GAME_OVER, JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -4895,9 +5070,17 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void AnnounceInsufficientMaterial(final MoveTextArea a_area){
+	    // Idiot proofing
+	    if(a_area == null){
+            return;
+        }
+	    
 	    // Draw by insufficient material
         m_menuBar.DisableLiveGameButtons();
-        a_area.append("\n½-½");
+        if(!a_area.getText().equals("")){
+            a_area.append("\n½-½");
+        }
+        
         // Announce the end of the game
         JOptionPane.showMessageDialog(m_menuBar, INSUFFICIENT_MATERIAL_MESSAGE, GAME_OVER, JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -4908,7 +5091,7 @@ public final class DarkBlue extends JFrame{
         private final void AnnounceFiftyMoveRule(final MoveTextArea a_area);
     
     SYNOPSIS
-        private final void AnnounceFiftyMoveRul(final MoveTextArea a_area);
+        private final void AnnounceFiftyMoveRule(final MoveTextArea a_area);
     
         MoveTextArea a_area --------> The area to append to.
     
@@ -4923,9 +5106,16 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void AnnounceFiftyMoveRule(final MoveTextArea a_area){
+	    // Idiot proofing
+	    if(a_area == null){
+            return;
+        }
+	    
 	    // Draw by the fifty-move rule
         m_menuBar.DisableLiveGameButtons();
-        a_area.append("\n½-½");
+        if(!a_area.getText().equals("")){
+            a_area.append("\n½-½");
+        }
         // Announce the end of the game
         JOptionPane.showMessageDialog(m_menuBar, FIFTY_MOVE_MESSAGE, GAME_OVER, JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -4951,9 +5141,17 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void AnnounceThreefoldRepetition(final MoveTextArea a_area){
+	    // Idiot proofing
+	    if(a_area == null){
+            return;
+        }
+	    
 	    // Draw by threefold repetition
         m_menuBar.DisableLiveGameButtons();
-        a_area.append("\n½-½");
+        if(!a_area.getText().equals("")){
+            a_area.append("\n½-½");
+        }
+        
         // Announce the end of the game
         JOptionPane.showMessageDialog(m_menuBar, THREEFOLD_REPETITION_MESSAGE, GAME_OVER, JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -4979,10 +5177,19 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void AnnounceCheck(final MoveTextArea a_area, final Player a_other){
+	    // Idiot proofing
+	    if(a_area == null || a_other == null){
+            return;
+        }
+	    
 	    // The next player is in check
-        a_area.append("+\n");
+	    if(!a_area.getText().equals("")){
+	        a_area.append("+\n");
+	    }
+	    
         // A king cannot castle when he is in check
         a_other.GetKing().RemoveCastlingMoves();
+        
         // Warn the human player if s/he is in check
         if(a_other.IsHuman()){
             JOptionPane.showMessageDialog(m_menuBar, CHECK_MESSAGE, TITLE, JOptionPane.WARNING_MESSAGE);
@@ -5009,6 +5216,12 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void SwapPlayers(final ChessColor a_previous){
+	    // Idiot proofing
+	    if(a_previous == null){
+            return;
+        }
+	    
+	    // Don't swap if the game was just taken from a serialization string
 	    if(!m_isPreviouslySavedGame){
             m_currentPlayer = (a_previous.IsWhite() ? m_black : m_white);
         }else{
@@ -5038,6 +5251,12 @@ public final class DarkBlue extends JFrame{
         Ryan King
     */
 	private final void AppendPromotion(final MoveTextArea a_area){
+	    // Idiot proofing
+	    if(a_area == null || m_promotionString == null){
+            return;
+        }
+	    
+	    // Append "=Q/R/B/N" if necessary to the proper area
 	    if(m_promotionString != null){
             a_area.append(m_promotionString);
             m_promotionString = null;
@@ -5047,15 +5266,15 @@ public final class DarkBlue extends JFrame{
 	/**/
     /*
     NAME
-        private final void AdjustCastlingRights(final Player a_other);
+        private final void AdjustCastlingRights(final Player a_player);
     
     SYNOPSIS
-        private final void AdjustCastlingRights(final Player a_other);
+        private final void AdjustCastlingRights(final Player a_player);
     
-        Player a_other --------> The other player.
+        Player a_other --------> The player.
     
     DESCRIPTION
-        This method adjusts the castling rights of the opponent's king.
+        This method adjusts the castling rights of the player's king.
     
     RETURNS
         Nothing
@@ -5063,19 +5282,22 @@ public final class DarkBlue extends JFrame{
     AUTHOR
         Ryan King
     */
-	private final void AdjustCastlingRights(final Player a_other){
-	    if(!a_other.GetKing().HasMoved() && a_other.GetKing().IsInOriginalSpot()){
+	private final void AdjustCastlingRights(final Player a_player){
+	    // Idiot proofing
+	    if(a_player != null && !a_player.GetKing().HasMoved() && a_player.GetKing().IsInOriginalSpot()){
 	        // Gather all the fields of the opponent's king and his associated tile
-            final King OPPOSING_KING = a_other.GetKing();
-            final int KING_ROW = OPPOSING_KING.GetCurrentRow();
-            final int KING_COLUMN = OPPOSING_KING.GetCurrentColumn();
+            final King KING = a_player.GetKing();
+            final int KING_ROW = KING.GetCurrentRow();
+            final int KING_COLUMN = KING.GetCurrentColumn();
             final ChessColor KING_TILE_COLOR = m_board.GetBoard().GetTile(KING_ROW, KING_COLUMN).GetColor();
-            final boolean KINGSIDE = OPPOSING_KING.HasKingsideCastlingRook(m_board.GetBoard());
-            final boolean QUEENSIDE = OPPOSING_KING.HasQueensideCastlingRook(m_board.GetBoard());
+
+            // Find the true status of castling rights
+            final boolean KINGSIDE = KING.HasKingsideCastlingRook(m_board.GetBoard())/* && KINGS_ROOK != null && !KINGS_ROOK.HasMoved()*/;
+            final boolean QUEENSIDE = KING.HasQueensideCastlingRook(m_board.GetBoard())/* && !KING.HasMoved()*/;
             
             // Make a new king if anything is different
-            if(KINGSIDE != OPPOSING_KING.CanKingsideCastle() || QUEENSIDE != OPPOSING_KING.CanQueensideCastle()){
-                m_board.GetBoard().GetBoard()[KING_ROW][KING_COLUMN] = new Tile(KING_TILE_COLOR, KING_ROW, KING_COLUMN, new King(a_other.GetColor(), KING_ROW, KING_COLUMN, KINGSIDE, QUEENSIDE));
+            if(KINGSIDE != KING.CanKingsideCastle() || QUEENSIDE != KING.CanQueensideCastle()){
+                m_board.GetBoard().GetBoard()[KING_ROW][KING_COLUMN] = new Tile(KING_TILE_COLOR, KING_ROW, KING_COLUMN, new King(a_player.GetColor(), KING_ROW, KING_COLUMN, KINGSIDE, QUEENSIDE));
             }
         }
 	}
@@ -5105,7 +5327,7 @@ public final class DarkBlue extends JFrame{
 	    // Get only the board configuration
 	    final String BOARD = m_board.GetBoard().toString().split(" ")[Utilities.ZERO];
 	    
-	    // Place in a new entry or increment an existing entry
+	    // Place it into a new entry if one doesn't exist yet or increment an existing entry
         if(!m_positions.containsKey(BOARD)){
             m_positions.put(BOARD, Utilities.ONE);
         }else{

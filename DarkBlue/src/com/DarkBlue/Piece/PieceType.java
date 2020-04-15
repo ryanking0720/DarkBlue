@@ -2,7 +2,7 @@ package com.DarkBlue.Piece;
 
 import com.DarkBlue.Utilities.Utilities;
 
-/*
+/**
  * This represents the type of a piece.
  * 
  * Names are self-explanatory and correspond

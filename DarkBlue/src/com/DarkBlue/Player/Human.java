@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import com.DarkBlue.Board.Board;
 
-/*
+/**
  * This class represents a human player. The human player is allowed to click
  * on the chessboard provided by the GUI in order to make a move. The computer
  * will move automatically once the human has moved unless the human reaches
@@ -143,5 +143,29 @@ public final class Human extends Player{
     @Override
     public final PlayerType GetPlayerType(){
     	return PlayerType.HUMAN;
+    }
+    
+    /**/
+    /*
+    NAME
+        public final String toString();
+    
+    SYNOPSIS
+        public final String toString();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the player's color and type.
+    
+    RETURNS
+        String: A string description of the player.
+    
+    AUTHOR
+        Ryan King
+    */
+    @Override
+    public final String toString(){
+        return this.GetColor().toString().toLowerCase() + " human player";
     }
 }

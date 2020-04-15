@@ -22,7 +22,7 @@ import com.DarkBlue.Player.Player;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Utilities;
 
-/*
+/**
  * This represents a panel that contains all captured pieces
  * in a vertical column.
  * 
