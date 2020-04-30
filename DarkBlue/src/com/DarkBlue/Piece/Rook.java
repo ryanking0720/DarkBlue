@@ -102,10 +102,10 @@ public final class Rook extends Piece{
         this.m_currentLeftMoves = new ArrayList<>();
         
         // Add the moves from the original piece
-        this.m_currentDownMoves.addAll(CANDIDATE.GetCurrentDownMoves());
-        this.m_currentUpMoves.addAll(CANDIDATE.GetCurrentUpMoves());
-        this.m_currentRightMoves.addAll(CANDIDATE.GetCurrentRightMoves());
-        this.m_currentLeftMoves.addAll(CANDIDATE.GetCurrentLeftMoves());
+        this.m_currentDownMoves.addAll(CANDIDATE.m_currentDownMoves);
+        this.m_currentUpMoves.addAll(CANDIDATE.m_currentUpMoves);
+        this.m_currentRightMoves.addAll(CANDIDATE.m_currentRightMoves);
+        this.m_currentLeftMoves.addAll(CANDIDATE.m_currentLeftMoves);
     }
     
     /**/
@@ -141,10 +141,10 @@ public final class Rook extends Piece{
         this.m_currentLeftMoves.clear();
 
         // Calculate new moves and add them to their respective directions
-        this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
-        this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));
-        this.m_currentRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allRightMoves));
-        this.m_currentLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allLeftMoves));
+        this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.DOWN_MOVES));
+        this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.UP_MOVES));
+        this.m_currentRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.RIGHT_MOVES));
+        this.m_currentLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.LEFT_MOVES));
         
         // Add the contents of the directional ArrayLists to the main legal move ArrayList
         this.m_currentLegalMoves.addAll(this.m_currentDownMoves);

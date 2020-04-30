@@ -137,10 +137,10 @@ public class Bishop extends Piece{
         this.m_currentDownAndLeftMoves.clear();
         
         // Add all new legal moves in each direction
-        this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndRightMoves));
-        this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndRightMoves));
-        this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndLeftMoves));
-        this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndLeftMoves));
+        this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.DOWN_AND_RIGHT_MOVES));
+        this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.UP_AND_RIGHT_MOVES));
+        this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.UP_AND_LEFT_MOVES));
+        this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.DOWN_AND_LEFT_MOVES));
         
         // Compile these moves into the main ArrayList
         this.m_currentLegalMoves.addAll(m_currentDownAndRightMoves);

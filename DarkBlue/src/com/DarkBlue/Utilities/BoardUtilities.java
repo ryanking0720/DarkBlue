@@ -1,6 +1,7 @@
 package com.DarkBlue.Utilities;
 
 import java.awt.Color;
+import java.awt.Dimension;
 
 /**
  * This interface contains fields and methods that help with assembling the
@@ -13,6 +14,7 @@ public interface BoardUtilities{
     public static final Color BLACK = new Color(Utilities.TWO_HUNDRED_FOUR, Utilities.ONE_HUNDRED_TWO, Utilities.ZERO, Utilities.TWO_HUNDRED_FIFTY_FIVE);
     public static final Color WHITE = new Color(Utilities.TWO_HUNDRED_FIFTY_FIVE, Utilities.ONE_HUNDRED_SEVENTY_EIGHT, Utilities.ONE_HUNDRED_TWO, Utilities.TWO_HUNDRED_FIFTY_FIVE);
     public static final Color SELECTED_GREEN = new Color(Utilities.FIFTY_ONE, Utilities.TWO_HUNDRED_FIFTY_FIVE, Utilities.FIFTY_ONE, Utilities.TWO_HUNDRED_FIFTY_FIVE);
+    public static final Dimension TILE_DIMENSION = new Dimension(Utilities.SIXTY, Utilities.SIXTY);
     public static final Color BORDER_BLACK = new Color(154, 152, 0, 1);
     public static final Color BORDER_WHITE = new Color(155, 228, 252, 1);
 	

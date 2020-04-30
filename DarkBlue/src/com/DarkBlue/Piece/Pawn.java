@@ -8,6 +8,7 @@ import com.DarkBlue.Move.Move;
 import com.DarkBlue.Move.Delta;
 import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.MoveEvaluation;
+import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Factory;
 import com.DarkBlue.Board.Board;
@@ -153,12 +154,12 @@ public final class Pawn extends Piece{
         
         // Determine the proper arrays to check,
         // since a pawn's direction is based on its color
-        if(this.GetColor().IsWhite()){
-            REGULAR_MOVES = MoveEvaluation.m_allWhiteRegularMoves;
-            ATTACKING_MOVES = MoveEvaluation.m_allWhiteAttackingMoves;
+        if(this.IsWhite()){
+            REGULAR_MOVES = MoveEvaluation.WHITE_REGULAR_MOVES;
+            ATTACKING_MOVES = MoveEvaluation.WHITE_ATTACKING_MOVES;
         }else{
-            REGULAR_MOVES = MoveEvaluation.m_allBlackRegularMoves;
-            ATTACKING_MOVES = MoveEvaluation.m_allBlackAttackingMoves;
+            REGULAR_MOVES = MoveEvaluation.BLACK_REGULAR_MOVES;
+            ATTACKING_MOVES = MoveEvaluation.BLACK_ATTACKING_MOVES;
         }
         
         // Add the pawn's regular and attacking moves, if any
@@ -166,8 +167,8 @@ public final class Pawn extends Piece{
         this.m_currentAttackingMoves.addAll(MoveEvaluation.AddCurrentAttackingMoves(this, a_board, ATTACKING_MOVES));
         
         // Determine if the pawn is on its fifth rank to add en passant moves
-        if((this.IsWhite() && this.GetCurrentRow() == Utilities.THREE) 
-                || (this.IsBlack() && this.GetCurrentRow() == Utilities.FOUR)){
+        if((this.IsWhite() && this.m_currentRow == Utilities.THREE) 
+                || (this.IsBlack() && this.m_currentRow == Utilities.FOUR)){
             this.m_currentEnPassantMoves.addAll(MoveEvaluation.AddCurrentEnPassantMoves(this, a_board));
         }
         
@@ -478,14 +479,16 @@ public final class Pawn extends Piece{
     /**/
     /*
     NAME
-        public final Board Promote(final Board a_board, final boolean a_isHuman);
+        public final Board Promote(final Board a_board, final boolean a_isHuman, final ChessColor a_callerColor);
     
     SYNOPSIS
-        public final Board Promote(final Board a_board, final boolean a_isHuman);
+        public final Board Promote(final Board a_board, final boolean a_isHuman, final ChessColor a_callerColor);
     
         Board a_board ------------> The board where a pawn is going to be promoted.
         
         boolean a_isHuman --------> A flag indicating whether the player is human or not.
+        
+        ChessColor a_callerColor -> The color of the player calling this method.
     
     DESCRIPTION
         This method promotes a pawn that has reached the farthest possible rank.
@@ -496,33 +499,36 @@ public final class Pawn extends Piece{
         no matter how many of those pieces currently exist on the board.
     
     RETURNS
-        Nothing
+        Board: a copy of the board with the appropriate promoted piece where the pawn used to be.
     
     AUTHOR
         Ryan King
     */
-    public final Board Promote(final Board a_board, final boolean a_isHuman){
+    public final Board Promote(final Board a_board, final boolean a_isHuman, final ChessColor a_callerColor){
         // Initialize options we'll need for buttons
-        final Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
+        final Object[] OPTIONS = {"Queen", "Rook", "Bishop", "Knight"};
         
         // Data we'll need to instantiate the piece
-        final Piece newPiece;
+        final Piece NEW_PIECE;
         
         // Keep looping until the user chooses an option.
         // If s/he closes out, start up again.
         int buttonInt;
         
-        final ArrayList<Double> values = new ArrayList<>();
-        final ChessColor color = this.GetColor();
-        final int row = this.GetCurrentRow();
-        final int column = this.GetCurrentColumn();
+        // Instantiate a list to hold values of promoted boards
+        final ArrayList<Double> VALUES = new ArrayList<>();
+        
+        // Get convenient immutable aliases for necessary fields
+        final ChessColor COLOR = this.GetColor();
+        final int ROW = this.GetCurrentRow();
+        final int COLUMN = this.GetCurrentColumn();
         
         if(a_isHuman){
         
             while(true){
             
                 // Determine which piece the user wants to promote this pawn to
-                buttonInt = JOptionPane.showOptionDialog(null, PROMOTION, DarkBlue.TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
+                buttonInt = JOptionPane.showOptionDialog(null, PROMOTION, DarkBlue.TITLE, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, OPTIONS, null);
 
                 // Only break out if the user chose a piece
                 if(buttonInt != JOptionPane.CLOSED_OPTION){
@@ -532,38 +538,71 @@ public final class Pawn extends Piece{
         
         }else{           
             
+            // Calculate every value
             for(int i = Utilities.ZERO; i < Utilities.FOUR; i++){
-                Board clone = Board.GetDeepCopy(a_board);
-                clone = clone.Promote(Factory.PromotedPieceFactory(color, row, column, i));
-                values.add((color.IsWhite() ? Minimax.Evaluate(clone, color) : -Minimax.Evaluate(clone, color)));
+                final Board CLONE = Board.GetDeepCopy(a_board).Promote(Factory.PromotedPieceFactory(COLOR, ROW, COLUMN, i));;
+                VALUES.add((BoardUtilities.Reverse(COLOR).IsEnemy(a_callerColor) ? Minimax.Evaluate(CLONE, COLOR) : -Minimax.Evaluate(CLONE, COLOR)));
             }
             
-            buttonInt = (color.IsWhite() ? GetSmallestIndex(values) : GetLargestIndex(values));
+            // Find the best piece to promote to
+            buttonInt = GetSmallestIndex(VALUES);
         }
         
-        newPiece = Factory.PromotedPieceFactory(color, row, column, buttonInt);
+        // Instantiate the new piece
+        NEW_PIECE = Factory.PromotedPieceFactory(COLOR, ROW, COLUMN, buttonInt);
         
         // Return the board with the newly-promoted piece
-        return a_board.Promote(newPiece);
+        return a_board.Promote(NEW_PIECE);
     }
+
+    /**/
+    /*
+    NAME
+        public final Board Promote(final Board a_board, final int a_type);
     
-    private final int GetLargestIndex(final ArrayList<Double> a_values){
-        int largest = Utilities.ZERO;
-        
-        for(int i = Utilities.ONE; i < a_values.size(); i++){
-            if(a_values.get(i) > a_values.get(largest)){
-                largest = i;
-            }
-        }
-        
-        return largest;
-    }
+    SYNOPSIS
+        public final Board Promote(final Board a_board, final int a_type);
     
+        Board a_board ------------> The board where a pawn is going to be promoted.
+        
+        int a_type ---------------> The type of piece denoted by 0, 1, 2, or 3.
+    
+    DESCRIPTION
+        This method promotes a pawn that has reached the farthest possible rank.
+        The a_type value passed in is taken from the set of 4 buttons presented in
+        the other overload of Promote().
+        This returns a copy of the board with the appropriate promoted piece where the pawn used to be.
+    
+    RETURNS
+        Board: a copy of the board with the appropriate promoted piece where the pawn used to be.
+    
+    AUTHOR
+        Ryan King
+    */
     public final Board Promote(final Board a_board, final int a_type){
         Board clone = Board.GetDeepCopy(a_board);
-        return clone.Promote(Factory.PromotedPieceFactory(this.m_color, this.m_currentRow, this.m_currentColumn, a_type));
+        return clone.Promote(Factory.PromotedPieceFactory(this.GetColor(), this.GetCurrentRow(), this.GetCurrentColumn(), a_type));
     }
     
+    /**/
+    /*
+    NAME
+        private final int GetSmallestIndex(final ArrayList<Double> a_values);
+    
+    SYNOPSIS
+        private final int GetSmallestIndex(final ArrayList<Double> a_values);
+    
+        ArrayList<Double> a_values ----------> The values of the promoted boards.
+        
+    DESCRIPTION
+        This method finds the index in this ArrayList that points to the smallest value.
+    
+    RETURNS
+        int smallest: the index in this ArrayList that points to the smallest value.
+    
+    AUTHOR
+        Ryan King
+    */
     private final int GetSmallestIndex(final ArrayList<Double> a_values){
         int smallest = Utilities.ZERO;
         

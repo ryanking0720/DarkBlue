@@ -29,10 +29,10 @@ public final class Tile{
     // The piece currently on the tile
     private final Piece m_piece;
     
-    //Keep in mind that the array spots are reversed from the 
-    //traditional notion of the chessboard.
-    //For example, tile a1 has row 7, column 0.
-    //Tile h8 has row 0, column 7.
+    // Keep in mind that the array spots are reversed from the 
+    // traditional notion of the chessboard.
+    // For example, tile a1 has row 7, column 0.
+    // Tile h8 has row 0, column 7.
     
     //letter(row), |8 - column|
     //letter(0) = a, letter(1) = b, and so on.
@@ -64,6 +64,13 @@ public final class Tile{
         Ryan King
     */
     public Tile(final ChessColor a_color, final int a_row, final int a_column, final Piece a_piece){
+        
+        // Idiot proofing
+        if(a_color == null || !BoardUtilities.HasValidCoordinates(a_row, a_column)){
+            System.err.println("Invalid parameter(s) for Tile object. Color: " + a_color + " | Row: " + a_row + " | Column: " + a_column);
+            System.exit(Utilities.ONE);
+        }
+        
         // Assign final fields
         this.m_color = a_color;
         this.m_row = a_row;
@@ -74,22 +81,16 @@ public final class Tile{
     /**/
     /*
     NAME
-        public Tile(final ChessColor a_color, final int a_row, final int a_column);
+        public Tile(final Tile a_tile);
     
     SYNOPSIS
-        public Tile(final ChessColor a_color, final int a_row, final int a_column);
+        public Tile(final Tile a_tile);
     
-        ChessColor a_color -------> The color of the tile.
+        Tile a_tile -------> The tile to be copied.
         
-        int a_row ----------------> The tile's row.
-        
-        int a_column -------------> The tile's column.
-    
     DESCRIPTION
-        This constructor initializes a new Tile object
-        with its color, row, and column.
-        Its piece is set to null and its occupied flag
-        is set to false.
+        This copy constructor initializes a new Tile object
+        based on the fields of the tile being passed in.
     
     RETURNS
         Nothing
@@ -99,10 +100,23 @@ public final class Tile{
     */
     public Tile(final Tile a_tile){
         
+        // Idiot proofing
+        if(a_tile == null){
+            System.err.println("Null parameter for Tile object.");
+            System.exit(Utilities.ONE);
+        }
+        
+        if(a_tile.GetColor() == null || !BoardUtilities.HasValidCoordinates(a_tile.GetRow(), a_tile.GetColumn())){
+            System.err.println("Invalid parameter(s) for Tile object. Color: " + a_tile.GetColor() + " | Row: " + a_tile.GetRow() + " | Column: " + a_tile.GetColumn());
+            System.exit(Utilities.ONE);
+        }
+        
+        // Assign basic fields
         this.m_color = a_tile.GetColor();
         this.m_row = a_tile.GetRow();
         this.m_column = a_tile.GetColumn();
         
+        // Assign the piece
         if(a_tile.IsOccupied()){
             switch(a_tile.GetPiece().GetPieceType()){
                 case PAWN: this.m_piece = new Pawn(a_tile.GetPiece(), a_tile.GetPiece().GetCurrentRow(), a_tile.GetPiece().GetCurrentColumn(), a_tile.GetPiece().HowManyMoves());
@@ -145,7 +159,7 @@ public final class Tile{
         Ryan King
     */
     public final Piece GetPiece(){
-        return m_piece;
+        return this.m_piece;
     }
     
     /**/
@@ -168,7 +182,7 @@ public final class Tile{
         Ryan King
     */
     public final int GetRow(){
-        return m_row;
+        return this.m_row;
     }
     
     /**/
@@ -191,7 +205,7 @@ public final class Tile{
         Ryan King
     */
     public final int GetColumn(){
-        return m_column;
+        return this.m_column;
     }
     
     /**/
@@ -214,7 +228,7 @@ public final class Tile{
         Ryan King
     */
     public final ChessColor GetColor(){
-        return m_color;
+        return this.m_color;
     }
     
     /**/
@@ -238,7 +252,7 @@ public final class Tile{
         Ryan King
     */
     public final boolean IsOccupied(){
-        return m_piece != null;
+        return this.m_piece != null;
     }
     
     /**/
@@ -262,7 +276,7 @@ public final class Tile{
         Ryan King
     */
     public final boolean IsEmpty(){
-        return m_piece == null;
+        return this.m_piece == null;
     }
     
     /**/
@@ -311,9 +325,13 @@ public final class Tile{
         Ryan King
     */
     public final boolean Equals(final Tile a_tile){
-        return this.GetPiece().Equals(a_tile.GetPiece())
+        try{
+            return this.GetPiece().Equals(a_tile.GetPiece())
                 && this.GetColor() == a_tile.GetColor()
                 && this.GetRow() == a_tile.GetRow()
                 && this.GetColumn() == a_tile.GetColumn();
+        }catch(Exception e){
+            return false;
+        }
     }
 }

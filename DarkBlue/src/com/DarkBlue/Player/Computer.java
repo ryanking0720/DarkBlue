@@ -14,6 +14,8 @@ import com.DarkBlue.GUI.DarkBlue;
  * own interface.
  */
 public final class Computer extends Player{
+    
+    private static final String COMPUTER_STRING = " computer player";
 
     /**/
     /*
@@ -39,33 +41,6 @@ public final class Computer extends Player{
     */
     public Computer(final ChessColor a_color, final Board a_board){
         super(a_color, a_board);
-    }
-    
-    /**/
-    /*
-    NAME
-        public Computer(final Player a_player, final Board a_board);
-    
-    SYNOPSIS
-        public Computer(final Player a_player, final Board a_board);
-    
-        Player a_player --------> The player to be copied.
-        
-        Board a_board ----------> The current state of the board.
-    
-    DESCRIPTION
-        This constructor instantiates a new Computer object.
-        This is meant to be the copy constructor.
-        The type is automatically set the PlayerType.COMPUTER.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    public Computer(final Player a_player, final Board a_board){
-        super(a_player.GetColor(), a_board);
     }
     
     /**/
@@ -161,6 +136,6 @@ public final class Computer extends Player{
     */
     @Override
     public final String toString(){
-        return this.GetColor().toString().toLowerCase() + " computer player";
+        return this.GetColor().toString().toLowerCase() + COMPUTER_STRING;
     }
 }

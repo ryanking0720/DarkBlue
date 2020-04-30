@@ -5,7 +5,9 @@ import com.DarkBlue.Piece.Piece;
 import com.DarkBlue.Player.Human;
 import com.DarkBlue.Player.Minimax;
 import com.DarkBlue.Player.Player;
+import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Utilities.ChessColor;
+import com.DarkBlue.Utilities.Utilities;
 
 /**
  * This class represents a move, which can take on several different forms.
@@ -43,11 +45,17 @@ import com.DarkBlue.Utilities.ChessColor;
  */
 public abstract class Move{
 
-    protected final Piece m_piece;// The piece on the old tile
-    protected final int m_newRow;// The new row the piece wants to move to
-    protected final int m_newColumn;// The new column the piece wants to move to
-    //protected final Piece m_victim;// The piece on the new tile. Set to null if empty.
-    protected final Board m_initialBoard;// The initial configuration of the board before this move is made
+    // The piece on the old tile
+    protected final Piece m_piece;
+    
+    // The new row the piece wants to move to
+    protected final int m_newRow;
+    
+    // The new column the piece wants to move to
+    protected final int m_newColumn;
+    
+    // The initial configuration of the board before this move is made
+    protected final Board m_initialBoard;
     
     /**/
     /*
@@ -77,11 +85,18 @@ public abstract class Move{
         Ryan King
     */
     public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board){
+        if(a_piece == null || !BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn()) || a_board == null || !BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
+            System.err.println("Invalid parameters in move");
+            System.exit(Utilities.ONE);
+        }
+        
         this.m_piece = a_piece;
         this.m_newRow = a_newRow;
         this.m_newColumn = a_newColumn;
         this.m_initialBoard = a_board;
     }
+    
+    /* Concrete methods */
     
     /**/
     /*
@@ -201,30 +216,6 @@ public abstract class Move{
     /**/
     /*
     NAME
-        public abstract Piece GetVictim();
-    
-    SYNOPSIS
-        public abstract Piece GetVictim();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns the victim from the 
-        move's destination tile.
-        Since not all moves have a victim, this method
-        is defined separately for each subclass.
-    
-    RETURNS
-        Piece m_victim: The victim, if any.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract Piece GetVictim();
-    
-    /**/
-    /*
-    NAME
         public final Board GetInitialBoard();
     
     SYNOPSIS
@@ -245,6 +236,114 @@ public abstract class Move{
     public final Board GetInitialBoard(){
         return this.m_initialBoard;
     }
+    
+    /**/
+    /*
+    NAME
+        public final boolean PlacesOpponentIntoCheck();
+    
+    SYNOPSIS
+        public final boolean PlacesOpponentIntoCheck();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move ends up producing a state of the board
+        where the opponent ends up in check.
+    
+    RETURNS
+        boolean: True if the opponent ends up in check after the move, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Based off isThreatenedBoardImmediate() by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/BoardUtils.java
+    */
+    public final boolean PlacesOpponentIntoCheck(){
+        // Make a copy of the transitional board
+        final Board CLONE = this.GetTransitionalBoard();
+        
+        // Initialize dummy players to hold the pieces
+        final Player WHITE = new Human(ChessColor.WHITE, CLONE);
+        final Player BLACK = new Human(ChessColor.BLACK, CLONE);
+        
+        // Determine what pieces each side has
+        WHITE.InitializePieces(CLONE);
+        BLACK.InitializePieces(CLONE);
+
+        // Determine who the opponent is
+        final Player OPPONENT = (this.m_piece.IsWhite() ? BLACK : WHITE);
+        
+        // Return if the opponent is in check
+        return OPPONENT.IsInCheck(CLONE);
+    }
+    
+    /**/
+    /*
+    NAME
+        public final boolean PlacesOpponentIntoCheckmate();
+    
+    SYNOPSIS
+        public final boolean PlacesOpponentIntoCheckmate();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns if the move ends up producing a state of the board
+        where the opponent ends up in checkmate.
+    
+    RETURNS
+        boolean: True if the opponent ends up in checkmate after the move, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Based off isThreatenedBoardImmediate() by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/BoardUtils.java
+    */
+    public final boolean PlacesOpponentIntoCheckmate(){
+        // Make a copy of the transitional board
+        final Board CLONE = this.GetTransitionalBoard();
+        
+        // Initialize dummy players to hold the pieces
+        final Player WHITE = new Human(ChessColor.WHITE, CLONE);
+        final Player BLACK = new Human(ChessColor.BLACK, CLONE);
+        
+        // Determine what pieces each side has
+        WHITE.InitializePieces(CLONE);
+        BLACK.InitializePieces(CLONE);
+
+        // Determine who the opponent is
+        final Player OPPONENT = (this.m_piece.IsWhite() ? BLACK : WHITE);
+        
+        // Return if the opponent is in checkmate
+        return OPPONENT.IsInCheckmate(CLONE);
+    }
+    
+    /* Abstract methods */
+    
+    /**/
+    /*
+    NAME
+        public abstract Piece GetVictim();
+    
+    SYNOPSIS
+        public abstract Piece GetVictim();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the victim from the 
+        move's destination tile.
+        Since not all moves have a victim, this method
+        is defined separately for each subclass.
+    
+    RETURNS
+        Piece m_victim: The victim, if any.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract Piece GetVictim();
     
     /**/
     /*
@@ -382,10 +481,10 @@ public abstract class Move{
     /**/
     /*
     NAME
-        public final Board GetTransitionalBoard();
+        public abstract Board GetTransitionalBoard();
     
     SYNOPSIS
-        public final Board GetTransitionalBoard();
+        public abstract Board GetTransitionalBoard();
     
         No parameters.
     
@@ -400,93 +499,5 @@ public abstract class Move{
         Based off the execute() method by Amir Afghani,
         https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
-    public final Board GetTransitionalBoard(){
-        // Make a copy of the initial board
-        final Board CLONE = Board.GetDeepCopy(this.m_initialBoard);
-
-        // Make the move on the copied board
-        return CLONE.MakeMove(this);
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean PlacesOpponentIntoCheck();
-    
-    SYNOPSIS
-        public final boolean PlacesOpponentIntoCheck();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns if the move ends up producing a state of the board
-        where the opponent ends up in check.
-    
-    RETURNS
-        True if the opponent ends up in check after the move, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Based off isThreatenedBoardImmediate() by Amir Afghani,
-        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/BoardUtils.java
-    */
-    public final boolean PlacesOpponentIntoCheck(){
-        // Make a copy of the transitional board
-        final Board CLONE = this.GetTransitionalBoard();
-        
-        // Initialize players to hold the pieces
-        final Player WHITE = new Human(ChessColor.WHITE, CLONE);
-        final Player BLACK = new Human(ChessColor.BLACK, CLONE);
-        
-        // Determine what pieces each side has
-        WHITE.InitializePieces(CLONE);
-        BLACK.InitializePieces(CLONE);
-
-        // Determine who the opponent is
-        final Player OPPONENT = (this.m_piece.IsWhite() ? BLACK : WHITE);
-        
-        // Return if the opponent is in check
-        return OPPONENT.IsInCheck(CLONE);
-    }
-    
-    /**/
-    /*
-    NAME
-        public final boolean PlacesOpponentIntoCheckmate();
-    
-    SYNOPSIS
-        public final boolean PlacesOpponentIntoCheckmate();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns if the move ends up producing a state of the board
-        where the opponent ends up in checkmate.
-    
-    RETURNS
-        True if the opponent ends up in checkmate after the move, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Based off isThreatenedBoardImmediate() by Amir Afghani,
-        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/BoardUtils.java
-    */
-    public final boolean PlacesOpponentIntoCheckmate(){
-        // Make a copy of the transitional board
-        final Board CLONE = this.GetTransitionalBoard();
-        
-        // Initialize players to hold the pieces
-        final Player WHITE = new Human(ChessColor.WHITE, CLONE);
-        final Player BLACK = new Human(ChessColor.BLACK, CLONE);
-        
-        // Determine what pieces each side has
-        WHITE.InitializePieces(CLONE);
-        BLACK.InitializePieces(CLONE);
-
-        // Determine who the opponent is
-        final Player OPPONENT = (this.m_piece.IsWhite() ? BLACK : WHITE);
-        
-        // Return if the opponent is in check
-        return OPPONENT.IsInCheckmate(CLONE);
-    }
+    public abstract Board GetTransitionalBoard();
 }

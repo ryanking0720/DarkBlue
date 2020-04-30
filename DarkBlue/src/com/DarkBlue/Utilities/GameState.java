@@ -75,7 +75,7 @@ package com.DarkBlue.Utilities;
         
     GameState.NORMAL: Neither king is threatened. The game proceeds as normal.
     
-    GameState.EMPTY: The program is initialized or a game is saved to a file and the board is empty. Nothing happens.
+    GameState.EMPTY: The program is initialized or a game is saved to a file or stopped without saving and the board is empty. Nothing happens.
  */
 public enum GameState{
     NORMAL,

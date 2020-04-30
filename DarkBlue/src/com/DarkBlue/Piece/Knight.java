@@ -107,7 +107,7 @@ public final class Knight extends Piece{
         this.m_currentLegalMoves.clear();
 
         // Add the moves that are currently deemed legal
-        this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKnightMoves));
+        this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.KNIGHT_MOVES));
     }
     
     /**/

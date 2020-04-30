@@ -51,6 +51,119 @@ public interface Minimax{
 	public static final double ROOK_VALUE = 50;
 	public static final double QUEEN_VALUE = 90;
 	public static final double KING_VALUE = 900;
+	
+	// Minimax evaluation arrays for all pieces
+    // Source for all arrays: https://jsfiddle.net/q76uzxwe/1/
+    public static final double[][] WHITE_KING_POSITIONS = {
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-2, -3, -3, -4, -4, -3, -3, -2},
+        {-1, -2, -2, -2, -2, -2, -2, -1},
+        {2, 0, 0, 0, 0, 0, 0, 2},
+        {2, 3, 1, 0, 0, 1, 2, 3}
+    };
+    
+    public static final double[][] BLACK_KING_POSITIONS = {
+        {2, 3, 1, 0, 0, 1, 2, 3},
+        {2, 0, 0, 0, 0, 0, 0, 2},
+        {-1, -2, -2, -2, -2, -2, -2, -1},
+        {-2, -3, -3, -4, -4, -3, -3, -2},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3},
+        {-3, -4, -4, -5, -5, -4, -4, -3}
+    };
+    
+    public static final double[][] QUEEN_POSITIONS = {
+        {-2, -1, -1, -0.5, -0.5, -1, -1, -2},
+        {-1, 0, 0, 0, 0, 0, 0, -1},
+        {-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
+        {-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
+        {-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5},
+        {-1, 0, -0.5, -0.5, -0.5, -0.5, 0, -1},
+        {-1, 0, 0, 0, 0, 0, 0, -1},
+        {-2, -1, -1, -0.5, -0.5, -1, -1, -2}
+    };
+ 
+    public static final double[][] WHITE_ROOK_POSITIONS = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {-0.5, 1, 1, 1, 1, 1, 1, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static final double[][] BLACK_ROOK_POSITIONS = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 0, 0, 0, 0, 0, 0, -0.5},
+        {-0.5, 1, 1, 1, 1, 1, 1, -0.5},
+        {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static final double[][] WHITE_BISHOP_POSITIONS = {
+        {-2, -1, -1, -1, -1, -1, -1, -2},
+        {-1, 0, 0, 0, 0, 0, 0, -1},
+        {-1, 0, 0.5, 1, 1, 0.5, 0, -1},
+        {-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1},
+        {-1, 0, 1, 1, 1, 1, 0, -1},
+        {-1, 1, 1, 1, 1, 1, 1, -1},
+        {-1, 0.5, 0, 0, 0, 0, 0.5, -1},
+        {-2, -1, -1, -1, -1, -1, -1, -2}
+    };
+    
+    public static final double[][] BLACK_BISHOP_POSITIONS = {
+        {-2, -1, -1, -1, -1, -1, -1, -2},
+        {-1, 0.5, 0, 0, 0, 0, 0.5, -1},
+        {-1, 1, 1, 1, 1, 1, 1, -1},
+        {-1, 0, 1, 1, 1, 1, 0, -1},
+        {-1, 0.5, 0.5, 1, 1, 0.5, 0.5, -1},
+        {-1, 0, 0.5, 1, 1, 0.5, 0, -1},
+        {-1, 0, 0, 0, 0, 0, 0, -1},
+        {-2, -1, -1, -1, -1, -1, -1, -2}
+    };
+    
+    public static final double[][] KNIGHT_POSITIONS = {
+        {-5, -4, -3, -3, -3, -3, -4, -5},
+        {-4, -2, 0, 0, 0, 0, -2, -4},
+        {-3, 0, 1, 1.5, 1.5, 1, 0, -3},
+        {-3, 0.5, 1.5, 2, 2, 1.5, 0.5, -3},
+        {-3, 0, 1.5, 2, 2, 1.5, 0, -3},
+        {-3, 0.5, 1, 1.5, 1.5, 1, 0.5, -3},
+        {-4, -2, 0, 0.5, 0.5, 0, -2, -4},
+        {-5, -4, -3, -3, -3, -3, -4, -5}
+    };
+    
+    public static final double[][] WHITE_PAWN_POSITIONS = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {5, 5, 5, 5, 5, 5, 5, 5},
+        {1, 1, 2, 3, 3, 2, 1, 1},
+        {0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5},
+        {0, 0, 0, 2, 2, 0, 0, 0},
+        {0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5},
+        {0.5, 1, 1, -2, -2, 1, 1, 0.5},
+        {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    public static final double[][] BLACK_PAWN_POSITIONS = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0.5, 1, 1, -2, -2, 1, 1, 0.5},
+        {0.5, -0.5, -1, 0, 0, -1, -0.5, 0.5},
+        {0, 0, 0, 2, 2, 0, 0, 0},
+        {0.5, 0.5, 1, 2.5, 2.5, 1, 0.5, 0.5},
+        {1, 1, 2, 3, 3, 2, 1, 1},
+        {5, 5, 5, 5, 5, 5, 5, 5},
+        {0, 0, 0, 0, 0, 0, 0, 0}
+    };
 
 	/**/
     /*
@@ -397,20 +510,22 @@ public interface Minimax{
 			return Utilities.ZERO;
 		}
 		
+		// Check for the piece type
 	    if(a_piece.IsPawn()){
-	        return PAWN_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whitePawnPositions[a_y][a_x] : MoveEvaluation.m_blackPawnPositions[a_y][a_x]);
+	        return PAWN_VALUE + (a_piece.IsWhite() ? Minimax.WHITE_PAWN_POSITIONS[a_y][a_x] : Minimax.BLACK_PAWN_POSITIONS[a_y][a_x]);
 	    }else if(a_piece.IsRook()){
-	        return ROOK_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whiteRookPositions[a_y][a_x] : MoveEvaluation.m_blackRookPositions[a_y][a_x]);
+	        return ROOK_VALUE + (a_piece.IsWhite() ? Minimax.WHITE_ROOK_POSITIONS[a_y][a_x] : Minimax.BLACK_ROOK_POSITIONS[a_y][a_x]);
 	    }else if(a_piece.IsKnight()){
-	        return BISHOP_OR_KNIGHT_VALUE + MoveEvaluation.m_knightPositions[a_y][a_x];
+	        return BISHOP_OR_KNIGHT_VALUE + Minimax.KNIGHT_POSITIONS[a_y][a_x];
 	    }else if(a_piece.IsBishop()){
-	        return BISHOP_OR_KNIGHT_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whiteBishopPositions[a_y][a_x] : MoveEvaluation.m_blackBishopPositions[a_y][a_x]);
+	        return BISHOP_OR_KNIGHT_VALUE + (a_piece.IsWhite() ? Minimax.WHITE_BISHOP_POSITIONS[a_y][a_x] : Minimax.BLACK_BISHOP_POSITIONS[a_y][a_x]);
 	    }else if(a_piece.IsQueen()){
-	        return QUEEN_VALUE + MoveEvaluation.m_queenPositions[a_y][a_x];
+	        return QUEEN_VALUE + Minimax.QUEEN_POSITIONS[a_y][a_x];
 	    }else if(a_piece.IsKing()){
-	        return KING_VALUE + (a_piece.IsWhite() ? MoveEvaluation.m_whiteKingPositions[a_y][a_x] : MoveEvaluation.m_blackKingPositions[a_y][a_x]);
+	        return KING_VALUE + (a_piece.IsWhite() ? Minimax.WHITE_KING_POSITIONS[a_y][a_x] : Minimax.BLACK_KING_POSITIONS[a_y][a_x]);
 	    }
 	        
+	    // Just in case the checks above were not enough
 	    return Utilities.ZERO;
 	}
 	
@@ -431,7 +546,7 @@ public interface Minimax{
         Attacking moves go next, then castling moves, then regular moves.
 
     RETURNS
-        ArrayList<Move> sortedMoves: The list of sorted moves.
+        ArrayList<Move> SORTED_MOVES: The list of sorted moves.
     
     AUTHOR
         Ryan King

@@ -527,16 +527,22 @@ public final class GameUtilities{
         https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/pgn/FenUtilities.java
     */
     public static final String ExpandRank(final String a_rank){
+        // Idiot proofing
+        if(a_rank == null){
+            return null;
+        }
+        
+        // Remove all numbers and replace them with that same number of hyphen-minuses
         return a_rank.replaceAll("8", "--------").replaceAll("7", "-------").replaceAll("6", "------").replaceAll("5", "-----").replaceAll("4", "----").replaceAll("3", "---").replaceAll("2", "--").replaceAll("1", "-");
     }
     
     /**/
     /*
     NAME
-        private final void TestParse(final String a_FENString, final boolean a_isSerializedGame);
+        private static final boolean TestParse(final String a_FENString, final boolean a_isSerializedGame);
     
     SYNOPSIS
-        private final void TestParse(final String a_FENString, final boolean a_isSerializedGame);
+        private static final boolean TestParse(final String a_FENString, final boolean a_isSerializedGame);
     
         String a_FENString -----------> The game to read in Forsyth-Edwards Notation.
         
@@ -551,7 +557,8 @@ public final class GameUtilities{
         Lots of this code has been repeated from the "DarkBlue.java" file.
     
     RETURNS
-        Nothing
+        boolean: True if the parsing in the testing environment succeeded and false otherwise.
+        One of these two options will always occur.
     
     AUTHOR
         Ryan King, with help taken from:
@@ -682,12 +689,18 @@ public final class GameUtilities{
         If an unmoved rook is found and the right is false, the rook will be changed but this game is still playable.
     
     RETURNS
-        Nothing
+        boolean: True if the right is valid per the board configuration and false otherwise.
+        One of these two options will always occur.
     
     AUTHOR
         Ryan King
     */
     private static final boolean IsCastlingRightValid(final Board a_board, final ChessColor a_color, final boolean a_canCastle, final boolean a_isKingside){
+        // Idiot proofing
+        if(a_board == null || a_color == null){
+            return false;
+        }
+        
         final King KING = a_board.GetKing(a_color);
         final int ROOK_ROW = KING.GetCurrentRow();
         final int ROOK_COLUMN = (a_isKingside ? Utilities.SEVEN : Utilities.ZERO);
@@ -918,6 +931,11 @@ public final class GameUtilities{
         Ryan King
     */
     public static final boolean IsDrawByInsufficientMaterial(final Player a_player, final Player a_opponent, final Board a_board){
+        // Idiot proofing
+        if(a_player == null || a_opponent == null || a_board == null){
+            return true;
+        }
+        
         // Check for all possible draw cases explained above
         if(a_player.HasBareKing() && a_opponent.HasBareKing()){
             return true;
@@ -1128,8 +1146,8 @@ public final class GameUtilities{
         m_white.Refresh(m_board);
         m_black.Refresh(m_board);
         
-        String rights = a_string.split(" ")[Utilities.TWO];
-        if(!AreCastlingRightsValid(rights)){
+        final String RIGHTS = a_string.split(" ")[Utilities.TWO];
+        if(!AreCastlingRightsValid(RIGHTS)){
             return false;
         }
 
@@ -1253,7 +1271,7 @@ public final class GameUtilities{
     */
     public static final boolean AreCastlingRightsValid(final String a_rights){
         // Idiot proofing
-        if(a_rights.isBlank()){
+        if(a_rights == null || a_rights.isBlank()){
             return false;
         }
         

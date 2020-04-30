@@ -151,7 +151,7 @@ public final class King extends Piece{
         
         this.m_currentCastlingMoves = new ArrayList<>();
         
-        this.m_currentCastlingMoves.addAll(candidate.GetCurrentCastlingMoves());
+        this.m_currentCastlingMoves.addAll(candidate.m_currentCastlingMoves);
         
         this.m_canKingsideCastle = false;
         this.m_canQueensideCastle = false;
@@ -184,16 +184,16 @@ public final class King extends Piece{
     @Override
     public final void AddCurrentLegalMoves(final Board a_board){
         // Clear out the legal moves to prepare for new evaluation
-        m_currentLegalMoves.clear();
-        m_currentCastlingMoves.clear();
+        this.m_currentLegalMoves.clear();
+        this.m_currentCastlingMoves.clear();
 
         // Add the current moves in the king's spectrum
-        this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.m_allKingMoves));      
+        this.m_currentLegalMoves.addAll(MoveEvaluation.AddCurrentSpectrumMoves(this, a_board, MoveEvaluation.KING_MOVES));      
         
         // Evaluate castling moves if the king has not moved and is not in check
-        if(!this.HasMoved() && this.GetCurrentColumn() == Utilities.FOUR
-                && (this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN) || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO)
-                && (this.m_canKingsideCastle || this.m_canQueensideCastle) && MoveEvaluation.IsKingSafe(a_board, this.GetCurrentRow(), this.GetCurrentColumn(), this.GetColor())){
+        if(!this.HasMoved() && this.m_currentColumn == Utilities.FOUR
+                && (this.IsWhite() && this.m_currentRow == Utilities.SEVEN) || (this.IsBlack() && this.m_currentRow == Utilities.ZERO)
+                && (this.m_canKingsideCastle || this.m_canQueensideCastle) && MoveEvaluation.IsKingSafe(a_board, this.m_currentRow, this.m_currentColumn, this.m_color)){
             this.AddCurrentCastlingMoves(a_board);
         }
         
@@ -460,8 +460,8 @@ public final class King extends Piece{
     */
     private final void AddCurrentCastlingMoves(final Board a_board){
         // Check to see if the king is in his original spot and has not moved before
-        if((this.IsWhite() && this.GetCurrentRow() == Utilities.SEVEN && this.GetCurrentColumn() == Utilities.FOUR) 
-                || (this.IsBlack() && this.GetCurrentRow() == Utilities.ZERO && this.GetCurrentColumn() == Utilities.FOUR)
+        if((this.IsWhite() && this.m_currentRow == Utilities.SEVEN && this.m_currentColumn == Utilities.FOUR) 
+                || (this.IsBlack() && this.m_currentRow == Utilities.ZERO && this.m_currentColumn == Utilities.FOUR)
                 && !this.HasMoved()){
             
             final int KING_DESTINATION_ROW = this.GetCurrentRow();
@@ -515,7 +515,7 @@ public final class King extends Piece{
     public final void RemoveCastlingMoves(){
         this.m_currentCastlingMoves.clear();
         
-        for(final Move MOVE : this.GetCurrentLegalMoves()){
+        for(final Move MOVE : this.m_currentLegalMoves){
             if(MOVE.IsCastling()){
                 this.m_currentLegalMoves.remove(MOVE);
             }
@@ -553,13 +553,13 @@ public final class King extends Piece{
             return false;
         }
         
-        final int ROW = this.GetCurrentRow();
-        int column = this.GetCurrentColumn() + Utilities.ONE, 
+        final int ROW = this.m_currentRow;
+        int column = this.m_currentColumn + Utilities.ONE, 
         // The king's rook always starts at column 7 of my board.
-        rookRow = this.GetCurrentRow(), rookColumn = Utilities.SEVEN;
+        rookRow = this.m_currentRow, rookColumn = Utilities.SEVEN;
         
         // See if there's a friendly rook that has not moved
-        if(!HasKingsideCastlingRook(a_board)){
+        if(!this.HasKingsideCastlingRook(a_board)){
             return false;
         }
         
@@ -596,7 +596,7 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean HasKingsideCastlingRook(final Board a_board){
-        final int ROOK_ROW = this.GetCurrentRow(), ROOK_COLUMN = Utilities.SEVEN;
+        final int ROOK_ROW = (this.IsWhite() ? Utilities.SEVEN : Utilities.ZERO), ROOK_COLUMN = Utilities.SEVEN;
         
         // See if there's a friendly rook that has not moved
         if(a_board.GetTile(ROOK_ROW, ROOK_COLUMN).IsOccupied() 
@@ -640,19 +640,19 @@ public final class King extends Piece{
             return false;
         }
         
-        final int ROW = this.GetCurrentRow();
-        int column = this.GetCurrentColumn() - Utilities.ONE,
+        final int ROW = this.m_currentRow;
+        int column = this.m_currentColumn - Utilities.ONE,
         // The queen's rook always starts at column 0 of my board.
         rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
         
         // See if there's a friendly rook that has not moved
-        if(!HasQueensideCastlingRook(a_board)){
+        if(!this.HasQueensideCastlingRook(a_board)){
             return false;
         }       
             
         // Evaluate each tile the king will move across
         while(column > Utilities.ONE){
-            if(a_board.GetTile(ROW, column).IsOccupied() || !MoveEvaluation.IsKingSafe(a_board, ROW, column, this.GetColor())){
+            if(a_board.GetTile(ROW, column).IsOccupied() || !MoveEvaluation.IsKingSafe(a_board, ROW, column, this.m_color)){
                 return false;
             }
             column--;
@@ -688,7 +688,7 @@ public final class King extends Piece{
         Ryan King
     */
     public final boolean HasQueensideCastlingRook(final Board a_board){
-        final int ROOK_ROW = this.GetCurrentRow(), ROOK_COLUMN = Utilities.ZERO;
+        final int ROOK_ROW = (this.IsWhite() ? Utilities.SEVEN : Utilities.ZERO), ROOK_COLUMN = Utilities.ZERO;
         
         // See if there's a friendly rook that has not moved
         if(a_board.GetTile(ROOK_ROW, ROOK_COLUMN).IsOccupied() 

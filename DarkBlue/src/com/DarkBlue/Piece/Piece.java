@@ -19,240 +19,26 @@ import com.DarkBlue.Board.Tile;
  * a row, a column, the number of moves it has made, and an
  * ArrayList of legal moves for the current turn.
  * 
- * Piece type, identity as a certain type of piece, special
+ * Identity as a certain type of piece, special
  * types of moves, etc. are all handled in each subclass.
  */
 public abstract class Piece{
-    protected final ChessColor m_color;//White or black
-    protected final int m_currentRow;//The piece's current row
-    protected final int m_currentColumn;//The piece's current column
-    protected final int m_moves;//How many times has the piece moved?
-    protected final ArrayList<Move> m_currentLegalMoves;//All the legal moves usable for the current turn only.
+    // White or black
+    protected final ChessColor m_color;
     
-    /* All abstract methods. */
+    // The piece's current row
+    protected final int m_currentRow;
     
-    /**/
-    /*
-    NAME
-        public abstract void AddCurrentLegalMoves(final Board a_board);
+    // The piece's current column
+    protected final int m_currentColumn;
     
-    SYNOPSIS
-        public abstract void AddCurrentLegalMoves(final Board a_board);
+    // How many times has the piece moved?
+    protected final int m_moves;
     
-        Board a_board --------> The current state of the game.
+    // All the legal moves usable for the current turn only
+    protected final ArrayList<Move> m_currentLegalMoves;
     
-    DESCRIPTION
-        This method adds all the moves that are legal
-        on the current turn only. Since every piece, even of the same type and color,
-        are in different spots and have different conditions (i.e., blocking a
-        king that's in check) as well as methods of moving
-        (e.g. a bishop moves diagonally whereas a rook moves horizontally), 
-        this method must be declared abstract.
-            
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract void AddCurrentLegalMoves(final Board a_board);
-    
-    /**/
-    /*
-    NAME
-        public abstract PieceType GetPieceType();
-    
-    SYNOPSIS
-        public abstract PieceType GetPieceType();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's type.
-    
-    RETURNS
-        PieceType m_pieceType: This piece's type.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract PieceType GetPieceType();
-    
-    /**/
-    /*
-    NAME
-        public abstract char GetIcon();
-    
-    SYNOPSIS
-        public abstract char GetIcon();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's algebraic notation icon.
-    
-    RETURNS
-        char: This piece's algebraic notation icon.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract char GetIcon();
-    
-    /**/
-    /*
-    NAME
-        public abstract char GetBoardIcon();
-    
-    SYNOPSIS
-        public abstract char GetBoardIcon();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method returns this piece's board icon.
-    
-    RETURNS
-        char m_boardIcon: This piece's board icon.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract char GetBoardIcon();
-    
-    /**/
-    /*
-    NAME
-        public abstract boolean IsPawn();
-    
-    SYNOPSIS
-        public abstract boolean IsPawn();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if this piece is a pawn.
-    
-    RETURNS
-        boolean: True if the piece is a pawn, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract boolean IsPawn();
-    
-    /**/
-    /*
-    NAME
-        public abstract boolean IsKing();
-    
-    SYNOPSIS
-        public abstract boolean IsKing();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if this piece is a king.
-    
-    RETURNS
-        boolean: True if this piece is a king, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract boolean IsKing();
-    
-    /**/
-    /*
-    NAME
-        public abstract boolean IsRook();
-    
-    SYNOPSIS
-        public abstract boolean IsRook();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if this piece is a rook.
-    
-    RETURNS
-        boolean: True if this piece is a rook, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract boolean IsRook();
-    
-    /**/
-    /*
-    NAME
-        public abstract boolean IsBishop();
-    
-    SYNOPSIS
-        public abstract boolean IsBishop();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if this piece is a bishop.
-    
-    RETURNS
-        boolean: True if this piece is a bishop, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract boolean IsBishop();
-    
-    /**/
-    /*
-    NAME
-        public abstract boolean IsQueen();
-    
-    SYNOPSIS
-        public abstract boolean IsQueen();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if this piece is a queen.
-    
-    RETURNS
-        boolean: True if this piece is a queen, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract boolean IsQueen();
-    
-    /**/
-    /*
-    NAME
-        public abstract boolean IsKnight();
-    
-    SYNOPSIS
-        public abstract boolean IsKnight();
-    
-        No parameters.
-    
-    DESCRIPTION
-        This method determines if this piece is a knight.
-    
-    RETURNS
-        boolean: True if this piece is a knight, and false otherwise.
-        One of these two options will always occur.
-    
-    AUTHOR
-        Ryan King
-    */
-    public abstract boolean IsKnight();
-    
-    /* Constructor and all non-abstract methods. */
+    /* Constructors and all concrete methods. */
     
     // The constructor.
     
@@ -280,6 +66,7 @@ public abstract class Piece{
         Ryan King
     */
     public Piece(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
+        // Validate the color
         if(a_color != null){
             this.m_color = a_color;
         }else{
@@ -288,6 +75,7 @@ public abstract class Piece{
             System.exit(Utilities.ONE);
         }
         
+        // Validate the row and column
         if(BoardUtilities.HasValidCoordinates(a_currentRow, a_currentColumn)){
             this.m_currentRow = a_currentRow;
             this.m_currentColumn = a_currentColumn;
@@ -298,6 +86,7 @@ public abstract class Piece{
             System.exit(Utilities.ONE);
         }
         
+        // Set other final fields
         this.m_moves = Utilities.ZERO;
         this.m_currentLegalMoves = new ArrayList<>();
     }
@@ -331,6 +120,13 @@ public abstract class Piece{
         Ryan King
     */
     public Piece(final Piece a_piece, final int a_newRow, final int a_newColumn, final int a_moves){
+        // Validate the argument piece
+        if(a_piece == null || !BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
+            System.err.println("Invalid piece parameter");
+            System.exit(Utilities.ONE);
+        }
+        
+        // Validate the color
         if(a_piece.GetColor() != null){
             this.m_color = a_piece.GetColor();
         }else{
@@ -339,13 +135,14 @@ public abstract class Piece{
             System.exit(Utilities.ONE);
         }
         
+        // Validate the coordinates
         if(BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
             this.m_currentRow = a_newRow;
             this.m_currentColumn = a_newColumn;
         }else{
             this.m_currentRow = Utilities.NEGATIVE_ONE;
             this.m_currentColumn = Utilities.NEGATIVE_ONE;
-            System.err.println("Invalid row and/or column coordinates: Row is " + a_newRow + " and Column is " + a_newColumn);
+            System.err.println("Invalid user-defined row and/or column coordinates: Row is " + a_newRow + " and Column is " + a_newColumn);
             System.exit(Utilities.ONE);
         }
         
@@ -718,6 +515,229 @@ public abstract class Piece{
     */
     @Override
     public final String toString(){
-        return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + " " + this.m_color.toString().toLowerCase() + " " + this.GetPieceType().toString().toLowerCase();
+        return BoardUtilities.ToAlgebraic(this.m_currentRow, this.m_currentColumn) + Utilities.SPACE + this.m_color.toString().toLowerCase() + Utilities.SPACE + this.GetPieceType().toString().toLowerCase();
     }
+    
+/* All abstract methods. */
+    
+    /**/
+    /*
+    NAME
+        public abstract void AddCurrentLegalMoves(final Board a_board);
+    
+    SYNOPSIS
+        public abstract void AddCurrentLegalMoves(final Board a_board);
+    
+        Board a_board --------> The current state of the game.
+    
+    DESCRIPTION
+        This method adds all the moves that are legal
+        on the current turn only. Since every piece, even of the same type and color,
+        are in different spots and have different conditions (i.e., blocking a
+        king that's in check) as well as methods of moving
+        (e.g. a bishop moves diagonally whereas a rook moves horizontally), 
+        this method must be declared abstract.
+            
+    RETURNS
+        Nothing
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract void AddCurrentLegalMoves(final Board a_board);
+    
+    /**/
+    /*
+    NAME
+        public abstract PieceType GetPieceType();
+    
+    SYNOPSIS
+        public abstract PieceType GetPieceType();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's type.
+    
+    RETURNS
+        PieceType m_pieceType: This piece's type.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract PieceType GetPieceType();
+    
+    /**/
+    /*
+    NAME
+        public abstract char GetIcon();
+    
+    SYNOPSIS
+        public abstract char GetIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's algebraic notation icon.
+    
+    RETURNS
+        char: This piece's algebraic notation icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract char GetIcon();
+    
+    /**/
+    /*
+    NAME
+        public abstract char GetBoardIcon();
+    
+    SYNOPSIS
+        public abstract char GetBoardIcon();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns this piece's board icon.
+    
+    RETURNS
+        char m_boardIcon: This piece's board icon.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract char GetBoardIcon();
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean IsPawn();
+    
+    SYNOPSIS
+        public abstract boolean IsPawn();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a pawn.
+    
+    RETURNS
+        boolean: True if the piece is a pawn, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract boolean IsPawn();
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean IsKing();
+    
+    SYNOPSIS
+        public abstract boolean IsKing();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a king.
+    
+    RETURNS
+        boolean: True if this piece is a king, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract boolean IsKing();
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean IsRook();
+    
+    SYNOPSIS
+        public abstract boolean IsRook();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a rook.
+    
+    RETURNS
+        boolean: True if this piece is a rook, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract boolean IsRook();
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean IsBishop();
+    
+    SYNOPSIS
+        public abstract boolean IsBishop();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a bishop.
+    
+    RETURNS
+        boolean: True if this piece is a bishop, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract boolean IsBishop();
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean IsQueen();
+    
+    SYNOPSIS
+        public abstract boolean IsQueen();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a queen.
+    
+    RETURNS
+        boolean: True if this piece is a queen, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract boolean IsQueen();
+    
+    /**/
+    /*
+    NAME
+        public abstract boolean IsKnight();
+    
+    SYNOPSIS
+        public abstract boolean IsKnight();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method determines if this piece is a knight.
+    
+    RETURNS
+        boolean: True if this piece is a knight, and false otherwise.
+        One of these two options will always occur.
+    
+    AUTHOR
+        Ryan King
+    */
+    public abstract boolean IsKnight();
 }

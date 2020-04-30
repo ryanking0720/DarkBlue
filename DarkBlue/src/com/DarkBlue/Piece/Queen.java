@@ -127,15 +127,15 @@ public final class Queen extends Piece{
         this.m_currentDownAndLeftMoves = new ArrayList<>();
         
         // Add all moves from the original piece
-        this.m_currentDownMoves.addAll(CANDIDATE.GetCurrentDownMoves());
-        this.m_currentUpMoves.addAll(CANDIDATE.GetCurrentUpMoves());
-        this.m_currentRightMoves.addAll(CANDIDATE.GetCurrentRightMoves());
-        this.m_currentLeftMoves.addAll(CANDIDATE.GetCurrentLeftMoves());
+        this.m_currentDownMoves.addAll(CANDIDATE.m_currentDownMoves);
+        this.m_currentUpMoves.addAll(CANDIDATE.m_currentUpMoves);
+        this.m_currentRightMoves.addAll(CANDIDATE.m_currentRightMoves);
+        this.m_currentLeftMoves.addAll(CANDIDATE.m_currentLeftMoves);
         
-        this.m_currentDownAndRightMoves.addAll(CANDIDATE.GetCurrentDownAndRightMoves());
-        this.m_currentUpAndRightMoves.addAll(CANDIDATE.GetCurrentUpAndRightMoves());
-        this.m_currentUpAndLeftMoves.addAll(CANDIDATE.GetCurrentUpAndLeftMoves());
-        this.m_currentDownAndLeftMoves.addAll(CANDIDATE.GetCurrentDownAndLeftMoves());
+        this.m_currentDownAndRightMoves.addAll(CANDIDATE.m_currentDownAndRightMoves);
+        this.m_currentUpAndRightMoves.addAll(CANDIDATE.m_currentUpAndRightMoves);
+        this.m_currentUpAndLeftMoves.addAll(CANDIDATE.m_currentUpAndLeftMoves);
+        this.m_currentDownAndLeftMoves.addAll(CANDIDATE.m_currentDownAndLeftMoves);
     }
     
     /**/
@@ -163,39 +163,39 @@ public final class Queen extends Piece{
     @Override
     public final void AddCurrentLegalMoves(final Board a_board){
         // Clear out all the legal moves from the previous turn
-        m_currentLegalMoves.clear();
+        this.m_currentLegalMoves.clear();
         
-        m_currentDownMoves.clear();
-        m_currentUpMoves.clear();
-        m_currentRightMoves.clear();
-        m_currentLeftMoves.clear();
+        this.m_currentDownMoves.clear();
+        this.m_currentUpMoves.clear();
+        this.m_currentRightMoves.clear();
+        this.m_currentLeftMoves.clear();
         
-        m_currentDownAndRightMoves.clear();
-        m_currentUpAndRightMoves.clear();
-        m_currentUpAndLeftMoves.clear();
-        m_currentDownAndLeftMoves.clear();
+        this.m_currentDownAndRightMoves.clear();
+        this.m_currentUpAndRightMoves.clear();
+        this.m_currentUpAndLeftMoves.clear();
+        this.m_currentDownAndLeftMoves.clear();
 
         // Add the new legal moves for this turn in all eight directions
-        this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownMoves));
-        this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpMoves));
-        this.m_currentRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allRightMoves));
-        this.m_currentLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allLeftMoves));
+        this.m_currentDownMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.DOWN_MOVES));
+        this.m_currentUpMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.UP_MOVES));
+        this.m_currentRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.RIGHT_MOVES));
+        this.m_currentLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.LEFT_MOVES));
         
-        this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndRightMoves));
-        this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndRightMoves));
-        this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allUpAndLeftMoves));
-        this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.m_allDownAndLeftMoves));
+        this.m_currentDownAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.DOWN_AND_RIGHT_MOVES));
+        this.m_currentUpAndRightMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.UP_AND_RIGHT_MOVES));
+        this.m_currentUpAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.UP_AND_LEFT_MOVES));
+        this.m_currentDownAndLeftMoves.addAll(MoveEvaluation.AddCurrentDirectionalMoves(this, a_board, MoveEvaluation.DOWN_AND_LEFT_MOVES));
         
         // Place the new moves into the generic current legal moves ArrayList
-        this.m_currentLegalMoves.addAll(m_currentDownMoves);
-        this.m_currentLegalMoves.addAll(m_currentUpMoves);
-        this.m_currentLegalMoves.addAll(m_currentRightMoves);
-        this.m_currentLegalMoves.addAll(m_currentLeftMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentDownMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentUpMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentRightMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentLeftMoves);
         
-        this.m_currentLegalMoves.addAll(m_currentDownAndRightMoves);
-        this.m_currentLegalMoves.addAll(m_currentUpAndRightMoves);
-        this.m_currentLegalMoves.addAll(m_currentUpAndLeftMoves);
-        this.m_currentLegalMoves.addAll(m_currentDownAndLeftMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentDownAndRightMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentUpAndRightMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentUpAndLeftMoves);
+        this.m_currentLegalMoves.addAll(this.m_currentDownAndLeftMoves);
     }
     
     /**/
@@ -422,27 +422,6 @@ public final class Queen extends Piece{
     	return false;
     }
     
-    /**/
-    /*
-    NAME
-    
-    
-    SYNOPSIS
-    
-    
-    
-    
-    DESCRIPTION
-    
-    
-    
-    RETURNS
-    
-    
-    AUTHOR
-        Ryan King
-    */
-
     /**/
     /*
     NAME

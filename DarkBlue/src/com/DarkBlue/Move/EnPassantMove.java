@@ -309,4 +309,34 @@ public final class EnPassantMove extends Move{
     public final boolean IsEnPassant(){
         return true;
     }
+    
+    /**/
+    /*
+    NAME
+        public final Board GetTransitionalBoard();
+    
+    SYNOPSIS
+        public final Board GetTransitionalBoard();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns the resulting board that will
+        be built once this move has been made.
+    
+    RETURNS
+        Board: The initial board field with this move made on it.
+    
+    AUTHOR
+        Based off the execute() method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
+    */
+    @Override
+    public final Board GetTransitionalBoard(){
+        // Make a copy of the initial board
+        final Board CLONE = Board.GetDeepCopy(this.m_initialBoard);
+
+        // Make the move on the copied board
+        return CLONE.EnPassant(this);
+    }
 }

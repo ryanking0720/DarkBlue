@@ -1,10 +1,26 @@
 package com.DarkBlue.Board;
 
-import com.DarkBlue.Player.*;
-import com.DarkBlue.Piece.*;
+import com.DarkBlue.Player.Player;
+import com.DarkBlue.Piece.Piece;
+import com.DarkBlue.Piece.Pawn;
+import com.DarkBlue.Piece.Rook;
+import com.DarkBlue.Piece.Knight;
+import com.DarkBlue.Piece.Bishop;
+import com.DarkBlue.Piece.Queen;
+import com.DarkBlue.Piece.King;
+
 import com.DarkBlue.GUI.DarkBlue;
-import com.DarkBlue.Move.*;
-import com.DarkBlue.Utilities.*;
+
+import com.DarkBlue.Move.Move;
+import com.DarkBlue.Move.RegularMove;
+import com.DarkBlue.Move.AttackingMove;
+import com.DarkBlue.Move.CastlingMove;
+import com.DarkBlue.Move.EnPassantMove;
+
+import com.DarkBlue.Utilities.Utilities;
+import com.DarkBlue.Utilities.BoardUtilities;
+import com.DarkBlue.Utilities.Factory;
+import com.DarkBlue.Utilities.ChessColor;
 
 /**
  * This class represents a chessboard.
@@ -13,15 +29,24 @@ import com.DarkBlue.Utilities.*;
  * for assembling a new board after every move.
  * It then assigns its own 8-by-8 array of tiles to the corresponding
  * array in the Board object in its Build() method.
+ * 
+ * It also contains a flag representing whose turn it is,
+ * as well as a lone Tile object representing a possible
+ * en passant destination tile, if any.
  */
 public final class Board{
     
     // The two-dimensional array of tiles where the chess pieces play
     private final Tile[][] m_boardObject;
+    
     // Whose turn it is: White or black
     private final ChessColor m_whoseTurn;
+    
     // The en passant tile, used for serialization
     private final Tile m_enPassantTile;
+    
+    public static final String WHITE_FILES = "  a b c d e f g h\n";
+    public static final String BLACK_FILES = "  h g f e d c b a\n";
     
     /**/
     /*
@@ -240,6 +265,7 @@ public final class Board{
         return BOARD_DUPLICATE;
     }
     
+    /**/
     /*
     NAME
         public static final Board GetStartingPosition();
@@ -468,13 +494,11 @@ public final class Board{
         BUILDER.SetPiece(new King(ChessColor.WHITE, Utilities.SEVEN, Utilities.FOUR, true, true));
         BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.FIVE, Utilities.TWO));
         BUILDER.SetPiece(new Rook(ChessColor.WHITE, Utilities.FIVE, Utilities.FOUR));
-        //BUILDER.SetPiece(new Pawn(ChessColor.WHITE, Utilities.ONE, Utilities.ONE));
-        
+       
         // Set the black pieces
         BUILDER.SetPiece(new King(ChessColor.BLACK, Utilities.ZERO, Utilities.FOUR, true, true));
         BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.SEVEN));
         BUILDER.SetPiece(new Rook(ChessColor.BLACK, Utilities.ZERO, Utilities.ZERO));
-        //BUILDER.SetPiece(new Queen(ChessColor.BLACK, Utilities.ZERO, Utilities.FIVE));
         
         // Set the turn to white
         BUILDER.SetWhoseTurn(ChessColor.BLACK);
@@ -746,7 +770,7 @@ public final class Board{
     public final Tile GetTile(final int a_row, final int a_column){
         try{
             if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                return m_boardObject[a_row][a_column];
+                return this.m_boardObject[a_row][a_column];
             }else{
                 return null;
             }
@@ -776,6 +800,10 @@ public final class Board{
         Ryan King
     */
     public final King GetKing(final ChessColor a_color){
+        if(a_color == null){
+            return null;
+        }
+        
         for(int i = Utilities.ZERO; i < Utilities.SIXTY_FOUR; i++){
             // Assign aliases for row and column
             final int ROW = i / Utilities.EIGHT;
@@ -818,7 +846,7 @@ public final class Board{
     */
     public final String GetWhiteBoard(){
         // Initialize an empty String
-        String whiteBoardString = "";
+        String whiteBoardString = Utilities.EMPTY_STRING;
         for(int index = Utilities.ZERO; index < Utilities.SIXTY_FOUR; index++){
             
             // Assign aliases for row and column
@@ -827,27 +855,27 @@ public final class Board{
             
             // Print the algebraic row
             if(COLUMN == Utilities.ZERO){
-                whiteBoardString += Integer.toString(Utilities.EIGHT - ROW) + " ";
+                whiteBoardString += Integer.toString(Utilities.EIGHT - ROW) + Utilities.SPACE;
             }
             
             // Get the piece's image if the tile is occupied, otherwise put a hyphen-minus
-            if(m_boardObject[ROW][COLUMN].IsOccupied()){
-                whiteBoardString += Character.toString(m_boardObject[ROW][COLUMN].GetPiece().GetBoardIcon());
+            if(this.m_boardObject[ROW][COLUMN].IsOccupied()){
+                whiteBoardString += Character.toString(this.m_boardObject[ROW][COLUMN].GetPiece().GetBoardIcon());
             }else{
-                whiteBoardString += "-";
+                whiteBoardString += Utilities.NO_RIGHTS_OR_TILE;
             }
             
             // Add spaces between tiles
-            whiteBoardString += " ";
+            whiteBoardString += Utilities.SPACE;
             
             // Start a new line once this has reached the end of the current row
             if(COLUMN == Utilities.SEVEN){
-                whiteBoardString += "\n";
+                whiteBoardString += Utilities.NEWLINE;
             }
         }
         
         // Add letters of columns
-        whiteBoardString += "  a b c d e f g h\n";
+        whiteBoardString += WHITE_FILES;
         
         // Return the String
         return whiteBoardString;
@@ -876,7 +904,7 @@ public final class Board{
     */
     public final String GetBlackBoard(){
         // Initialize an empty String
-        String blackBoardString = "";
+        String blackBoardString = Utilities.EMPTY_STRING;
         for(int index = Utilities.SIXTY_FOUR - Utilities.ONE; index >= Utilities.ZERO; index--){
             
             // Assign aliases for row and column
@@ -885,27 +913,27 @@ public final class Board{
             
             // Print the algebraic row
             if(COLUMN == Utilities.SEVEN){
-                blackBoardString += Integer.toString(Utilities.EIGHT - ROW) + " ";
+                blackBoardString += Integer.toString(Utilities.EIGHT - ROW) + Utilities.SPACE;
             }
             
             // Get the piece's image if the tile is occupied, otherwise put a hyphen-minus
             if(m_boardObject[ROW][COLUMN].IsOccupied()){
-                blackBoardString += Character.toString(m_boardObject[ROW][COLUMN].GetPiece().GetBoardIcon());
+                blackBoardString += Character.toString(this.m_boardObject[ROW][COLUMN].GetPiece().GetBoardIcon());
             }else{
-                blackBoardString += "-";
+                blackBoardString += Utilities.NO_RIGHTS_OR_TILE;
             }
             
             // Add spaces between tiles
-            blackBoardString += " ";
+            blackBoardString += Utilities.SPACE;
             
             // Start a new line once this has reached the end of the current row
             if(COLUMN == Utilities.ZERO){
-                blackBoardString += "\n";
+                blackBoardString += Utilities.NEWLINE;
             }
         }
         
         // Add letters of columns
-        blackBoardString += "  h g f e d c b a\n";
+        blackBoardString += BLACK_FILES;
         
         // Return the String
         return blackBoardString;
@@ -927,39 +955,45 @@ public final class Board{
         The move clocks will be added in later when parsing during the actual game.
     
     RETURNS
-        String serial: The FEN string of this board excluding the move clocks.
+        String: The FEN string of this board excluding the move clocks.
     
     AUTHOR
         Ryan King
     */
     @Override
     public final String toString(){
-        // Initialize the serialization string
-        String serial = SerializeBoardContents();
-
-        // Add a space as a delimiter
-        serial += " ";
-        
-        // Add the side who will play next when the game resumes
-        serial += SerializeTurn();
-        
-        // Add a space as a delimiter
-        serial += " ";
-
-        // Add which player(s) can castle and on what side
-        serial += SerializeCastlingRights();
-        
-        serial += " ";
-        
-        // Add the en passant tile, if any
-        serial += SerializeEnPassantTile();
-        
-        // Return the serialization string
-        return serial;
+        return SerializeBoardContents() + Utilities.SPACE + SerializeTurn() + Utilities.SPACE + SerializeCastlingRights() + Utilities.SPACE + SerializeEnPassantTile();
     }
     
+    /**/
+    /*
+    NAME
+        private final String SerializeBoardContents();
+    
+    SYNOPSIS
+        private final String SerializeBoardContents();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns an FEN string of the current board configuration.
+        White pieces are denoted with capital letters (P, R, N, B, Q, K) and
+        black pieces are denoted with lowercase letters (p, r, n, b, q, k).
+        The letters used are the standard notational letters used in English.
+        Consecutive empty tiles on the same row/rank are compiled into a number between 1 and 8. 
+        
+        For example, if a rank reads "R (blank) (blank) (blank) K (blank) (blank) R", 
+        the FEN serialization of this rank would give "R3K2R". An empty rank would just give "8".
+        Ranks are separated by forward slashes ("/").
+    
+    RETURNS
+        String board: The FEN string of this board.
+    
+    AUTHOR
+        Ryan King
+    */
     private final String SerializeBoardContents(){
-        String board = "";
+        String board = Utilities.EMPTY_STRING;
         
         // Initialize the counter that will hold 
         // the current number of empty tiles encountered in part of a row
@@ -971,7 +1005,7 @@ public final class Board{
             final int COLUMN = index % Utilities.EIGHT;
         
             // Count how many tiles are empty between pieces
-            if(m_boardObject[ROW][COLUMN].IsEmpty()){
+            if(this.m_boardObject[ROW][COLUMN].IsEmpty()){
                 emptyTiles++;
             }else{
                 // Place the empty tile counter into the string once another occupied tile
@@ -980,7 +1014,7 @@ public final class Board{
                     board += Integer.toString(emptyTiles);
                     emptyTiles = Utilities.ZERO;
                 }
-                board += m_boardObject[ROW][COLUMN].GetPiece().GetIcon();
+                board += this.m_boardObject[ROW][COLUMN].GetPiece().GetIcon();
             }
         
             // Add any empty tiles left over at the end
@@ -991,7 +1025,7 @@ public final class Board{
                 
                 // Add a row delimiter if necessary
                 if(ROW < Utilities.SEVEN){
-                    board += "/";
+                    board += Utilities.FORWARD_SLASH;
                 }
                 
                 // Reset the empty tile counter
@@ -1002,25 +1036,65 @@ public final class Board{
         return board;
     }
     
+    /**/
+    /*
+    NAME
+        private final String SerializeTurn();
+    
+    SYNOPSIS
+        private final String SerializeTurn();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns an FEN string of whose turn it is on the board,
+        either "b" or "w".
+    
+    RETURNS
+        String: "b" if it's black's turn or "w" if it's white's turn.
+    
+    AUTHOR
+        Ryan King
+    */
     private final char SerializeTurn(){
         return Character.toLowerCase(this.WhoseTurnIsIt().toString().charAt(Utilities.ZERO));
     }
     
+    /**/
+    /*
+    NAME
+        private final String SerializeCastlingRights();
+    
+    SYNOPSIS
+        private final String SerializeCastlingRights();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns an FEN string of castling rights for both sides.
+    
+    RETURNS
+        String: Some combination of the letters "KQkq" in that order
+        if any rights exist, otherwise "-".
+    
+    AUTHOR
+        Ryan King
+    */
     private final String SerializeCastlingRights(){
         final String WHITE_CASTLING_RIGHTS = SerializeCastlingRightsForOneSide(this.GetKing(ChessColor.WHITE));
         final String BLACK_CASTLING_RIGHTS = SerializeCastlingRightsForOneSide(this.GetKing(ChessColor.BLACK));
         
         // Add the castling privileges, if any
-        if(WHITE_CASTLING_RIGHTS.equals("-") && BLACK_CASTLING_RIGHTS.equals("-")){
-            return "-";
+        if(WHITE_CASTLING_RIGHTS.equals(Character.toString(Utilities.NO_RIGHTS_OR_TILE)) && BLACK_CASTLING_RIGHTS.equals(Character.toString(Utilities.NO_RIGHTS_OR_TILE))){
+            return Character.toString(Utilities.NO_RIGHTS_OR_TILE);
         }else{
-            String rights = "";
+            String rights = Utilities.EMPTY_STRING;
             
-            if(!WHITE_CASTLING_RIGHTS.equals("-")){
+            if(!WHITE_CASTLING_RIGHTS.equals(Character.toString(Utilities.NO_RIGHTS_OR_TILE))){
                 rights += WHITE_CASTLING_RIGHTS;
             }
             
-            if(!BLACK_CASTLING_RIGHTS.equals("-")){
+            if(!BLACK_CASTLING_RIGHTS.equals(Character.toString(Utilities.NO_RIGHTS_OR_TILE))){
                 rights += BLACK_CASTLING_RIGHTS;
             }
             
@@ -1028,18 +1102,40 @@ public final class Board{
         }
     }
     
+    /**/
+    /*
+    NAME
+        private final String SerializeCastlingRightsForOneSide(final King a_king);
+    
+    SYNOPSIS
+        private final String SerializeCastlingRightsForOneSide(final King a_king);
+    
+        King a_king --------------> The king whose castling rights must be serialized.
+    
+    DESCRIPTION
+        This method returns an FEN string of castling rights for one side.
+        If the king is white, it will return "KQ", "K", "Q", or "-".
+        If the king is black, it will return "kq", "k", "q", or "-".
+    
+    RETURNS
+        String: Some combination of the letters "KQ" for white 
+        or "kq" for black if any rights exist, otherwise "-".
+    
+    AUTHOR
+        Ryan King
+    */
     private final String SerializeCastlingRightsForOneSide(final King a_king){
-        String castlingRights = "";
+        String castlingRights = Utilities.EMPTY_STRING;
         
         if(a_king == null){
-            return "";
+            return Utilities.EMPTY_STRING;
         }
         
         // Assign helpful aliases to the required characters
         final char KINGSIDE = (a_king.IsWhite() ? Utilities.WHITE_KING_ICON : Utilities.BLACK_KING_ICON);
         final char QUEENSIDE = (a_king.IsWhite() ? Utilities.WHITE_QUEEN_ICON : Utilities.BLACK_QUEEN_ICON);
 
-        // Two checks to help get rid of erroneous castling rights
+        // Two checks per side to help get rid of erroneous castling rights
         if(a_king.HasKingsideCastlingRook(this) && !a_king.HasMoved()){
             castlingRights += KINGSIDE;
         }
@@ -1048,18 +1144,39 @@ public final class Board{
             castlingRights += QUEENSIDE;
         }
         
+        // Return the proper string
         if(!castlingRights.isBlank()){
             return castlingRights;
         }else{
-            return "-";
+            return Character.toString(Utilities.NO_RIGHTS_OR_TILE);
         }
     }
     
+    /**/
+    /*
+    NAME
+        private final String SerializeEnPassantTile();
+    
+    SYNOPSIS
+        private final String SerializeEnPassantTile();
+    
+        No parameters.
+    
+    DESCRIPTION
+        This method returns an FEN string of the en passant tile, if any.
+    
+    RETURNS
+        String: A lowercase letter from a-h followed by 3 or 6 
+        if an en passant tile exists, otherwise "-".
+    
+    AUTHOR
+        Ryan King
+    */
     private final String SerializeEnPassantTile(){
-        if(this.GetEnPassantTile() != null){
+        if(this.m_enPassantTile != null){
             return this.GetEnPassantTile().toString();
         }else{
-            return "-";
+            return Character.toString(Utilities.NO_RIGHTS_OR_TILE);
         }
     }
     
@@ -1074,10 +1191,11 @@ public final class Board{
         Move a_candidate -------> The move that may change castling privileges.
     
     DESCRIPTION
-        This method adjusts the castling privileges of the king
-        after a move has been made. This is meant to be used when
-        a rook moves or is captured and the king hasn't moved and
-        may lose rights to one side.
+        This method adjusts the castling rights of the king
+        after a move involving a rook has been made. 
+        This is meant to be used when a rook moves or 
+        is captured and the king hasn't moved and thus 
+        may lose castling rights to one side.
     
     RETURNS
         Nothing
@@ -1130,7 +1248,7 @@ public final class Board{
             
             // If the king has not moved, reset the king with adjusted castling privileges and 0 moves made
             // If the king has already moved, it does not matter if the rook has not moved because the king cannot castle
-            m_boardObject[KING_ROW][KING_COLUMN] = new Tile(TILE_COLOR, KING_ROW, KING_COLUMN, new King(MOVER_COLOR, KING_ROW, KING_COLUMN, KINGSIDE, QUEENSIDE));
+            this.m_boardObject[KING_ROW][KING_COLUMN] = new Tile(TILE_COLOR, KING_ROW, KING_COLUMN, new King(MOVER_COLOR, KING_ROW, KING_COLUMN, KINGSIDE, QUEENSIDE));
         }
     }
     
@@ -1148,7 +1266,7 @@ public final class Board{
         This method returns a new Board object with the specified regular move made.
     
     RETURNS
-        The Board once the move has been completed.
+        Board: The Board once the move has been completed.
     
     AUTHOR
         Ryan King
@@ -1168,19 +1286,19 @@ public final class Board{
         final int NEW_COLUMN = a_candidate.GetNewColumn();
 
         // Make note of the new and old tiles
-        final Tile NEW_TILE = m_boardObject[NEW_ROW][NEW_COLUMN];
-        final Tile OLD_TILE = m_boardObject[OLD_ROW][OLD_COLUMN];
+        final Tile NEW_TILE = this.m_boardObject[NEW_ROW][NEW_COLUMN];
+        final Tile OLD_TILE = this.m_boardObject[OLD_ROW][OLD_COLUMN];
         
         // Change castling privileges if this scenario eliminates them
         AdjustRooks(a_candidate);
                 
         // Set the moved Piece to the new Tile
-        m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
+        this.m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
         // Remove the moved Piece from the old Tile
-        m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
+        this.m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        BoardBuilder BUILDER = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
+        final BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Build the board
         return BUILDER.Build();
@@ -1200,7 +1318,7 @@ public final class Board{
         This method returns a new Board object with the specified attacking move made.
     
     RETURNS
-        The Board once the move has been completed.
+        Board: The Board once the move has been completed.
     
     AUTHOR
         Ryan King
@@ -1218,20 +1336,20 @@ public final class Board{
         final int NEW_COLUMN = a_candidate.GetNewColumn();
 
         // Find both source and destination tiles involved in this move
-        final Tile NEW_TILE = m_boardObject[NEW_ROW][NEW_COLUMN];
-        final Tile OLD_TILE = m_boardObject[OLD_ROW][OLD_COLUMN];
+        final Tile NEW_TILE = this.m_boardObject[NEW_ROW][NEW_COLUMN];
+        final Tile OLD_TILE = this.m_boardObject[OLD_ROW][OLD_COLUMN];
         
         // Adjust castling privileges for both sides
         AdjustRooks(a_candidate);
         
         // Set the moved Piece to the new Tile
-        m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
+        this.m_boardObject[NEW_ROW][NEW_COLUMN] = new Tile(NEW_TILE.GetColor(), NEW_TILE.GetRow(), NEW_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_ROW, NEW_COLUMN));
         
         // Remove the moved Piece from the old Tile
-        m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
+        this.m_boardObject[OLD_ROW][OLD_COLUMN] = new Tile(OLD_TILE.GetColor(), OLD_TILE.GetRow(), OLD_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder BUILDER = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
+        final BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));
         
         // Return the newly-moved board
         return BUILDER.Build();
@@ -1251,7 +1369,7 @@ public final class Board{
         This method returns a new Board object with the specified castling move made.
     
     RETURNS
-        The Board once the move has been completed.
+        Board: The Board once the move has been completed.
     
     AUTHOR
         Ryan King
@@ -1279,27 +1397,27 @@ public final class Board{
         final int NEW_ROOK_COLUMN = a_candidate.GetRookDestinationColumn();
         
         // Find the king's old and new tiles
-        final Tile OLD_KING_TILE = m_boardObject[OLD_KING_ROW][OLD_KING_COLUMN];
-        final Tile NEW_KING_TILE = m_boardObject[NEW_KING_ROW][NEW_KING_COLUMN];
+        final Tile OLD_KING_TILE = this.m_boardObject[OLD_KING_ROW][OLD_KING_COLUMN];
+        final Tile NEW_KING_TILE = this.m_boardObject[NEW_KING_ROW][NEW_KING_COLUMN];
         
         // Find the rook's old and new tiles
-        final Tile OLD_ROOK_TILE = m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN];
-        final Tile NEW_ROOK_TILE = m_boardObject[NEW_ROOK_ROW][NEW_ROOK_COLUMN];
+        final Tile OLD_ROOK_TILE = this.m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN];
+        final Tile NEW_ROOK_TILE = this.m_boardObject[NEW_ROOK_ROW][NEW_ROOK_COLUMN];
     
         // Set the moved king to the new Tile
-        m_boardObject[NEW_KING_ROW][NEW_KING_COLUMN] = new Tile(NEW_KING_TILE.GetColor(), NEW_KING_TILE.GetRow(), NEW_KING_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_KING_ROW, NEW_KING_COLUMN));
+        this.m_boardObject[NEW_KING_ROW][NEW_KING_COLUMN] = new Tile(NEW_KING_TILE.GetColor(), NEW_KING_TILE.GetRow(), NEW_KING_TILE.GetColumn(), Factory.MovedPieceFactory(a_candidate.GetPiece(), NEW_KING_ROW, NEW_KING_COLUMN));
         
         // Remove the moved king from the old Tile
-        m_boardObject[OLD_KING_ROW][OLD_KING_COLUMN] = new Tile(OLD_KING_TILE.GetColor(), OLD_KING_TILE.GetRow(), OLD_KING_TILE.GetColumn(), null);
+        this.m_boardObject[OLD_KING_ROW][OLD_KING_COLUMN] = new Tile(OLD_KING_TILE.GetColor(), OLD_KING_TILE.GetRow(), OLD_KING_TILE.GetColumn(), null);
         
         // Set the moved rook to the new Tile
-        m_boardObject[NEW_ROOK_ROW][NEW_ROOK_COLUMN] = new Tile(NEW_ROOK_TILE.GetColor(), NEW_ROOK_TILE.GetRow(), NEW_ROOK_TILE.GetColumn(), Factory.MovedPieceFactory(this.m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN].GetPiece(), NEW_ROOK_ROW, NEW_ROOK_COLUMN));
+        this.m_boardObject[NEW_ROOK_ROW][NEW_ROOK_COLUMN] = new Tile(NEW_ROOK_TILE.GetColor(), NEW_ROOK_TILE.GetRow(), NEW_ROOK_TILE.GetColumn(), Factory.MovedPieceFactory(this.m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN].GetPiece(), NEW_ROOK_ROW, NEW_ROOK_COLUMN));
         
         // Remove the moved rook from the old Tile
-        m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN] = new Tile(OLD_ROOK_TILE.GetColor(), OLD_ROOK_TILE.GetRow(), OLD_ROOK_TILE.GetColumn(), null);
+        this.m_boardObject[OLD_ROOK_ROW][OLD_ROOK_COLUMN] = new Tile(OLD_ROOK_TILE.GetColor(), OLD_ROOK_TILE.GetRow(), OLD_ROOK_TILE.GetColumn(), null);
         
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        final BoardBuilder BUILDER = new BoardBuilder(m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));            
+        final BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, BoardUtilities.Reverse(this.WhoseTurnIsIt()));            
 
         // Return the newly-moved board
         return BUILDER.Build();
@@ -1319,7 +1437,7 @@ public final class Board{
         This method returns a new Board object with the specified Move made.
     
     RETURNS
-        The Board once the move has been completed.
+        Board: The Board once the move has been completed.
     
     AUTHOR
         Ryan King
@@ -1381,14 +1499,14 @@ public final class Board{
         by the piece the player chose.
     
     RETURNS
-        The Board once the move has been completed.
+        Board: The Board once the move has been completed.
     
     AUTHOR
         Ryan King
     */
     public final Board Promote(final Piece a_promotedPiece){
-        // Null values do not constitute valid moves
-        if(a_promotedPiece == null){
+        // Null or illegal values do not constitute valid moves
+        if(a_promotedPiece == null || a_promotedPiece.IsPawn() || a_promotedPiece.IsKing() || !BoardUtilities.HasValidCoordinates(a_promotedPiece.GetCurrentRow(), a_promotedPiece.GetCurrentColumn()) || ((a_promotedPiece.IsWhite() && a_promotedPiece.GetCurrentRow() != Utilities.ZERO) || (a_promotedPiece.IsBlack() && a_promotedPiece.GetCurrentRow() != Utilities.SEVEN))){
             return this;
         }
         
@@ -1403,53 +1521,12 @@ public final class Board{
         this.m_boardObject[PROMOTED_ROW][PROMOTED_COLUMN] = new Tile(PROMOTED_TILE.GetColor(), PROMOTED_TILE.GetRow(), PROMOTED_TILE.GetColumn(), Factory.MovedPieceFactory(a_promotedPiece, PROMOTED_ROW, PROMOTED_COLUMN));
 
         // Initialize a new BoardBuilder object with the configuration of the new Board
-        BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, this.WhoseTurnIsIt());
+        final BoardBuilder BUILDER = new BoardBuilder(this.m_boardObject, this.WhoseTurnIsIt());
         
         // Return the newly-moved board
         return BUILDER.Build();
     }
     
-    /**/
-    /*
-    NAME
-        public final Board MakeMove(final Move a_move);
-    
-    SYNOPSIS
-        public final Board MakeMove(final Move a_move);
-
-        Move a_move --------------> The move to be made.
-
-    DESCRIPTION
-        This method makes any type of move on the given board.
-
-    RETURNS
-        The board with the newly-made move.
-    
-    AUTHOR
-        Based off the execute() method by Amir Afghani,
-        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
-    */
-    public final Board MakeMove(final Move a_move){
-        // Null values do not constitute valid moves
-        if(a_move == null){
-            return this;
-        }
-        
-        // Make a copy of the board to perform the move
-        final Board CLONE = Board.GetDeepCopy(this);
-        
-        // Make a different kind of move by type
-        if(a_move.IsEnPassant()){
-            return CLONE.EnPassant((EnPassantMove)a_move);
-        }else if(a_move.IsCastling()){
-            return CLONE.Castle((CastlingMove)a_move);
-        }else if(a_move.IsAttacking()){
-            return CLONE.Attack((AttackingMove)a_move);
-        }else{
-            return CLONE.Move((RegularMove)a_move);
-        }
-    }
-
     /**
      * The BoardBuilder class is responsible for generating any new moves 
      * made on the Board object and passing it into the Board at
@@ -1513,6 +1590,11 @@ public final class Board{
             Ryan King
         */
         public BoardBuilder(final Tile[][] a_copy, final ChessColor a_turn){
+            if(a_copy == null || a_turn == null || a_copy.length != Utilities.EIGHT || a_copy[Utilities.ZERO].length != Utilities.EIGHT){
+                System.err.println("Invalid argument(s) to BoardBuilder constructor");
+                System.exit(Utilities.ONE);
+            }
+            
             // Initialize the new array space
             this.m_builderBoard = new Tile[Utilities.EIGHT][Utilities.EIGHT];
             // Set the turn
@@ -1580,10 +1662,12 @@ public final class Board{
             Ryan King
         */
         private final ChessColor AssignTileColor(final int a_row, final int a_column){
+            // Idiot proofing
             if(!BoardUtilities.HasValidCoordinates(a_row, a_column)){
                 return null;
             }
             
+            // Find the proper color by examining both coordinates
             if(a_row % Utilities.TWO == Utilities.ONE){
                 if(a_column % Utilities.TWO == Utilities.ONE){
                     return ChessColor.WHITE;
@@ -1613,7 +1697,7 @@ public final class Board{
             This method returns an 8-by-8 Tile array from the BoardBuilder object.
         
         RETURNS
-            The BoardBuilder object array.
+            Tile[8][8]: The BoardBuilder object array.
         
         AUTHOR
             Ryan King
@@ -1636,7 +1720,7 @@ public final class Board{
             This method returns the Board object that gets passed to the quasi singleton Board.
         
         RETURNS
-            A new Board object.
+            Board: A new Board object.
         
         AUTHOR
             Amir Afghani,
@@ -1661,7 +1745,7 @@ public final class Board{
             and sets the color of the moving player.
         
         RETURNS
-            The BoardBuilder object.
+            BoardBuilder this: The BoardBuilder object.
         
         AUTHOR
             Amir Afghani,
@@ -1696,7 +1780,7 @@ public final class Board{
             simply returns itself as is.
         
         RETURNS
-            The BoardBuilder object.
+            BoardBuilder this: The BoardBuilder object.
         
         AUTHOR
             Amir Afghani,
@@ -1707,8 +1791,8 @@ public final class Board{
             try{
                 // Remove the piece from the tile if coordinates are valid
                 if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    final Tile ORIGINAL = m_builderBoard[a_row][a_column];
-                    m_builderBoard[a_row][a_column] = new Tile(ORIGINAL.GetColor(), ORIGINAL.GetRow(), ORIGINAL.GetColumn(), null);
+                    final Tile ORIGINAL = this.m_builderBoard[a_row][a_column];
+                    this.m_builderBoard[a_row][a_column] = new Tile(ORIGINAL.GetColor(), ORIGINAL.GetRow(), ORIGINAL.GetColumn(), null);
                 }
                 return this;
             }catch(Exception e){
@@ -1731,7 +1815,7 @@ public final class Board{
             and sets the piece on its spot on the BoardBuilder array.
         
         RETURNS
-            The BoardBuilder object.
+            BoardBuilder this: The BoardBuilder object.
         
         AUTHOR
             Amir Afghani,
@@ -1742,8 +1826,8 @@ public final class Board{
             try{
                 // Set the piece on tile if the piece's coordinates are valid
                 if(BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn())){
-                    final Tile ORIGINAL = m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
-                    m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(ORIGINAL.GetColor(), ORIGINAL.GetRow(), ORIGINAL.GetColumn(), a_piece);
+                    final Tile ORIGINAL = this.m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()];
+                    this.m_builderBoard[a_piece.GetCurrentRow()][a_piece.GetCurrentColumn()] = new Tile(ORIGINAL.GetColor(), ORIGINAL.GetRow(), ORIGINAL.GetColumn(), a_piece);
                 }
                 return this;
             }catch(Exception e){
@@ -1779,7 +1863,7 @@ public final class Board{
         public final void SetTile(final Tile a_tile, final int a_row, final int a_column){
             try{
                 if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    m_builderBoard[a_row][a_column] = a_tile;
+                    this.m_builderBoard[a_row][a_column] = a_tile;
                 }
             }catch(Exception e){
                 return;
@@ -1804,7 +1888,7 @@ public final class Board{
             invalid arguments are given.
         
         RETURNS
-            The desired Tile object if coordinates are valid, or null if they're not.
+            Tile: The desired Tile object if coordinates are valid, or null if they're not.
         
         AUTHOR
             Ryan King
@@ -1812,7 +1896,7 @@ public final class Board{
         public final Tile GetTile(final int a_row, final int a_column){
             try{
                 if(BoardUtilities.HasValidCoordinates(a_row, a_column)){
-                    return m_builderBoard[a_row][a_column];
+                    return this.m_builderBoard[a_row][a_column];
                 }else{
                     return null;
                 }
@@ -1835,13 +1919,13 @@ public final class Board{
             This method returns whose turn it is, either white or black.
         
         RETURNS
-            The ChessColor representing whose turn it is.
+            ChessColor m_whoseTurn: The color representing whose turn it is.
         
         AUTHOR
             Ryan King
         */
         public final ChessColor WhoseTurnIsIt(){
-            return m_whoseTurn;
+            return this.m_whoseTurn;
         }
     }//End of BoardBuilder class
 }//End of Board class

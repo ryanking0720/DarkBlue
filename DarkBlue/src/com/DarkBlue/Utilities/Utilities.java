@@ -51,6 +51,10 @@ public interface Utilities{
     public static final char BLACK_QUEEN_BOARD_ICON = '♛';
     public static final char BLACK_KING_BOARD_ICON = '♚';
     
+    public static final String EMPTY_STRING = "";
+    public static final String CAPTURE = "x";
+    public static final String ELLIPSIS = "...\n";
+    
     // Letters in algebraic notation
     public static final char A = 'a';
     public static final char B = 'b';
@@ -61,6 +65,11 @@ public interface Utilities{
     public static final char G = 'g';
     public static final char H = 'h';
     public static final char NULL = '\0';
+    public static final char NEWLINE = '\n';
+    public static final char CAPTURE_CHAR = 'x';
+    public static final char NO_RIGHTS_OR_TILE = '-';
+    public static final char SPACE = ' ';
+    public static final char FORWARD_SLASH = '/';
     
     // Character versions of single-digit numbers
     public static final char ONE_CHAR = '1';
@@ -96,6 +105,7 @@ public interface Utilities{
     public static final int EIGHT = 8;
     public static final int NINE = 9;
     public static final int TEN = 10;
+    public static final int FIFTEEN = 15;
     public static final int SIXTEEN = 16;
     public static final int FORTY = 40;
     public static final int FIFTY = 50;
@@ -141,7 +151,13 @@ public interface Utilities{
     AUTHOR
         Ryan King
     */
-    public static boolean IsLegal(final Piece a_piece, final int a_destinationRow, final int a_destinationColumn){        
+    public static boolean IsLegal(final Piece a_piece, final int a_destinationRow, final int a_destinationColumn){   
+        // Idiot proofing
+        if(a_piece == null || !BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn()) || !BoardUtilities.HasValidCoordinates(a_destinationRow, a_destinationColumn)){
+            return false;
+        }
+        
+        // Check for move legality by examining destination coordinates
         for(final Move MOVE : a_piece.GetCurrentLegalMoves()){
             if(MOVE.GetNewRow() == a_destinationRow && MOVE.GetNewColumn() == a_destinationColumn){
                 return true;
@@ -172,6 +188,12 @@ public interface Utilities{
         with additional modifications made by Ryan King
     */
     public static void EnlargeFont(final JComponent a_object){
+        // Idiot proofing
+        if(a_object == null){
+            return;
+        }
+        
+        // Enlarge the component's font
         final Font FONT = a_object.getFont();
         final float SIZE = FONT.getSize() + FIVE_FLOAT;
         a_object.setFont(FONT.deriveFont(SIZE));

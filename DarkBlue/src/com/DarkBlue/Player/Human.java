@@ -20,6 +20,8 @@ import com.DarkBlue.Board.Board;
  */
 public final class Human extends Player{
 
+    private static final String HUMAN_STRING = " human player";
+    
     /**/
     /*
     NAME
@@ -44,33 +46,6 @@ public final class Human extends Player{
     */
     public Human(final ChessColor a_color, final Board a_board){
         super(a_color, a_board);
-    }
-    
-    /**/
-    /*
-    NAME
-        public Human(final Player a_player, final Board a_board);
-    
-    SYNOPSIS
-        public Human(final Player a_player, final Board a_board);
-    
-        Player a_player --------> The player to be copied.
-        
-        Board a_board ----------> The current state of the board.
-    
-    DESCRIPTION
-        This constructor instantiates a new Human object.
-        This is meant to be the copy constructor.
-        The type is automatically set the PlayerType.HUMAN.
-    
-    RETURNS
-        Nothing
-    
-    AUTHOR
-        Ryan King
-    */
-    public Human(final Player a_player, final Board a_board){
-        super(a_player, a_board);
     }
     
     /**/
@@ -166,6 +141,6 @@ public final class Human extends Player{
     */
     @Override
     public final String toString(){
-        return this.GetColor().toString().toLowerCase() + " human player";
+        return this.GetColor().toString().toLowerCase() + HUMAN_STRING;
     }
 }

@@ -45,7 +45,7 @@ public interface Factory{
     */
     public static Piece PieceFactory(final Piece a_candidate){
         // Idiot proofing for a null argument
-    	if(a_candidate == null){
+    	if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn())){
     		return null;
     	}
     	
@@ -83,9 +83,9 @@ public interface Factory{
     */
     public static Piece MovedPieceFactory(final Piece a_candidate){
         // Idiot proofing for a null argument
-    	if(a_candidate == null){
-    		return null;
-    	}
+        if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn())){
+            return null;
+        }
     	
     	// Make a deep copy of the piece that just moved
         switch(a_candidate.GetPieceType()){
@@ -125,7 +125,7 @@ public interface Factory{
     */
     public static Piece MovedPieceFactory(final Piece a_candidate, final int a_newRow, final int a_newColumn){
         // Idiot proofing for null or invalid arguments
-    	if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
+    	if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn()) || !BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
     		return null;
     	}
 
@@ -176,7 +176,7 @@ public interface Factory{
     */
     public static Piece PromotedPieceFactory(final ChessColor a_color, final int a_row, final int a_column, final int a_buttonInt){
         // Idiot proofing for null or invalid arguments
-        if(a_color == null || !BoardUtilities.HasValidCoordinates(a_row, a_column) || !(a_buttonInt >= Utilities.ZERO && a_buttonInt <= Utilities.THREE)){
+        if(a_color == null || !(BoardUtilities.HasValidValue(a_column) && (a_color.IsWhite() && a_row == Utilities.ZERO) || (a_color.IsBlack() && a_row == Utilities.SEVEN)) || !BoardUtilities.HasValidCoordinates(a_row, a_column) || !(a_buttonInt >= Utilities.ZERO && a_buttonInt <= Utilities.THREE)){
             return null;
         }
         
@@ -350,7 +350,8 @@ public interface Factory{
         Ryan King
     */
     public static Move MoveFactory(final Piece a_candidate, final int a_destinationRow, final int a_destinationColumn, final Piece a_victim, final Board a_board){
-        if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_destinationRow, a_destinationColumn) || a_board == null){
+        // Idiot proofing which is not done for the victim because it can be null
+        if(a_candidate == null || !BoardUtilities.HasValidCoordinates(a_candidate.GetCurrentRow(), a_candidate.GetCurrentColumn()) || !BoardUtilities.HasValidCoordinates(a_destinationRow, a_destinationColumn) || a_board == null){
             return null;
         }
         
