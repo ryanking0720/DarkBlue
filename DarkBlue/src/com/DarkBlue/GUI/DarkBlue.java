@@ -117,6 +117,7 @@ import java.io.OutputStreamWriter;
  * to perform such an action, even if a game with a large amount of moves is resumed from a file or string.
  * 
  * The Save, Stop, Undo, and Help Me Move buttons are only accessible when a game is in progress.
+ * The Undo button is not accessible when a piece is selected.
  * 
  * The New Game button and Load Game submenu are only accessible when a game is not in progress.
  */
@@ -2868,10 +2869,12 @@ public final class DarkBlue extends JFrame{
     			// Only highlight moves if the user clicked on a piece that is his/her color and has at least one legal move
                 if(m_sourceTile.IsOccupied() && m_candidate.GetColor().IsAlly(m_currentPlayer.GetColor()) && m_candidate.CanMove()){
                     m_shouldHighlightLegalMoves = true;
+                    m_menuBar.DisableUndo();
                 }else{
                     // Show dialog boxes to report specific types of errors
                     ShowSourceErrorMessage();
                     m_sourceTile = null;
+                    m_menuBar.EnableUndo();
                 }
             }else{
                 // The player has selected a destination
@@ -2887,10 +2890,12 @@ public final class DarkBlue extends JFrame{
                 // The player deselected his/her current piece
                 if(m_sourceTile.GetRow() == m_destinationTile.GetRow() && m_sourceTile.GetColumn() == m_destinationTile.GetColumn()){
                     ResetHumanFields();
+                    m_menuBar.EnableUndo();
                 }else{
                 	// The player chose a place to move                	 
                     if(Utilities.IsLegal(m_candidate, m_destinationTile.GetRow(), m_destinationTile.GetColumn())){
                         PlayThrough();
+                        m_menuBar.EnableUndo();
                     }else{
                         // Report if the move attempted to be made was illegal
                         JOptionPane.showMessageDialog(m_menuBar, ILLEGAL_MOVE_ERROR, ILLEGAL_MOVE_HEADER, JOptionPane.PLAIN_MESSAGE);
@@ -4900,7 +4905,7 @@ public final class DarkBlue extends JFrame{
     	}
     }
 	
-    /*
+    /**
      * This class contains methods that check the status of the board
      * and see if the game is over or not.
      * 
@@ -4910,6 +4915,8 @@ public final class DarkBlue extends JFrame{
      * Observe() will also search for check, checkmate, stalemate, and
      * other draw conditions, but will notify the player with a JOptionPane message dialog.
      * No dialog will pop up if the human places the computer into check.
+     * 
+     * Additional methods exist to announce different game conditions such as check, checkmate, and any draw condition.
      */
 	public final class GameWatcher{
 		
