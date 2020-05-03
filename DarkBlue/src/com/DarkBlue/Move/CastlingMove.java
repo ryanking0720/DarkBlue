@@ -46,6 +46,11 @@ import com.DarkBlue.Board.Board;
  * If the king has not moved but one rook has moved 
  * and the player decides to castle with the other one that has not 
  * moved yet, this is legal.
+ * 
+ * Parts of the design of this class were inspired 
+ * by the design of one of the Move subclasses by Amir Afghani in Black Widow Chess,
+ * https://github.com/amir650/BlackWidow-Chess
+ * but any code not identical to that repository was written by Ryan King.
  */
 public final class CastlingMove extends Move{
     
@@ -202,7 +207,8 @@ public final class CastlingMove extends Move{
         Piece m_victim: The captured piece.
     
     AUTHOR
-        Ryan King
+        Ryan King, but based off a similar method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     @Override
     public final Piece GetVictim(){

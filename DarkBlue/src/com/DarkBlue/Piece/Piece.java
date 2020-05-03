@@ -21,6 +21,12 @@ import com.DarkBlue.Board.Tile;
  * 
  * Identity as a certain type of piece, special
  * types of moves, etc. are all handled in each subclass.
+ * 
+ * Partially inspired by the Piece class in Black Widow Chess by Amir Afghani:
+ * https://github.com/amir650/BlackWidow-Chess
+ * 
+ * My piece class hierarchy with all concrete subclasses is identical to the one used in Black Widow, but with some differences.
+ * I designed my hierarchy independently of Black Widow despite the fact that it is identical.
  */
 public abstract class Piece{
     // White or black

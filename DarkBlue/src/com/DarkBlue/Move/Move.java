@@ -40,8 +40,10 @@ import com.DarkBlue.Utilities.Utilities;
  * The toString() method is abstract, since the string representation of each move is slightly different
  * depending on the rules of algebraic notation, the type of move, as well as the moving piece.
  * 
- * Inspired by the Move class by Amir Afghani in Black Widow Chess,
- * https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
+ * Parts of the design of this class were inspired 
+ * by the design of the Move class by Amir Afghani in Black Widow Chess,
+ * https://github.com/amir650/BlackWidow-Chess
+ * but any code not found in that repository was written by Ryan King.
  */
 public abstract class Move{
 
@@ -82,7 +84,8 @@ public abstract class Move{
         Nothing
     
     AUTHOR
-        Ryan King
+        Ryan King, but based off a similar method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     public Move(final Piece a_piece, final int a_newRow, final int a_newColumn, final Board a_board){
         if(a_piece == null || !BoardUtilities.HasValidCoordinates(a_piece.GetCurrentRow(), a_piece.GetCurrentColumn()) || a_board == null || !BoardUtilities.HasValidCoordinates(a_newRow, a_newColumn)){
@@ -115,7 +118,8 @@ public abstract class Move{
         Piece m_piece: The piece to be moved.
     
     AUTHOR
-        Ryan King
+        Ryan King, with inspiration from Amir Afghani, 
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     public final Piece GetPiece(){
         return this.m_piece;
@@ -338,10 +342,11 @@ public abstract class Move{
         is defined separately for each subclass.
     
     RETURNS
-        Piece m_victim: The victim, if any.
+        Piece: The victim, if any; otherwise null.
     
     AUTHOR
-        Ryan King
+        Ryan King, but based off a similar method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     public abstract Piece GetVictim();
     

@@ -15,6 +15,10 @@ import com.DarkBlue.Utilities.*;
  * The color is determined through the tile's coordinates.
  * Though the color may look like a waste of space and bookkeeping,
  * it is useful for determining draws when both players have a king and bishop.
+ * 
+ * Adapted from the Tile class found in an early version of Black Widow Chess by Amir Afghani:
+ * https://www.youtube.com/watch?v=h8fSdSUKttk and https://www.youtube.com/watch?v=Ol2pAXgVE7c
+ * This class is not used in the current version of Black Widow on his GitHub repository.
  */
 public final class Tile{
     // The color of the tile, i.e. black or white
@@ -34,8 +38,8 @@ public final class Tile{
     // For example, tile a1 has row 7, column 0.
     // Tile h8 has row 0, column 7.
     
-    //letter(row), |8 - column|
-    //letter(0) = a, letter(1) = b, and so on.
+    // letter(row), |8 - column|
+    // letter(0) = a, letter(1) = b, and so on.
     
     /**/
     /*

@@ -12,6 +12,9 @@ import com.DarkBlue.Board.Board;
  * This represents a chess piece that can move any number of tiles diagonally,
  * stopping either on a tile of a non-king enemy piece or the tile
  * before a friendly piece. The bishop captures the same way it moves.
+ * 
+ * Inspired by the class of the same name in Black Widow Chess by Amir Afghani,
+ * but this code was entirely written by Ryan King unless indicated otherwise.
  */
 public class Bishop extends Piece{
     
@@ -57,10 +60,10 @@ public class Bishop extends Piece{
     public Bishop(final ChessColor a_color, final int a_currentRow, final int a_currentColumn){
         super(a_color, a_currentRow, a_currentColumn);
         
-        m_currentDownAndRightMoves = new ArrayList<>();
-        m_currentUpAndRightMoves = new ArrayList<>();
-        m_currentUpAndLeftMoves = new ArrayList<>();
-        m_currentDownAndLeftMoves = new ArrayList<>();
+        this.m_currentDownAndRightMoves = new ArrayList<>();
+        this.m_currentUpAndRightMoves = new ArrayList<>();
+        this.m_currentUpAndLeftMoves = new ArrayList<>();
+        this.m_currentDownAndLeftMoves = new ArrayList<>();
     }
     
     /**/
@@ -267,7 +270,7 @@ public class Bishop extends Piece{
         This method determines if this piece is a king.
     
     RETURNS
-        boolean: Always return false.
+        boolean: Always returns false.
     
     AUTHOR
         Ryan King
@@ -291,7 +294,7 @@ public class Bishop extends Piece{
         This method determines if this piece is a rook.
     
     RETURNS
-        boolean: Always return false.
+        boolean: Always returns false.
     
     AUTHOR
         Ryan King

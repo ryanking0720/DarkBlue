@@ -14,6 +14,9 @@ import java.util.ArrayList;
  * before a friendly piece. The queen captures the same way she moves.
  * 
  * She is chosen for ninety percent of pawn promotions.
+ * 
+ * Inspired by the class of the same name in Black Widow Chess by Amir Afghani,
+ * but this code was entirely written by Ryan King unless indicated otherwise.
  */
 public final class Queen extends Piece{
     
@@ -28,8 +31,6 @@ public final class Queen extends Piece{
         
     // The left moves usable on this turn only
     private final ArrayList<Move> m_currentLeftMoves;
-    
-    
     
     // The down and right moves usable on this turn only
     private final ArrayList<Move> m_currentDownAndRightMoves;

@@ -120,6 +120,11 @@ import java.io.OutputStreamWriter;
  * The Undo button is not accessible when a piece is selected.
  * 
  * The New Game button and Load Game submenu are only accessible when a game is not in progress.
+ * 
+ * Parts of the design of this class and its internal classes were inspired 
+ * by the design of the Table class by Amir Afghani in Black Widow Chess,
+ * https://github.com/amir650/BlackWidow-Chess
+ * but any code not completely identical to that repository was written by Ryan King.
  */
 public final class DarkBlue extends JFrame{
     
@@ -2677,7 +2682,8 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Ryan King
+            Ryan King, with help taken from
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         public GUITile(final Tile a_tile){
             super();
@@ -2852,7 +2858,7 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Amir Afghani, Black Widow Chess
+            Idea taken from Amir Afghani, Black Widow Chess
             https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
             with changes made specifically for this engine by Ryan King
         */
@@ -2957,7 +2963,8 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Ryan King
+            Code written by Ryan King, with idea taken from Amir Afghani
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         private final void ResetHumanFields(){
             m_shouldHighlightLegalMoves = false;
@@ -2984,7 +2991,8 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Ryan King
+            Code written by Ryan King, with idea taken from Amir Afghani
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         private final void PlayThrough(){
             m_shouldHighlightLegalMoves = false;
@@ -3032,7 +3040,7 @@ public final class DarkBlue extends JFrame{
             have been assigned and thus if the move to be made has been made.
         
         RETURNS
-            True if both tiles are non-null, and false otherwise.
+            boolean: True if both tiles are non-null, and false otherwise.
             One of these two options will always occur.
         
         AUTHOR
@@ -3067,52 +3075,6 @@ public final class DarkBlue extends JFrame{
             return this.m_tile;
         }
         
-        /**/
-        /*
-        NAME
-            public final int GetRow();
-        
-        SYNOPSIS
-            public final int GetRow();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns this tile's row from its model Tile.
-        
-        RETURNS
-            int: The tile's row.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final int GetRow(){
-        	return this.m_tile.GetRow();
-        }
-        
-        /**/
-        /*
-        NAME
-            public final int GetColumn();
-        
-        SYNOPSIS
-            public final int GetColumn();
-        
-            No parameters.
-        
-        DESCRIPTION
-            This method returns this tile's column from its model Tile.
-        
-        RETURNS
-            int: The tile's column.
-        
-        AUTHOR
-            Ryan King
-        */
-        public final int GetColumn(){
-        	return this.m_tile.GetColumn();
-        }
-
         /**/
         /*
         NAME
@@ -3189,7 +3151,8 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Ryan King
+            Code written by Ryan King with idea inspired by Amir Afghani
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         public GUIBoard(final Board a_board){
             // Set the layout
@@ -3265,7 +3228,8 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Ryan King
+            Code written by Ryan King with idea inspired by Amir Afghani
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         public final void SetBoard(final Board a_board){
             m_board = a_board;
@@ -3511,7 +3475,8 @@ public final class DarkBlue extends JFrame{
             Board m_board: The board object.
         
         AUTHOR
-            Ryan King
+            Code written by Ryan King with idea inspired by Amir Afghani
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         public final Board GetBoard(){
             return this.m_board;
@@ -3538,7 +3503,8 @@ public final class DarkBlue extends JFrame{
             One of these two options will always occur.
         
         AUTHOR
-            Ryan King
+            Code written by Ryan King with idea inspired by Amir Afghani
+            https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
         */
         public final ChessColor WhoseTurnIsIt(){
             return this.m_board.WhoseTurnIsIt();
@@ -3605,6 +3571,10 @@ public final class DarkBlue extends JFrame{
      * Rules listed about touching a piece to make a legal move, improperly prepared boards, time controls, etc. do not apply to this engine.
      * 
      * Help Me Move: The AI plays from the human perspective to determine an ideal move. This move is shown to the user with a dynamically-prepared string.
+     * 
+     * Inspired by the Table Menu Bar in Black Widow Chess by Amir Afghani,
+     * with original code written by Ryan King.
+     * https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
      */
     public final class DarkBlueMenuBar extends JMenuBar implements ActionListener{
 
@@ -3676,7 +3646,8 @@ public final class DarkBlue extends JFrame{
             Nothing
         
         AUTHOR
-            Ryan King
+            Ryan King, with help taken from:
+            https://stackoverflow.com/questions/4434894/java-swing-jmenu-mnemonic
         */
         private final void AddMnemonics(){
         	this.m_newGame.setMnemonic('N');
@@ -4123,6 +4094,28 @@ public final class DarkBlue extends JFrame{
         	}
         }
         
+        /**/
+        /*
+        NAME
+            private final void ParseCustomFEN(final String a_FEN);
+        
+        SYNOPSIS
+            private final void ParseCustomFEN(final String a_FEN);
+        
+            String a_FEN -------------> A custom FEN string typed in by the user.
+        
+        DESCRIPTION
+            This method parses a custom FEN string typed in by the user.
+            It will warn the user if the string is invalid or results in
+            an unplayable game. Otherwise, a new game will resume and the
+            user will choose his/her color like normal.
+        
+        RETURNS
+            Nothing
+        
+        AUTHOR
+            Ryan King
+        */
         private final void ParseCustomFEN(final String a_FEN){ 
             ClearGameFields();
             
@@ -4853,7 +4846,7 @@ public final class DarkBlue extends JFrame{
         }
     }
     
-    /*
+    /**
      * This class is my custom extension of the JTextArea.
      * 
      * It is built to hold the algebraic notation form of any move
@@ -4869,6 +4862,9 @@ public final class DarkBlue extends JFrame{
      * 
      * It will be partially cleared when a move is undone,
      * and will be completely cleared at the start of a new game.
+     * 
+     * Inspired by the MoveHistoryPanel from Black Widow Chess by Amir Afghani,
+     * but this code was entirely written by Ryan King unless indicated otherwise.
      */
     public final class MoveTextArea extends JTextArea{
 
@@ -4917,6 +4913,9 @@ public final class DarkBlue extends JFrame{
      * No dialog will pop up if the human places the computer into check.
      * 
      * Additional methods exist to announce different game conditions such as check, checkmate, and any draw condition.
+     * 
+     * This class was inspired by the use of the Observer class in Black Widow Chess by Amir Afghani,
+     * but this code is was entirely designed and written by Ryan King unless indicated otherwise.
      */
 	public final class GameWatcher{
 		
@@ -4994,7 +4993,6 @@ public final class DarkBlue extends JFrame{
 			RefreshPlayers();
 
 			// Adjust the castling privileges of both players if necessary
-			
 			AdjustCastlingRights(m_currentPlayer);
 			AdjustCastlingRights(OTHER);
 			
@@ -5124,6 +5122,7 @@ public final class DarkBlue extends JFrame{
             a_area.append(Character.toString(Utilities.NEWLINE));
             return true;
         }
+	    
 	    return true;
 	}
 	

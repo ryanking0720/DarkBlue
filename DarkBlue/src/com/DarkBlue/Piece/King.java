@@ -71,6 +71,12 @@ import java.util.ArrayList;
  *  or use a friendly piece to block the threat if the threatening piece moves in a linear manner. 
  *  The side delivering checkmate wins and the game is over.
  *  Just like with check, stalemate, or draw conditions, the program will warn either type of player if and when checkmate is found.
+ *
+ *  Inspiration for having Boolean fields denoting castling rights was taken from the King class from Black Widow Chess:
+ *  https://github.com/amir650/BlackWidow-Chess
+ *  
+ *  Inspired by the class of the same name in Black Widow Chess by Amir Afghani,
+ *  but this code was entirely written by Ryan King unless indicated otherwise.
  */
 public final class King extends Piece{
     

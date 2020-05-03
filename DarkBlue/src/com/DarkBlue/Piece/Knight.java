@@ -14,6 +14,9 @@ import com.DarkBlue.Board.Board;
  * and is completely unimpeded in movement unless a friendly
  * piece is occupying all of its destination tiles or its
  * destination tiles go off the board. 
+ * 
+ * Inspired by the class of the same name in Black Widow Chess by Amir Afghani,
+ * but this code was entirely written by Ryan King unless indicated otherwise.
  */
 public final class Knight extends Piece{
 

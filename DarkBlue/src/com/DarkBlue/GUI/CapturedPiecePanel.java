@@ -36,6 +36,11 @@ import com.DarkBlue.Utilities.Utilities;
  * 
  * This still allows for fewer pawns and more rooks, bishops,
  * knights, or queens if necessary.
+ * 
+ * I got the idea for this class from the TakenPiecesPanel 
+ * from Black Widow Chess by Amir Afghani,
+ * https://github.com/amir650/BlackWidow-Chess
+ * but this code is entirely my own design.
  */
 public class CapturedPiecePanel extends JPanel{
 

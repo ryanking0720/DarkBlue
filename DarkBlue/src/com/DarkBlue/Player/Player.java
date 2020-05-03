@@ -17,7 +17,13 @@ import java.util.ArrayList;
 
 /**
  * This class represents a player. It contains a color,
- * a king, a list of active pieces, a list of captured pieces, and a list of all current legal moves.
+ * a king, a list of active pieces, and a list of captured pieces.
+ * 
+ * Partially inspired by the design of the Player class from Black Widow Chess:
+ * https://github.com/amir650/BlackWidow-Chess
+ * 
+ * My version of this class contains ArrayLists that hold active and captured pieces,
+ * but this design was developed independently of Black Widow.
  */
 public abstract class Player{
     
@@ -30,7 +36,7 @@ public abstract class Player{
     // How many active pieces the player has on the board, which starts at 16
     protected final ArrayList<Piece> m_activePieces;
     
-    // The pieces this player has captured
+    // The pieces this player has captured, which starts at 0
     protected final ArrayList<Piece> m_capturedPieces;
 
     /**/
@@ -681,7 +687,8 @@ public abstract class Player{
         King m_king: The player's king.
     
     AUTHOR
-        Ryan King
+        Help taken from:
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/player/Player.java
     */    
     public final King GetKing(){
         return this.m_king;
@@ -936,7 +943,8 @@ public abstract class Player{
         ArrayList<Move> UGLY_MOVES: All possible moves for this player on the current turn.
     
     AUTHOR
-        Ryan King
+        Ryan King, method name inspired by the name used on JSFiddle:
+        https://jsfiddle.net/q76uzxwe/1/
     */
     public final ArrayList<Move> UglyMoves(){
         // Make a new list to hold the moves

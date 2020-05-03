@@ -11,6 +11,11 @@ import com.DarkBlue.Board.Board;
  * 
  * Castling moves performed by kings are different,
  * and are handled in a class of their own.
+ * 
+ * Parts of the design of this class were inspired 
+ * by the design of one of the Move subclasses by Amir Afghani in Black Widow Chess,
+ * https://github.com/amir650/BlackWidow-Chess
+ * but any code not identical to that repository was written by Ryan King.
  */
 public final class RegularMove extends Move{
 
@@ -76,7 +81,7 @@ public final class RegularMove extends Move{
     */
     @Override
     public final String toString(){
-        String moveString = "";
+        String moveString = Utilities.EMPTY_STRING;
         
         if(!m_piece.IsPawn()){
             moveString += Character.toString(m_piece.GetIcon()).toUpperCase();
@@ -102,10 +107,11 @@ public final class RegularMove extends Move{
         It returns the victim of this move, which will always be null.
     
     RETURNS
-        Piece m_victim: Always returns null.
+        Piece: Always returns null.
     
     AUTHOR
-        Ryan King
+        Ryan King, but based off a similar method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     @Override
     public final Piece GetVictim(){

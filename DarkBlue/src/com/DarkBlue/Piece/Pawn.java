@@ -33,6 +33,9 @@ import com.DarkBlue.GUI.DarkBlue;
  * 
  * The pawn can capture an enemy pawn that just moved two tiles on its first move the previous turn in a special move known as "en passant".
  * The pawn loses this right if no action is taken on that turn.
+ * 
+ * Inspired by the class of the same name in Black Widow Chess by Amir Afghani,
+ * but this code was entirely written by Ryan King unless indicated otherwise.
  */
 public final class Pawn extends Piece{
     
@@ -73,9 +76,9 @@ public final class Pawn extends Piece{
 
         super(a_color, a_currentRow, a_currentColumn);
         
-        m_currentRegularMoves = new ArrayList<>();
-        m_currentAttackingMoves = new ArrayList<>();
-        m_currentEnPassantMoves = new ArrayList<>();
+        this.m_currentRegularMoves = new ArrayList<>();
+        this.m_currentAttackingMoves = new ArrayList<>();
+        this.m_currentEnPassantMoves = new ArrayList<>();
     }
     
     /**/

@@ -30,6 +30,9 @@ import com.DarkBlue.Player.Player;
  * 
  * This also contains many variables similar to the Dark Blue chess engine that is meant
  * to parse a FEN file in an isolated environment away from the actual game to determine if the game is playable.
+ * 
+ * Partial inspiration taken from the design of FenUtilities in Black Widow Chess by Amir Afghani:
+ * https://github.com/amir650/BlackWidow-Chess
  */
 public final class GameUtilities{
     
@@ -76,8 +79,8 @@ public final class GameUtilities{
             return false;
         }
         
-        // Separate all parts
-        final String[] PARTS = a_string.split(" ");
+        // Separate all parts of the string
+        final String[] PARTS = a_string.split(Character.toString(Utilities.SPACE));
         
         // All FEN strings must have six distinct parts
         if(PARTS.length != Utilities.SIX){
@@ -85,7 +88,7 @@ public final class GameUtilities{
         }
         
         // The first part contains the board configuration delimited by forward slashes
-        final String[] RANKS = PARTS[Utilities.ZERO].split("/");
+        final String[] RANKS = PARTS[Utilities.ZERO].split(Character.toString(Utilities.FORWARD_SLASH));
         
         // All FEN boards must have exactly eight ranks
         if(RANKS == null || RANKS.length != Utilities.EIGHT){
@@ -93,7 +96,7 @@ public final class GameUtilities{
         }
         
         // board will hold the board configuration as a single string with no delimiters
-        String board = "";
+        String board = Utilities.EMPTY_STRING;
 
         // Check if each rank is valid
         for(int i = Utilities.ZERO; i < RANKS.length; i++){
@@ -174,7 +177,7 @@ public final class GameUtilities{
         Ryan King
     */
     private static final boolean HasIncorrectlyPlacedPawns(final int a_index, final String a_rank){
-        return ((a_index == Utilities.ZERO || a_index == Utilities.SEVEN) && (a_rank.contains("P")  || a_rank.contains("p")));
+        return ((a_index == Utilities.ZERO || a_index == Utilities.SEVEN) && (a_rank.contains(Character.toString(Utilities.WHITE_PAWN_BOARD_ICON))  || a_rank.contains(Character.toString(Utilities.BLACK_PAWN_BOARD_ICON))));
     }
     
     /**/
@@ -477,12 +480,12 @@ public final class GameUtilities{
         Ryan King
     */
     public static final int Pieces(final String a_board, final ChessColor a_color){
-        int pieces = Utilities.ZERO;
-        
         // Null or empty arguments do not return anything of value
         if(a_board == null || a_board.isBlank() || a_color == null){
-            return pieces;
+            return Utilities.ZERO;
         }
+        
+        int pieces = Utilities.ZERO;
         
         // Iterate through every character on the board
         for(int i = Utilities.ZERO; i < a_board.length(); i++){
@@ -572,7 +575,7 @@ public final class GameUtilities{
         m_builder = new BoardBuilder();
         
         // PARTS[0] represents the configuration of the board
-        final String[] BOARD = PARTS[Utilities.ZERO].split("/");    
+        final String[] BOARD = PARTS[Utilities.ZERO].split(Character.toString(Utilities.FORWARD_SLASH));    
 
         // PARTS[1] determines whose turn it is
         if(PARTS[Utilities.ONE].equalsIgnoreCase("w")){
@@ -867,7 +870,7 @@ public final class GameUtilities{
         engine starts up initially or if the game is stopped or saved.
     
     RETURNS
-        One of the GameState variables described above.
+        GameState: One of the GameState variables described above.
     
     AUTHOR
         Ryan King
@@ -924,7 +927,7 @@ public final class GameUtilities{
         If not, it returns false.
     
     RETURNS
-        True if the players have insufficient material and false otherwise.
+        boolean: True if the players have insufficient material and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
@@ -991,7 +994,7 @@ public final class GameUtilities{
         king is put into check many times.
     
     RETURNS
-        True if the same board configuration has occurred three times either consecutively or non-consecutively
+        boolean: True if the same board configuration has occurred three times either consecutively or non-consecutively
         and false otherwise. One of these two options will always occur.
     
     AUTHOR
@@ -1038,7 +1041,7 @@ public final class GameUtilities{
         If not, it returns false.
     
     RETURNS
-        True if the halfmove clock is at least fifty and false otherwise.
+        boolean: True if the halfmove clock is at least fifty and false otherwise.
         One of these two options will always occur.
     
     AUTHOR
@@ -1146,7 +1149,7 @@ public final class GameUtilities{
         m_white.Refresh(m_board);
         m_black.Refresh(m_board);
         
-        final String RIGHTS = a_string.split(" ")[Utilities.TWO];
+        final String RIGHTS = a_string.split(Character.toString(Utilities.SPACE))[Utilities.TWO];
         if(!AreCastlingRightsValid(RIGHTS)){
             return false;
         }

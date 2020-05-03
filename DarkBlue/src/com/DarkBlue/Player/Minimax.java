@@ -42,6 +42,9 @@ import java.util.LinkedHashSet;
  * 3. Attacking moves
  * 4. Regular moves
  * 5. En passant moves
+ * 
+ * Help taken from the simple chess AI guide by Lauri Hartikka at JSFiddle.
+ * Specific links are located here and in the bibliography.
  */
 public interface Minimax{
 

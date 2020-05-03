@@ -41,8 +41,7 @@ import com.DarkBlue.Utilities.Utilities;
  * Knight's move deltas have a row and column whose absolute values have differences of 1 or 2,
  * while diagonal deltas have rows and columns whose absolute values are identical.
  * 
- * An error delta has a default constructor, and it returns (0, 0).
- * It has a zero row and a zero column.
+ * This code has been taken and modified from another Ramapo College student's chess engine senior project.
  */
 public final class Delta{
     

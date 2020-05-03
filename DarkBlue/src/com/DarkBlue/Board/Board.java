@@ -33,6 +33,14 @@ import com.DarkBlue.Utilities.ChessColor;
  * It also contains a flag representing whose turn it is,
  * as well as a lone Tile object representing a possible
  * en passant destination tile, if any.
+ * 
+ * Inspired by the Board class from Black Widow Chess by Amir Afghani,
+ * https://github.com/amir650/BlackWidow-Chess
+ * 
+ * I replaced the Player indicating who goes next with a simple flag,
+ * and removed many fields from the Black Widow board.
+ * My en passant tile assignment is also handled differently.
+ * My toString() method parses the board directly into a partial FEN string.
  */
 public final class Board{
     
@@ -1081,6 +1089,7 @@ public final class Board{
         Ryan King
     */
     private final String SerializeCastlingRights(){
+        // Get privileges for both sides separately
         final String WHITE_CASTLING_RIGHTS = SerializeCastlingRightsForOneSide(this.GetKing(ChessColor.WHITE));
         final String BLACK_CASTLING_RIGHTS = SerializeCastlingRightsForOneSide(this.GetKing(ChessColor.BLACK));
         

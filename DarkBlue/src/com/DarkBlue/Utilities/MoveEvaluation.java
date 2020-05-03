@@ -35,8 +35,6 @@ import com.DarkBlue.Player.Human;
  * because they move and attack differently. They can also use AddCurrentEnPassantMoves()
  * if they are on their fifth rank, though it will not always lead to any moves getting added.
  * Black and white pawns have their own arrays for these moves because they can only move in one direction.
- * 
- * This also contains minimax evaluation grids for the computer to use to evaluate position and material.
  */
 public interface MoveEvaluation{
     
@@ -632,6 +630,7 @@ public interface MoveEvaluation{
                 continue;
             }
         }//End for loop
+        
         // Return the ArrayList
         return ATTACKING_MOVES;
     }
@@ -870,7 +869,8 @@ public interface MoveEvaluation{
         One of these two options will always occur.
     
     AUTHOR
-        Ryan King
+        Ryan King, design inspiration taken from kingSafe() by Jonathan Warkentin:
+        https://www.youtube.com/watch?v=P-qGwTNBwdQ
     */
     public static boolean IsKnightMovesSafe(final Board a_board, final int a_row, final int a_column, final ChessColor a_color){
         // Idiot proofing
@@ -1005,7 +1005,8 @@ public interface MoveEvaluation{
         One of these two options will always occur.
     
     AUTHOR
-        Ryan King
+        Ryan King, with design of called methods taken from Alpha Beta Chess by Jonathan Warkentin:
+        https://www.youtube.com/watch?v=P-qGwTNBwdQ
     */
     public static boolean IsKingSafe(final Board a_board, final int a_row, final int a_column, final ChessColor a_color){
         // Idiot proofing

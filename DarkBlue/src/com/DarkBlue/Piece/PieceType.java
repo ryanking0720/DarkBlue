@@ -7,6 +7,9 @@ import com.DarkBlue.Utilities.Utilities;
  * 
  * Names are self-explanatory and correspond
  * directly to the pieces one would find in chess.
+ * 
+ * Partially inspired by Black Widow Chess:
+ * https://github.com/amir650/BlackWidow-Chess
  */
 public enum PieceType{
     PAWN, 

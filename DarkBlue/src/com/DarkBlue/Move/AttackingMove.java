@@ -9,6 +9,11 @@ import com.DarkBlue.Board.Board;
  * This represents a move with any piece moving anywhere and capturing a victim.
  * 
  * This does not apply to pawns capturing others en passant, which has its own separate class.
+ * 
+ * Parts of the design of this class were inspired 
+ * by the design of one of the Move subclasses by Amir Afghani in Black Widow Chess,
+ * https://github.com/amir650/BlackWidow-Chess
+ * but any code not identical to that repository was written by Ryan King.
  */
 public final class AttackingMove extends Move{
 
@@ -79,7 +84,7 @@ public final class AttackingMove extends Move{
     */
     @Override
     public final String toString(){
-        String moveString = "";
+        String moveString = Utilities.EMPTY_STRING;
         
         if(!m_piece.IsPawn()){
             moveString += Character.toString(this.m_piece.GetIcon()).toUpperCase();
@@ -107,10 +112,11 @@ public final class AttackingMove extends Move{
         It returns the victim of this move, which will never be null.
     
     RETURNS
-        Piece m_victim: The captured piece.
+        Piece: The captured piece.
     
     AUTHOR
-        Ryan King
+        Ryan King, but based off a similar method by Amir Afghani,
+        https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/engine/classic/board/Move.java
     */
     @Override
     public final Piece GetVictim(){

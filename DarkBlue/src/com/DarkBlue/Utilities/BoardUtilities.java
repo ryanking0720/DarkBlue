@@ -7,6 +7,9 @@ import java.awt.Dimension;
  * This interface contains fields and methods that help with assembling the
  * GUI board and helping with validation of board coordinates, assigning colors,
  * and converting model board coordinates into algebraic notation and vice versa.
+ * 
+ * Contains some methods from BoardUtils.java in Black Widow Chess by Amir Afghani:
+ * https://github.com/amir650/BlackWidow-Chess
  */
 public interface BoardUtilities{
 	
@@ -275,7 +278,7 @@ public interface BoardUtilities{
     */
     public static int ToBoardRow(final String a_algebraicSpot){
         // Idiot proofing for invalid arguments
-        if(a_algebraicSpot.isBlank() || a_algebraicSpot.length() != Utilities.TWO){
+        if(a_algebraicSpot == null || a_algebraicSpot.isBlank() || a_algebraicSpot.length() != Utilities.TWO){
             return Utilities.NEGATIVE_ONE;
         }
         
@@ -317,7 +320,7 @@ public interface BoardUtilities{
     */
     public static int ToBoardColumn(final String a_algebraicSpot){
         try{
-            if(a_algebraicSpot.isBlank() || a_algebraicSpot.length() != Utilities.TWO){
+            if(a_algebraicSpot == null || a_algebraicSpot.isBlank() || a_algebraicSpot.length() != Utilities.TWO){
                 return Utilities.NEGATIVE_ONE;
             }
             
@@ -434,14 +437,15 @@ public interface BoardUtilities{
         An invalid example would be "duck".
     
     RETURNS
-        True if the String is valid, and false otherwise.
+        boolean: True if the String is valid, and false otherwise.
+        One of these two options will always occur.
     
     AUTHOR
         Ryan King
     */
     public static boolean IsValidTile(final String a_string){
         // Idiot proofing for invalid arguments
-        if(a_string.isBlank() || a_string.length() != Utilities.TWO){
+        if(a_string == null || a_string.isBlank() || a_string.length() != Utilities.TWO){
             return false;
         }
         
