@@ -8,7 +8,7 @@ import java.awt.Dimension;
  * GUI board and helping with validation of board coordinates, assigning colors,
  * and converting model board coordinates into algebraic notation and vice versa.
  * 
- * Contains some methods from BoardUtils.java in Black Widow Chess by Amir Afghani:
+ * Contains some methods and partial inspiration from BoardUtils.java in Black Widow Chess by Amir Afghani:
  * https://github.com/amir650/BlackWidow-Chess
  */
 public interface BoardUtilities{

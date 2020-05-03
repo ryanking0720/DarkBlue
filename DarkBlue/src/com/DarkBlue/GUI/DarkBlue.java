@@ -487,7 +487,8 @@ public final class DarkBlue extends JFrame{
         A string containing the above mentioned fields.
     
     AUTHOR
-        Ryan King
+        Ryan King, with help taken from:
+        https://stackoverflow.com/questions/9474121/i-want-to-get-year-month-day-etc-from-java-date-to-compare-with-gregorian-cal
     */
     private final String GetDate(){
         // Get all necessary fields to create a unique timestamp
@@ -1033,8 +1034,7 @@ public final class DarkBlue extends JFrame{
     
     AUTHOR
         Ryan King, with help about the InputStreamReader taken from:
-        
-        
+        https://www.programiz.com/java-programming/inputstreamreader
     */
     private final String ReadFile(final File a_file){
         // Open and read the file
@@ -1077,7 +1077,7 @@ public final class DarkBlue extends JFrame{
     
     AUTHOR
         Ryan King, with help about the OutputStreamWriter taken from:
-        
+        https://docs.oracle.com/javase/7/docs/api/java/io/OutputStreamWriter.html
         
     */
     private final void WriteFile(final String a_file, final String a_FEN) throws Exception{
@@ -4899,7 +4899,7 @@ public final class DarkBlue extends JFrame{
     		// Make the font larger
     		Utilities.EnlargeFont(this);
     	}
-    }
+    }// End of MoveTextArea class
 	
     /**
      * This class contains methods that check the status of the board

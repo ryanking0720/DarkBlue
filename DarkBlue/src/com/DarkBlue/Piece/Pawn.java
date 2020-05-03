@@ -169,7 +169,7 @@ public final class Pawn extends Piece{
         this.m_currentRegularMoves.addAll(MoveEvaluation.AddCurrentRegularMoves(this, a_board, REGULAR_MOVES));
         this.m_currentAttackingMoves.addAll(MoveEvaluation.AddCurrentAttackingMoves(this, a_board, ATTACKING_MOVES));
         
-        // Determine if the pawn is on its fifth rank to add en passant moves
+        // Determine if the pawn is on the proper rank to add en passant moves
         if((this.IsWhite() && this.m_currentRow == Utilities.THREE) 
                 || (this.IsBlack() && this.m_currentRow == Utilities.FOUR)){
             this.m_currentEnPassantMoves.addAll(MoveEvaluation.AddCurrentEnPassantMoves(this, a_board));

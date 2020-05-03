@@ -35,6 +35,11 @@ import com.DarkBlue.Player.Human;
  * because they move and attack differently. They can also use AddCurrentEnPassantMoves()
  * if they are on their fifth rank, though it will not always lead to any moves getting added.
  * Black and white pawns have their own arrays for these moves because they can only move in one direction.
+ * 
+ * All code in this interface was designed, written, and tested by Ryan King unless indicated otherwise,
+ * but may slightly resemble similar code in Black Widow Chess by Amir Afghani,
+ * https://github.com/amir650/BlackWidow-Chess
+ * Any resemblance in this interface to Black Widow is entirely coincidental.
  */
 public interface MoveEvaluation{
     
