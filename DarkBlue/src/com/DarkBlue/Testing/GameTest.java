@@ -1,16 +1,8 @@
 package com.DarkBlue.Testing;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.util.*;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import org.junit.Test;
 
@@ -65,6 +57,14 @@ public class GameTest{
     private static GameState m_state;
     
     private static ChessColor m_humanColor, m_computerColor;
+    
+    public static Piece GetPreviouslyMoved(){
+    	return m_previouslyMoved;
+    }
+    
+    public static ChessColor GetComputerColor(){
+    	return m_computerColor;
+    }
     
     /**/
     /*
@@ -431,6 +431,7 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final boolean IsEnPassantMove(){
         return m_victim != null
                     && m_victim.IsPawn() 
@@ -439,6 +440,7 @@ public class GameTest{
                             || m_victim.GetCurrentRow() == m_destinationRow + Utilities.ONE)
                     && m_victim.GetCurrentColumn() == m_destinationColumn;
     }
+    */
     
     /**/
     /*
@@ -462,12 +464,13 @@ public class GameTest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final boolean IsCastlingMove(){
         return m_destinationRow == m_sourceRow 
                 && (m_destinationColumn == m_sourceColumn + Utilities.TWO 
                 || m_destinationColumn == m_sourceColumn - Utilities.TWO);
     }
-    
+    */
     
     private static final void InitializePlayers(final Board a_board){
         if(m_humanColor.IsWhite()){

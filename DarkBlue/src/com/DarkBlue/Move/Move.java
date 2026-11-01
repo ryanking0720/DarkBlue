@@ -3,7 +3,6 @@ package com.DarkBlue.Move;
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.Piece.Piece;
 import com.DarkBlue.Player.Human;
-import com.DarkBlue.Player.Minimax;
 import com.DarkBlue.Player.Player;
 import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Utilities.ChessColor;

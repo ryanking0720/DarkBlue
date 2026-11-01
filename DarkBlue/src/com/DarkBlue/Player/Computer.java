@@ -1,12 +1,7 @@
 package com.DarkBlue.Player;
 
-import java.util.ArrayList;
-
-import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
-import com.DarkBlue.Move.Move;
-import com.DarkBlue.GUI.DarkBlue;
 
 /**
  * This class represents a computer player. The computer player selects its move

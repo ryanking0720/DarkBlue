@@ -1,25 +1,17 @@
 package com.DarkBlue.GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javafx.scene.control.Label;
+//import javafx.scene.control.ScrollPane;
+//import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 
-import com.DarkBlue.Piece.*;
 import com.DarkBlue.Player.Player;
-import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Utilities;
 
 /**
@@ -42,14 +34,13 @@ import com.DarkBlue.Utilities.Utilities;
  * https://github.com/amir650/BlackWidow-Chess
  * but this code is entirely my own design.
  */
-public class CapturedPiecePanel extends JPanel{
+public class CapturedPiecePanel extends VBox{
 
-	private static final long serialVersionUID = Utilities.ONE_LONG;
-	private static final Dimension PANEL_SIZE = new Dimension(80, 480);
-    private static final Dimension RIGID_AREA_SIZE = new Dimension(60, 10);
+	//private static final Dimension PANEL_SIZE = new Dimension(80, 480);
+    //private static final Dimension RIGID_AREA_SIZE = new Dimension(60, 10);
 	
 	// This will hold 15+ labels
-	private final ArrayList<JLabel> m_capturedPieces;
+	private final ArrayList<Label> m_capturedPieces;
 
 	/**/
     /*
@@ -73,27 +64,32 @@ public class CapturedPiecePanel extends JPanel{
     */
 	public CapturedPiecePanel(){
 		super();
-		// Configure the layout
-		this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-		
+
 		// Set the size
-		this.setPreferredSize(PANEL_SIZE);
+		//this.setSize(PANEL_SIZE);
+		this.setPrefSize(80, 480);
 		
 		// Set the background color
-		this.setBackground(Color.WHITE);
+		//this.setBackground(Color.WHITE);
+		// Create a BackgroundFill with the desired color
+        BackgroundFill backgroundFill = new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, javafx.geometry.Insets.EMPTY);
+        // Create a Background object with the BackgroundFill
+        Background background = new Background(backgroundFill);
+        
+        this.setBackground(background);
 		
-		// Instaintiate the JLabel space
+		// Instantiate the JLabel space
 		this.m_capturedPieces = new ArrayList<>();
 
 		for(int i = Utilities.ZERO; i < Utilities.FIFTEEN; i++){
 		    // Instantiate each JLabel
-		    final JLabel LABEL = new JLabel(Utilities.EMPTY_STRING);
+		    final Label LABEL = new Label(Utilities.EMPTY_STRING);
 		    Utilities.EnlargeFont(LABEL);
 		    this.m_capturedPieces.add(LABEL);
 		    
-		    // Add the JLabel to the panel
-			this.add(this.m_capturedPieces.get(i));
-			this.add(Box.createRigidArea(RIGID_AREA_SIZE));
+		    // Add the Label to the panel
+			this.getChildren().add(this.m_capturedPieces.get(i));
+			//this.add(Box.createRigidArea(RIGID_AREA_SIZE));
 		}
 	}
 	
@@ -117,7 +113,7 @@ public class CapturedPiecePanel extends JPanel{
         Ryan King
     */
 	public final void Clear(){
-		this.removeAll();
+		this.getChildren().clear();
 		this.m_capturedPieces.clear();
 	}
 	
@@ -150,41 +146,41 @@ public class CapturedPiecePanel extends JPanel{
 	    final int BISHOPS = a_player.CapturedBishops();
 	    final int QUEENS = a_player.CapturedQueens();
 	    
-	    this.removeAll();
+	    this.getChildren().clear();
 	    
 	    this.m_capturedPieces.clear();
 
 	    // Make all pawn labels
 	    for(int i = Utilities.ZERO; i < PAWNS; i++){
-	        final JLabel LABEL = new JLabel(Character.toString(a_player.IsWhite() ? Utilities.BLACK_PAWN_BOARD_ICON : Utilities.WHITE_PAWN_BOARD_ICON));
+	        final Label LABEL = new Label(Character.toString(a_player.IsWhite() ? Utilities.BLACK_PAWN_BOARD_ICON : Utilities.WHITE_PAWN_BOARD_ICON));
 	        Utilities.EnlargeFont(LABEL);
 	        this.m_capturedPieces.add(LABEL);
 	    }
 	    
 	    // Make all rook labels
 	    for(int i = Utilities.ZERO; i < ROOKS; i++){
-	        final JLabel LABEL = new JLabel(Character.toString(a_player.IsWhite() ? Utilities.BLACK_ROOK_BOARD_ICON : Utilities.WHITE_ROOK_BOARD_ICON));
+	        final Label LABEL = new Label(Character.toString(a_player.IsWhite() ? Utilities.BLACK_ROOK_BOARD_ICON : Utilities.WHITE_ROOK_BOARD_ICON));
 	        Utilities.EnlargeFont(LABEL);
             this.m_capturedPieces.add(LABEL);
 	    }
 	    
 	    // Make all knight labels
 	    for(int i = Utilities.ZERO; i < KNIGHTS; i++){
-	        final JLabel LABEL = new JLabel(Character.toString(a_player.IsWhite() ? Utilities.BLACK_KNIGHT_BOARD_ICON : Utilities.WHITE_KNIGHT_BOARD_ICON));
+	        final Label LABEL = new Label(Character.toString(a_player.IsWhite() ? Utilities.BLACK_KNIGHT_BOARD_ICON : Utilities.WHITE_KNIGHT_BOARD_ICON));
 	        Utilities.EnlargeFont(LABEL);
 	        this.m_capturedPieces.add(LABEL);
 	    }
 	    
 	    // Make all bishop labels
 	    for(int i = Utilities.ZERO; i < BISHOPS; i++){
-	        final JLabel LABEL = new JLabel(Character.toString(a_player.IsWhite() ? Utilities.BLACK_BISHOP_BOARD_ICON : Utilities.WHITE_BISHOP_BOARD_ICON));
+	        final Label LABEL = new Label(Character.toString(a_player.IsWhite() ? Utilities.BLACK_BISHOP_BOARD_ICON : Utilities.WHITE_BISHOP_BOARD_ICON));
 	        Utilities.EnlargeFont(LABEL);
 	        this.m_capturedPieces.add(LABEL);
 	    }
 	    
 	    // Make all queen labels
 	    for(int i = Utilities.ZERO; i < QUEENS; i++){
-	        final JLabel LABEL = new JLabel(Character.toString(a_player.IsWhite() ? Utilities.BLACK_QUEEN_BOARD_ICON : Utilities.WHITE_QUEEN_BOARD_ICON));
+	        final Label LABEL = new Label(Character.toString(a_player.IsWhite() ? Utilities.BLACK_QUEEN_BOARD_ICON : Utilities.WHITE_QUEEN_BOARD_ICON));
 	        Utilities.EnlargeFont(LABEL);
             this.m_capturedPieces.add(LABEL);
 	    }
@@ -192,7 +188,7 @@ public class CapturedPiecePanel extends JPanel{
 	    // Add every label to the panel
 	    for(int i = Utilities.ZERO; i < this.m_capturedPieces.size(); i++){
 	        Utilities.EnlargeFont(this.m_capturedPieces.get(i));
-	        this.add(this.m_capturedPieces.get(i));
+	        this.getChildren().add(this.m_capturedPieces.get(i));
 	    }
 	}
 }

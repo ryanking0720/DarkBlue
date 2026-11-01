@@ -3,7 +3,6 @@ package com.DarkBlue.Move;
 import com.DarkBlue.Piece.Piece;
 import com.DarkBlue.Piece.King;
 import com.DarkBlue.Utilities.Utilities;
-import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Board.Board;
 
 /**

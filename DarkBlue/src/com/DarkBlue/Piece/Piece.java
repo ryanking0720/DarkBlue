@@ -1,15 +1,12 @@
 package com.DarkBlue.Piece;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.BoardUtilities;
-import com.DarkBlue.Utilities.MoveEvaluation;
 import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
-import com.DarkBlue.Board.Tile;
 
 /**
  * This class represents a generic chess piece.

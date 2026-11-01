@@ -1,42 +1,28 @@
 package com.DarkBlue.Testing;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
+import javafx.scene.layout.Pane;
+//import javafx.scene.paint.Color;
 
 import com.DarkBlue.Board.Tile;
-import com.DarkBlue.GUI.DarkBlue.MoveTextArea;
 import com.DarkBlue.Utilities.BoardUtilities;
-import com.DarkBlue.Utilities.Factory;
 import com.DarkBlue.Utilities.Utilities;
 
 /**
  * This is a copy of the GUITile class found in DarkBlue.java.
  * It is not functional and is only meant for testing purposes. 
  */
-public final class GUITile extends JPanel{
+public final class GUITile extends Pane{
 
-    // Final values for bookkeeping
-    private static final long serialVersionUID = Utilities.ONE_LONG;
-    
     // Important path and extension
-    private static final String EXTENSION = ".png";
-    private static final String FOLDER = "src/com/DarkBlue/GUI/ChessPieces/";
+    //private static final String EXTENSION = ".png";
+    //private static final String FOLDER = "src/com/DarkBlue/GUI/ChessPieces/";
     
     // Custom final values
-    private final Color m_originalColor;
+    //private final Color m_originalColor;
     private final Tile m_tile;
     
     // The image of the chess piece
-    private JLabel m_image;
+    //private JLabel m_image;
 
     /**/
     /*
@@ -67,16 +53,17 @@ public final class GUITile extends JPanel{
         this.m_tile = a_tile;
         
         // Set the color of the tile
-        if(a_tile.GetColor().IsWhite()){
-            this.m_originalColor = BoardUtilities.WHITE;
-        }else{
-            this.m_originalColor = BoardUtilities.BLACK;
-        }
+        //if(a_tile.GetColor().IsWhite()){
+        //    this.m_originalColor = BoardUtilities.WHITE;
+        //}else{
+        //    this.m_originalColor = BoardUtilities.BLACK;
+        //}
         
         // Set the size and background color
-        this.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-        this.setPreferredSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
-        this.setBackground(this.m_originalColor);
+        //this.setSize(new Dimension(Utilities.SIXTY, Utilities.SIXTY));
+        this.setMaxSize(Utilities.SIXTY, Utilities.SIXTY);
+        this.setMinSize(Utilities.SIXTY, Utilities.SIXTY);
+        //this.setBackground(this.m_originalColor);
 
         // Load the image onto the tile
         DrawTile();
@@ -104,28 +91,30 @@ public final class GUITile extends JPanel{
         and Black Widow Chess by Amir Afghani,
         https://github.com/amir650/BlackWidow-Chess/blob/master/src/com/chess/gui/Table.java
     */
+    
     private final void SetPiece(){
         // Remove any irrelevant pieces
-        this.removeAll();
+        this.getChildren().clear();
         
         // Only add an image if the model tile has a piece on it
         if(this.GetTile().IsOccupied()){
-            final String COLOR = this.GetTile().GetPiece().GetColor().toString().toLowerCase();
-            final String PIECE = this.GetTile().GetPiece().GetPieceType().toString().toLowerCase();
+            //final String COLOR = this.GetTile().GetPiece().GetColor().toString().toLowerCase();
+            //final String PIECE = this.GetTile().GetPiece().GetPieceType().toString().toLowerCase();
         
-            final String PATH = FOLDER + COLOR + PIECE + EXTENSION;
+            //final String PATH = FOLDER + COLOR + PIECE + EXTENSION;
         
             try{   
-                this.m_image = new JLabel(new ImageIcon(ImageIO.read(new File(PATH))));
-                this.add(m_image);
+               // this.m_image = new JLabel(new ImageIcon(ImageIO.read(new File(PATH))));
+               // this.getChildren().add(m_image);
             }catch(Exception e){        
                 e.printStackTrace();
             }
         }
         
-        revalidate();
-        repaint();
+        //revalidate();
+        //repaint();
     }
+    
     
     /**/
     /*
@@ -150,8 +139,8 @@ public final class GUITile extends JPanel{
     private final void DrawTile(){
         SetPiece();
         
-        revalidate();
-        repaint();
+        //revalidate();
+        //repaint();
     }
     
     /**/

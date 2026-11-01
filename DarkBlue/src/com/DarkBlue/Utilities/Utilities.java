@@ -1,11 +1,13 @@
 package com.DarkBlue.Utilities;
 
-import java.awt.Font;
+import javafx.scene.text.Font;
 
-import javax.swing.JComponent;
+//import javafx.scene.Node;
 
 import com.DarkBlue.Move.Move;
 import com.DarkBlue.Piece.Piece;
+
+import javafx.scene.control.Label;
 
 /**
  * This interface contains symbolic constants for
@@ -116,6 +118,7 @@ public interface Utilities{
     public static final int ONE_HUNDRED = 100;
     public static final int ONE_HUNDRED_TWO = 102;
     public static final int ONE_HUNDRED_SEVENTY_EIGHT = 178;
+    public static final int TWO_HUNDRED = 200;
     public static final int TWO_HUNDRED_FOUR = 204;
     public static final int TWO_HUNDRED_FIFTY_FIVE = 255;
     public static final int THREE_HUNDRED_SIXTY = 360;
@@ -123,6 +126,7 @@ public interface Utilities{
     public static final long ONE_LONG = 1;
     
     public static final float FIVE_FLOAT = 5.0f;
+    public static final double FIVE_DOUBLE = 5.0d;
        
     /**/
     /*
@@ -187,15 +191,15 @@ public interface Utilities{
         https://stackoverflow.com/questions/8675038/increasing-decreasing-font-size-inside-textarea-using-jbutton
         with additional modifications made by Ryan King
     */
-    public static void EnlargeFont(final JComponent a_object){
+    public static void EnlargeFont(final Label LABEL){
         // Idiot proofing
-        if(a_object == null){
+        if(LABEL == null){
             return;
         }
         
         // Enlarge the component's font
-        final Font FONT = a_object.getFont();
-        final float SIZE = FONT.getSize() + FIVE_FLOAT;
-        a_object.setFont(FONT.deriveFont(SIZE));
+        final Font FONT = LABEL.getFont();
+        final double SIZE = FONT.getSize() + FIVE_DOUBLE;
+        LABEL.setFont(Font.font(SIZE));
     }
 }

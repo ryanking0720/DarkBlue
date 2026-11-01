@@ -11,7 +11,6 @@ import com.DarkBlue.Piece.Knight;
 import com.DarkBlue.Piece.Pawn;
 import com.DarkBlue.Piece.PieceType;
 import com.DarkBlue.Piece.Queen;
-import com.DarkBlue.Piece.Rook;
 import com.DarkBlue.Player.Human;
 import com.DarkBlue.Player.Player;
 /**
@@ -46,6 +45,14 @@ public final class GameUtilities{
     private static ChessColor m_turn = null;
     private static int m_halfmoves = Utilities.NEGATIVE_ONE;
     private static GameState m_gameState = GameState.EMPTY;
+    
+    public static ChessColor GetTurn(){
+    	return m_turn;
+    }
+    
+    public static GameState GetGameState(){
+    	return m_gameState;
+    }
     
     /**/
     /*
@@ -705,8 +712,8 @@ public final class GameUtilities{
         }
         
         final King KING = a_board.GetKing(a_color);
-        final int ROOK_ROW = KING.GetCurrentRow();
-        final int ROOK_COLUMN = (a_isKingside ? Utilities.SEVEN : Utilities.ZERO);
+        //final int ROOK_ROW = KING.GetCurrentRow();
+        //final int ROOK_COLUMN = (a_isKingside ? Utilities.SEVEN : Utilities.ZERO);
         
         // Do not allow this to pass if the FEN rights specified say
         // the king has a rook to castle with on that side while he really has none
@@ -1218,6 +1225,7 @@ public final class GameUtilities{
     AUTHOR
         Ryan King
     */
+    /*
     private static final void ParseCastlingRights(final String a_rights){
         if(a_rights.equals("-")){
             m_canWhiteKingsideCastle = false;
@@ -1250,6 +1258,7 @@ public final class GameUtilities{
             }
         }
     }
+    */
     
     /**/
     /*

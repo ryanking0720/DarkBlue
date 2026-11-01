@@ -1,6 +1,6 @@
 package com.DarkBlue.Utilities;
 
-import java.awt.Color;
+import javafx.scene.paint.Color;
 import java.awt.Dimension;
 
 /**
@@ -14,12 +14,13 @@ import java.awt.Dimension;
 public interface BoardUtilities{
 	
 	// Colors for GUITiles
-    public static final Color BLACK = new Color(Utilities.TWO_HUNDRED_FOUR, Utilities.ONE_HUNDRED_TWO, Utilities.ZERO, Utilities.TWO_HUNDRED_FIFTY_FIVE);
-    public static final Color WHITE = new Color(Utilities.TWO_HUNDRED_FIFTY_FIVE, Utilities.ONE_HUNDRED_SEVENTY_EIGHT, Utilities.ONE_HUNDRED_TWO, Utilities.TWO_HUNDRED_FIFTY_FIVE);
-    public static final Color SELECTED_GREEN = new Color(Utilities.FIFTY_ONE, Utilities.TWO_HUNDRED_FIFTY_FIVE, Utilities.FIFTY_ONE, Utilities.TWO_HUNDRED_FIFTY_FIVE);
+    public static final Color BLACK = Color.web("#CC6600");
+    public static final Color WHITE = Color.web("#FFB266");
+    public static final Color SELECTED_GREEN_WHITE = Color.web("#33FF33");
+    public static final Color SELECTED_GREEN_BLACK = Color.web("#33C833");
     public static final Dimension TILE_DIMENSION = new Dimension(Utilities.SIXTY, Utilities.SIXTY);
-    public static final Color BORDER_BLACK = new Color(154, 152, 0, 1);
-    public static final Color BORDER_WHITE = new Color(155, 228, 252, 1);
+    public static final Color BORDER_BLACK = Color.web("#9A9800");
+    public static final Color BORDER_WHITE = Color.web("#9BE4FC");
 	
     /**/
     /*

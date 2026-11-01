@@ -1,5 +1,5 @@
 package com.DarkBlue.Testing;
-
+/*
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.Board.Tile;
 import com.DarkBlue.Piece.Bishop;
@@ -14,9 +14,10 @@ import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Utilities.Utilities;
 
 import java.awt.BorderLayout;
+*/
 import java.util.Scanner;
 
-import javax.swing.JFrame;
+//import javax.swing.JFrame;
 
 /**
  * This file is meant to test the stipped-down GUITile
@@ -63,7 +64,7 @@ public final class GUITest{
         keyboard = new Scanner(System.in);
         
         //GUITileTest();
-        GUIBoardTest();
+        //GUIBoardTest();
         
         keyboard.close();
     }
@@ -89,6 +90,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final void GUITileTest(){
         // Gather the user input fields
         
@@ -140,7 +142,7 @@ public final class GUITest{
         // Show the frame
         FRAME.setVisible(true);
     }
-    
+    */
     /**/
     /*
     NAME
@@ -165,6 +167,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final void GUIBoardTest(){
         // Find the desired color
         final String COLOR_STRING = PromptColor();
@@ -195,7 +198,7 @@ public final class GUITest{
         // Show the frame
         FRAME.setVisible(true);
     }
-    
+    */
     /**/
     /*
     NAME
@@ -217,6 +220,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final String PromptPiece(){
         String piece = "";
         
@@ -227,7 +231,7 @@ public final class GUITest{
         
         return piece;
     }
-    
+    */
     /**/
     /*
     NAME
@@ -249,6 +253,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final String PromptColor(){
         String color = "";
         
@@ -259,7 +264,7 @@ public final class GUITest{
         
         return color;
     }
-    
+	*/
     /**/
     /*
     NAME
@@ -281,6 +286,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final String PromptTile(){
         String tile = "";
         
@@ -291,7 +297,7 @@ public final class GUITest{
         
         return tile;
     }
-    
+    */
     /**/
     /*
     NAME
@@ -319,6 +325,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final Piece GetPieceByLetter(final String a_piece, ChessColor a_color, int a_row, int a_column){
         if(a_piece.equalsIgnoreCase("P")){
             return new Pawn(a_color, a_row, a_column);
@@ -336,7 +343,7 @@ public final class GUITest{
             return null;
         }
     }
-    
+    */
     /**/
     /*
     NAME
@@ -359,6 +366,7 @@ public final class GUITest{
     AUTHOR
         Ryan King
     */
+    /*
     private static final ChessColor AssignTileColor(final int a_row, final int a_column){
         if(a_row % Utilities.TWO == Utilities.ONE){
             if(a_column % Utilities.TWO == Utilities.ONE){
@@ -374,4 +382,5 @@ public final class GUITest{
             }
         }
     }
+    */
 }

@@ -2,10 +2,7 @@ package com.DarkBlue.Move;
 
 import com.DarkBlue.Piece.Piece;
 import com.DarkBlue.Piece.Pawn;
-import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Utilities.BoardUtilities;
-import com.DarkBlue.Utilities.MoveEvaluation;
-import com.DarkBlue.Utilities.ChessColor;
 import com.DarkBlue.Board.Board;
 
 /**

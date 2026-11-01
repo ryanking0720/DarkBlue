@@ -1,19 +1,12 @@
 package com.DarkBlue.Player;
 
 import com.DarkBlue.Board.Board;
-import com.DarkBlue.GUI.DarkBlue;
 import com.DarkBlue.Utilities.BoardUtilities;
 import com.DarkBlue.Utilities.ChessColor;
-import com.DarkBlue.Utilities.Factory;
-import com.DarkBlue.Utilities.MoveEvaluation;
 import com.DarkBlue.Utilities.Utilities;
 import com.DarkBlue.Move.Move;
-import com.DarkBlue.Move.RegularMove;
 import com.DarkBlue.Piece.Pawn;
 import com.DarkBlue.Piece.Piece;
-import com.DarkBlue.Move.AttackingMove;
-import com.DarkBlue.Move.CastlingMove;
-import com.DarkBlue.Move.EnPassantMove;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

@@ -1,6 +1,5 @@
 package com.DarkBlue.Board;
 
-import com.DarkBlue.Player.Player;
 import com.DarkBlue.Piece.Piece;
 import com.DarkBlue.Piece.Pawn;
 import com.DarkBlue.Piece.Rook;
@@ -1464,7 +1463,6 @@ public final class Board{
         // Get the coordinates where the moving pawn will move
         final int NEW_ROW = a_candidate.GetNewRow();
         final int NEW_COLUMN = a_candidate.GetNewColumn();
-        final int OLD_MOVES = a_candidate.GetPiece().HowManyMoves();
         
         // Get the coordinates of the captured pawn,
         // which are different from the destination

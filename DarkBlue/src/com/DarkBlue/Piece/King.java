@@ -560,9 +560,9 @@ public final class King extends Piece{
         }
         
         final int ROW = this.m_currentRow;
-        int column = this.m_currentColumn + Utilities.ONE, 
+        int column = this.m_currentColumn + Utilities.ONE;
         // The king's rook always starts at column 7 of my board.
-        rookRow = this.m_currentRow, rookColumn = Utilities.SEVEN;
+        //rookRow = this.m_currentRow, rookColumn = Utilities.SEVEN;
         
         // See if there's a friendly rook that has not moved
         if(!this.HasKingsideCastlingRook(a_board)){
@@ -647,9 +647,9 @@ public final class King extends Piece{
         }
         
         final int ROW = this.m_currentRow;
-        int column = this.m_currentColumn - Utilities.ONE,
+        int column = this.m_currentColumn - Utilities.ONE;
         // The queen's rook always starts at column 0 of my board.
-        rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
+        //rookRow = this.GetCurrentRow(), rookColumn = Utilities.ZERO;
         
         // See if there's a friendly rook that has not moved
         if(!this.HasQueensideCastlingRook(a_board)){

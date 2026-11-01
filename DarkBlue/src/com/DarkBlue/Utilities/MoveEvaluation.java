@@ -1,7 +1,6 @@
 package com.DarkBlue.Utilities;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 import com.DarkBlue.Board.Board;
 import com.DarkBlue.GUI.DarkBlue;
@@ -278,7 +277,7 @@ public interface MoveEvaluation{
                         MOVE = new AttackingMove(a_piece, newRow, newColumn, a_board);
                         
                         clone = MOVE.GetTransitionalBoard();
-                        try {
+                        try{
                         	WHITE.InitializePieces(clone);
                         	BLACK.InitializePieces(clone);
                         }catch(Exception e){
@@ -1268,7 +1267,7 @@ public interface MoveEvaluation{
         for(int index = Utilities.ZERO; index < a_movesToCopy.size(); index++){
             final Move NEXT = a_movesToCopy.get(index);
             
-            // Check for every type of mvoe
+            // Check for every type of move
             if(NEXT.IsEnPassant()){
                 COPIED_MOVES.add(new EnPassantMove((Pawn)NEXT.GetPiece(), NEXT.GetNewRow(), NEXT.GetNewColumn(), (Pawn)NEXT.GetVictim(), NEXT.GetInitialBoard()));
             }else if(NEXT.IsCastling()){
